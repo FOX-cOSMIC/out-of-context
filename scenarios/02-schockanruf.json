@@ -1,0 +1,9 @@
+{
+  "id": "schockanruf",
+  "title": "Der Schockanruf",
+  "description": "Ihre \"Tochter\" weint am Telefon: Sie hatte einen Unfall und braucht sofort Geld.",
+  "opening": "Mama? Mama, ich bin's... ich hatte einen schlimmen Unfall. Ich gebe dich gleich an den Anwalt weiter, bitte hilf mir.",
+  "caller_goal": "Get the person to pay a 'bail' (Kaution) today, handed to a courier.",
+  "tactics": ["emotional shock", "crying relative, then a 'lawyer' takes over", "urgency: 'today or she goes to jail'", "no time to call anyone"],
+  "red_flags": ["Angeblicher Verwandter in Not", "Kaution oder Geld sofort", "Übergabe an Boten"]
+}

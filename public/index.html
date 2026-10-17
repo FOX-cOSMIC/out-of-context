@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scam Shield</title>
+  <style>
+    :root {
+      --bg: #fbf8f3;
+      --card: #ffffff;
+      --text: #1d1b18;
+      --muted: #5c574f;
+      --accent: #1f5fae;
+      --scam: #b42318;
+      --suspicious: #b54708;
+      --safe: #067647;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 22px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1 { font-size: 40px; margin: 8px 0 4px; }
+    h2 { font-size: 30px; margin: 0 0 12px; }
+    p.lead { color: var(--muted); margin: 0 0 24px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .big-btn {
+      display: block; width: 100%;
+      font: inherit; font-size: 26px; font-weight: 600;
+      padding: 22px 24px; margin: 0 0 16px;
+      border: 3px solid var(--accent); border-radius: var(--radius);
+      background: var(--card); color: var(--accent);
+      cursor: pointer; text-align: left;
+    }
+    .big-btn.primary { background: var(--accent); color: #fff; }
+    .big-btn.danger { border-color: var(--scam); background: var(--scam); color: #fff; }
+    .big-btn small { display: block; font-size: 19px; font-weight: 400; opacity: .85; }
+    .big-btn:focus-visible { outline: 4px solid #f5b400; outline-offset: 3px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row .big-btn { flex: 1 1 200px; text-align: center; }
+    textarea {
+      width: 100%; min-height: 160px;
+      font: inherit; padding: 16px;
+      border: 2px solid #c9c2b6; border-radius: var(--radius);
+      background: var(--card); color: var(--text);
+    }
+    .back {
+      font: inherit; font-size: 20px;
+      background: none; border: none; color: var(--accent);
+      padding: 8px 0; margin-bottom: 8px; cursor: pointer;
+    }
+    .card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 20px 22px; margin: 16px 0;
+      border-left: 10px solid var(--muted);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .card.scam, .card.risky { border-left-color: var(--scam); }
+    .card.suspicious, .card.okay { border-left-color: var(--suspicious); }
+    .card.safe, .card.great { border-left-color: var(--safe); }
+    .card .headline { font-size: 28px; font-weight: 700; margin: 0 0 8px; }
+    .card p { margin: 8px 0; }
+    .label { font-weight: 700; }
+    .error { color: var(--scam); font-weight: 600; }
+    .chat { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+    .bubble { padding: 14px 18px; border-radius: var(--radius); max-width: 85%; }
+    .bubble.caller { background: #eee8de; align-self: flex-start; }
+    .bubble.me { background: #dbe8f8; align-self: flex-end; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+
+  <!-- HOME -->
+  <section id="home" class="view active">
+    <h1>Scam Shield</h1>
+    <p class="lead">Ihr Helfer gegen Betrug am Telefon und per Nachricht.</p>
+    <button class="big-btn primary" data-go="check">
+      Anruf oder Nachricht prüfen
+      <small>Erzählen Sie, was passiert ist. Ich sage Ihnen, ob es Betrug ist.</small>
+    </button>
+    <button class="big-btn" data-go="practice">
+      Üben
+      <small>Üben Sie in Ruhe, wie Sie Betrüger erkennen und auflegen.</small>
+    </button>
+  </section>
+
+  <!-- CHECK -->
+  <section id="check" class="view">
+    <button class="back" data-go="home">← Zurück</button>
+    <h2>Was ist passiert?</h2>
+    <p class="lead">Erzählen Sie vom Anruf oder fügen Sie die Nachricht ein.</p>
+    <textarea id="check-text" placeholder="Zum Beispiel: Ein Polizist hat angerufen. Er sagt, Einbrecher sind in meiner Straße, und will meinen Schmuck abholen."></textarea>
+    <div class="row">
+      <button class="big-btn mic-btn" data-target="check-text">🎤 Sprechen</button>
+      <button class="big-btn primary" id="check-btn">Prüfen</button>
+    </div>
+    <div id="check-result"></div>
+  </section>
+
+  <!-- PRACTICE: pick a scenario -->
+  <section id="practice" class="view">
+    <button class="back" data-go="home">← Zurück</button>
+    <h2>Üben</h2>
+    <p class="lead">Wählen Sie eine Übung. Der Anrufer ist eine KI, nichts kann passieren.</p>
+    <div id="scenario-list"></div>
+  </section>
+
+  <!-- PRACTICE: the call -->
+  <section id="call" class="view">
+    <button class="back" data-go="practice">← Andere Übung</button>
+    <h2 id="call-title"></h2>
+    <div class="chat" id="chat"></div>
+    <div id="call-controls">
+      <textarea id="reply-text" placeholder="Was antworten Sie?"></textarea>
+      <div class="row">
+        <button class="big-btn mic-btn" data-target="reply-text">🎤 Sprechen</button>
+        <button class="big-btn primary" id="reply-btn">Antworten</button>
+      </div>
+      <button class="big-btn danger" id="hangup-btn">Auflegen 📞</button>
+    </div>
+    <div id="feedback"></div>
+  </section>
+
+</main>
+
+<script>
+  // ---------- helpers ----------
+  const $ = (id) => document.getElementById(id);
+
+  function show(viewId) {
+    document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === viewId));
+    window.speechSynthesis?.cancel();
+    window.scrollTo(0, 0);
+    if (viewId === "practice") loadScenarios();
+  }
+  document.querySelectorAll("[data-go]").forEach((b) =>
+    b.addEventListener("click", () => show(b.dataset.go)));
+
+  async function api(path, body) {
+    const res = await fetch(path, body
+      ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+      : undefined);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || "Das hat gerade nicht geklappt.");
+    return data;
+  }
+
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // Read text aloud in German (built into the browser).
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "de-DE";
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  }
+
+  // Speech-to-text (Chrome/Edge/Safari). Hides the mic button where unsupported.
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".mic-btn").forEach((btn) => {
+    if (!Recognition) return btn.classList.add("hidden");
+    btn.addEventListener("click", () => {
+      const rec = new Recognition();
+      rec.lang = "de-DE";
+      rec.interimResults = false;
+      btn.textContent = "🎤 Ich höre zu…";
+      rec.onresult = (e) => {
+        const box = $(btn.dataset.target);
+        box.value = (box.value + " " + e.results[0][0].transcript).trim();
+      };
+      rec.onend = () => { btn.textContent = "🎤 Sprechen"; };
+      rec.start();
+    });
+  });
+
+  // ---------- check ----------
+  const VERDICT_LABEL = { scam: "Betrug", suspicious: "Verdächtig", safe: "Wahrscheinlich sicher" };
+
+  $("check-btn").addEventListener("click", async () => {
+    const out = $("check-result");
+    out.innerHTML = "<p>Einen Moment, ich prüfe das…</p>";
+    try {
+      const r = await api("/api/check", { text: $("check-text").value });
+      out.innerHTML = `
+        <div class="card ${r.verdict}">
+          <p class="headline">${escapeHtml(r.headline)}</p>
+          <p>${escapeHtml(r.why)}</p>
+          <p><span class="label">Was Sie jetzt tun:</span> ${escapeHtml(r.next_step)}</p>
+          <p><span class="label">Merken Sie sich:</span> ${escapeHtml(r.learn_tip)}</p>
+        </div>
+        <button class="big-btn" id="read-again">🔊 Noch einmal vorlesen</button>`;
+      const spoken = `${r.headline} ${r.why} ${r.next_step}`;
+      speak(spoken);
+      $("read-again").onclick = () => speak(spoken);
+    } catch (e) {
+      out.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  });
+
+  // ---------- practice ----------
+  let scenario = null;
+  let history = []; // [{ from: "caller" | "me", text }]
+
+  async function loadScenarios() {
+    const list = $("scenario-list");
+    list.innerHTML = "<p>Lade Übungen…</p>";
+    try {
+      const scenarios = await api("/api/scenarios");
+      list.innerHTML = "";
+      scenarios.forEach((s) => {
+        const b = document.createElement("button");
+        b.className = "big-btn";
+        b.innerHTML = `${escapeHtml(s.title)}<small>${escapeHtml(s.description)}</small>`;
+        b.onclick = () => startCall(s);
+        list.appendChild(b);
+      });
+    } catch (e) {
+      list.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  }
+
+  function renderChat() {
+    $("chat").innerHTML = history.map((m) =>
+      `<div class="bubble ${m.from}">${escapeHtml(m.text)}</div>`).join("");
+  }
+
+  function startCall(s) {
+    scenario = s;
+    history = [{ from: "caller", text: s.opening }];
+    $("call-title").textContent = s.title;
+    $("feedback").innerHTML = "";
+    $("call-controls").classList.remove("hidden");
+    $("reply-text").value = "";
+    show("call");
+    renderChat();
+    speak(s.opening);
+  }
+
+  $("reply-btn").addEventListener("click", async () => {
+    const text = $("reply-text").value.trim();
+    if (!text) return;
+    history.push({ from: "me", text });
+    $("reply-text").value = "";
+    renderChat();
+    try {
+      const { reply } = await api("/api/practice", { scenarioId: scenario.id, history });
+      history.push({ from: "caller", text: reply });
+      renderChat();
+      speak(reply);
+    } catch (e) {
+      $("feedback").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  });
+
+  const SCORE_LABEL = { great: "Sehr gut gemacht!", okay: "Gut, mit einem Tipp", risky: "Vorsicht" };
+
+  $("hangup-btn").addEventListener("click", async () => {
+    speechSynthesis?.cancel();
+    $("call-controls").classList.add("hidden");
+    const out = $("feedback");
+    out.innerHTML = "<p>Aufgelegt. Ich schaue mir das Gespräch an…</p>";
+    try {
+      const f = await api("/api/feedback", { scenarioId: scenario.id, history });
+      out.innerHTML = `
+        <div class="card ${f.score}">
+          <p class="headline">${SCORE_LABEL[f.score] || ""}</p>
+          <p>${escapeHtml(f.praise)}</p>
+          <p><span class="label">Tipp:</span> ${escapeHtml(f.tip)}</p>
+          <p><span class="label">Warnzeichen:</span> ${f.red_flags.map(escapeHtml).join(" · ")}</p>
+        </div>
+        <button class="big-btn" data-go="practice" onclick="show('practice')">Nächste Übung</button>`;
+      speak(`${SCORE_LABEL[f.score] || ""} ${f.praise} ${f.tip}`);
+    } catch (e) {
+      out.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  });
+</script>
+</body>
+</html>

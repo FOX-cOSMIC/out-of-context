@@ -1,0 +1,15 @@
+{
+  "name": "out-of-context-scam-shield",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scam Shield: helps older adults check suspicious calls and messages with Claude, and practise spotting scams.",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --watch --env-file-if-exists=.env server.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0"
+  }
+}

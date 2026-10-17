@@ -20,17 +20,35 @@
 Phone scams on older people are rising in Germany: according to BKA figures reported in the press, fake police officers took about €49.5M in 2025 (up from €30.1M), and the grandchild trick and shock calls about €49.0M. The costliest scams arrive by phone, often on a landline, where existing text-only scam checkers don't help. Research suggests short, repeated practice works better than one-off warnings.
 
 ## What it does
-<What a user can do with it. A short list is fine.>
+- **Check a call or message:** describe what happened (typing or speaking), get a plain-German verdict (scam / suspicious / safe), the warning signs, one clear next step, and a tip to remember. The answer is read aloud.
+- **Practise:** pick a scenario (fake police officer, shock call, "Hallo Mama"). Claude plays the caller; you answer by voice or text, press *Auflegen* (hang up) and get kind feedback on what you did well and what to watch for.
 
 ## How Claude is used
-<What Claude does inside the product: which model, what it reads, what it produces.>
+Claude Opus 5.5 (`claude-opus-5-5`) via the Anthropic API, called from `server.js`:
+- **Scam check:** reads the user's description of a call or message and returns structured JSON (verdict, why, next step, learning tip). Prompt: `prompts/check.md`.
+- **Practice caller:** role-plays a scammer from a scenario file, mildly, and stops if real personal data appears. Prompt: `prompts/practice-caller.md`.
+- **Coach:** reviews the practice call and returns encouraging feedback as JSON. Prompt: `prompts/practice-feedback.md`.
 
 ## How to run it
+Needs Node.js 22 or newer.
+
 ```bash
 cp .env.example .env    # paste your ANTHROPIC_API_KEY into .env
-# then the commands to start it, e.g.
-# python app.py   or   npm install && npm run dev   or   open index.html
+npm install
+npm start               # then open http://localhost:3000
 ```
+
+`npm run dev` restarts the server automatically when you change a file. Voice input works in Chrome, Edge and Safari.
+
+### Project layout (who owns what)
+
+| Path | What it is | Owner |
+|---|---|---|
+| `server.js` | Small Node server: talks to Claude, keeps the API key secret | Gabriela |
+| `prompts/` | Instructions for Claude (check, practice caller, coach) | Gabriela |
+| `public/index.html` | The big-button, voice-first screen | Ahmad |
+| `scenarios/` | Fake scam scenarios for practice and the demo (one JSON file each) | Lucas |
+| `README.md` | This file, the pitch story | Valentina |
 
 **Live link (if any):** <link>
 
@@ -49,4 +67,6 @@ Teams of 5 (at least 1 builder, 1 product or design, 1 domain expert; plus found
 | Lucas | Domain expert (videography) |
 
 ## Credits
-<Open-source libraries, APIs, datasets and assets you used.>
+- [Anthropic API](https://docs.claude.com) and the official [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) (MIT)
+- Browser Web Speech API for speech input and read-aloud
+- Scam patterns: [Verbraucherzentrale](https://www.verbraucherzentrale.de/wissen/digitale-welt/mobilfunk-und-festnetz/hallo-mama-hallo-papa-betrugsversuche-ueber-whatsapp-und-sms-72910), BKA figures as reported by German press. All scenarios are fictional.
