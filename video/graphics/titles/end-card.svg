@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Agatha end card</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;display=swap');
+.h{font-family:Quicksand,'Varela Round',Nunito,'Arial Rounded MT Bold',system-ui,sans-serif;font-weight:700}
+.b{font-family:'Atkinson Hyperlegible',Verdana,'Segoe UI',system-ui,sans-serif;font-weight:400}
+.bb{font-family:'Atkinson Hyperlegible',Verdana,'Segoe UI',system-ui,sans-serif;font-weight:700}
+</style>
+<defs><filter id="shadow" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#1E1B2E" flood-opacity="0.18"/></filter></defs>
+<rect id="background" width="1920" height="1080" fill="#FAF9F5"/>
+<g id="decor"><circle cx="1800" cy="110" r="300" fill="#EFE6FF"/><circle cx="110" cy="1010" r="260" fill="#EFE6FF"/><circle cx="1610" cy="360" r="18" fill="#FF7A3D"/></g><g id="mascot" transform="translate(815.0 70) scale(1.45)"><ellipse cx="100" cy="200" rx="46" ry="6" fill="#EFE6FF"></ellipse>
+        <line x1="100" y1="30" x2="100" y2="14" stroke="#C9B8F0" stroke-width="4" stroke-linecap="round"></line>
+        <circle cx="100" cy="11" r="7" fill="#FF7A3D"></circle>
+        <ellipse cx="44" cy="150" rx="11" ry="18" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2" transform="rotate(20 44 150)"></ellipse>
+        <ellipse cx="158" cy="146" rx="11" ry="18" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2" transform="rotate(-28 158 146)"></ellipse>
+        <rect x="58" y="128" width="84" height="66" rx="30" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2"></rect>
+        <path d="M66 140 L100 176 L134 140 L134 182 Q134 192 122 192 L78 192 Q66 192 66 182 Z" fill="#6B3FE0"></path>
+        <path d="M100 176 L100 192" stroke="#FFFFFF" stroke-width="2"></path>
+        <circle cx="93" cy="183" r="2.5" fill="#FFFFFF"></circle>
+        <path d="M88 132 L100 139 L88 146 Z M112 132 L100 139 L112 146 Z" fill="#FF7A3D"></path>
+        <circle cx="100" cy="139" r="3.5" fill="#E05E22"></circle>
+        <circle cx="34" cy="80" r="11" fill="#DDD0F5"></circle>
+        <circle cx="166" cy="80" r="11" fill="#DDD0F5"></circle>
+        <rect x="38" y="28" width="124" height="104" rx="50" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2"></rect>
+        <rect x="52" y="46" width="96" height="70" rx="32" fill="#2A2140"></rect>
+        <path d="M71 84 Q79 74 87 84" stroke="#CDB8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+        <path d="M113 84 Q121 74 129 84" stroke="#CDB8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+        <circle cx="79" cy="81" r="16" fill="none" stroke="#FFB547" stroke-width="3.5"></circle>
+        <circle cx="121" cy="81" r="16" fill="none" stroke="#FFB547" stroke-width="3.5"></circle>
+        <path d="M95 80 Q100 75 105 80" stroke="#FFB547" stroke-width="3.5" fill="none" stroke-linecap="round"></path>
+        <path d="M63 79 L52 76" stroke="#FFB547" stroke-width="3.5" stroke-linecap="round"></path>
+        <path d="M137 79 L148 76" stroke="#FFB547" stroke-width="3.5" stroke-linecap="round"></path></g><g id="pitch"><g id="pitch-line1"><text x="960.0" y="604.0" class="h" font-size="84.0" fill="#1E1B2E" text-anchor="middle"><tspan id="pitch-line1-w1" class="word">Medicines</tspan> <tspan id="pitch-line1-w2" class="word">are</tspan> <tspan id="pitch-line1-w3" class="word">why</tspan> <tspan id="pitch-line1-w4" class="word">they</tspan> <tspan id="pitch-line1-w5" class="word">start.</tspan></text></g><g id="pitch-line2"><text x="960.0" y="713.2" class="h" font-size="84.0" fill="#1E1B2E" text-anchor="middle"><tspan id="pitch-line2-w1" class="word" fill="#6B3FE0">AI</tspan> <tspan id="pitch-line2-w2" class="word" fill="#6B3FE0">skills</tspan> <tspan id="pitch-line2-w3" class="word">are</tspan> <tspan id="pitch-line2-w4" class="word">what</tspan> <tspan id="pitch-line2-w5" class="word">they</tspan> <tspan id="pitch-line2-w6" class="word">keep.</tspan></text></g></g><g id="credits"><text x="960" y="900" class="b" font-size="38" fill="#5D5873" text-anchor="middle"><tspan id="credits-agatha" class="bb" fill="#3E1F99">Agatha</tspan><tspan fill="#6B3FE0" dx="0"> · </tspan><tspan id="credits-team">Team Out of Context</tspan><tspan fill="#6B3FE0" dx="0"> · </tspan><tspan id="credits-event">Claude Impact Lab Berlin 2026</tspan></text></g>
+</svg>

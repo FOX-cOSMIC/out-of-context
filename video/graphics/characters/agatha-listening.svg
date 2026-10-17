@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -10 280 222" role="img" aria-label="Agatha listening">
+<title>Agatha listening</title>
+
+  <ellipse id="agatha-shadow" cx="100" cy="200" rx="46" ry="6" fill="#EFE6FF"/>
+  
+  <g id="agatha" >
+    <g id="agatha-arm-left" transform="rotate(0 56 140)" data-pivot="56 140">
+      <ellipse cx="44" cy="150" rx="11" ry="18" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2" transform="rotate(20 44 150)"/>
+    </g>
+    <g id="agatha-arm-right" transform="rotate(-35 144 138)" data-pivot="144 138">
+      <ellipse cx="158" cy="146" rx="11" ry="18" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2" transform="rotate(-28 158 146)"/>
+    </g>
+    <g id="agatha-body">
+      <rect x="58" y="128" width="84" height="66" rx="30" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2"/>
+      <path d="M66 140 L100 176 L134 140 L134 182 Q134 192 122 192 L78 192 Q66 192 66 182 Z" fill="#6B3FE0"/>
+      <path d="M100 176 L100 192" stroke="#FFFFFF" stroke-width="2"/>
+      <circle cx="93" cy="183" r="2.5" fill="#FFFFFF"/>
+      <g id="agatha-bowtie">
+        <path d="M88 132 L100 139 L88 146 Z M112 132 L100 139 L112 146 Z" fill="#FF7A3D"/>
+        <circle cx="100" cy="139" r="3.5" fill="#E05E22"/>
+      </g>
+    </g>
+    <g id="agatha-head" transform="rotate(7 100 130)" data-pivot="100 130">
+      <g id="agatha-antenna">
+        <line x1="100" y1="30" x2="100" y2="14" stroke="#C9B8F0" stroke-width="4" stroke-linecap="round"/>
+        <circle id="agatha-antenna-ball" cx="100" cy="11" r="7" fill="#FF7A3D"/>
+      </g>
+      <g id="agatha-ears"><circle cx="34" cy="80" r="11" fill="#DDD0F5"/><circle cx="166" cy="80" r="11" fill="#DDD0F5"/></g>
+      <rect x="38" y="28" width="124" height="104" rx="50" fill="#FFFFFF" stroke="#DDD0F5" stroke-width="2"/>
+      <rect id="agatha-visor" x="52" y="46" width="96" height="70" rx="32" fill="#2A2140"/>
+      <g id="agatha-eyes"><ellipse cx="79" cy="81" rx="5" ry="6" fill="#CDB8FF"/><ellipse cx="121" cy="81" rx="5" ry="6" fill="#CDB8FF"/>
+      <circle cx="81" cy="78.5" r="1.8" fill="#FFFFFF"/><circle cx="123" cy="78.5" r="1.8" fill="#FFFFFF"/></g>
+      <g id="agatha-mouth"><path d="M94 103 Q100 107 106 103" stroke="#CDB8FF" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+      <g id="agatha-glasses">
+        <circle cx="79" cy="81" r="16" fill="none" stroke="#FFB547" stroke-width="3.5"/>
+        <circle cx="121" cy="81" r="16" fill="none" stroke="#FFB547" stroke-width="3.5"/>
+        <path d="M95 80 Q100 75 105 80" stroke="#FFB547" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M63 79 L52 76" stroke="#FFB547" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M137 79 L148 76" stroke="#FFB547" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
+    </g>
+  </g>
+  <g id="agatha-soundwaves" fill="none" stroke="#FF7A3D" stroke-width="4" stroke-linecap="round">
+    <path d="M196 70 Q190 84 196 98"/><path d="M210 60 Q200 84 210 108"/><path d="M224 50 Q210 84 224 118" opacity="0.6"/>
+  </g>
+</svg>
