@@ -51,7 +51,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Helper computer")
                 } footer: {
-                    Text("Leave empty in the Simulator. On a real phone, enter the computer's address, e.g. http://192.168.1.20:3000.")
+                    Text("Leave empty to use the team's helper computer (\(APIClient.defaultServer)).")
                 }
                 Section {
                     Button("Delete all my data", role: .destructive) { confirmDelete = true }

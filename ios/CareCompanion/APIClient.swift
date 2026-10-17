@@ -3,10 +3,16 @@ import Foundation
 /// Talks to our Node server (server.js). The server holds the Claude API key and
 /// does the local voice (Whisper + macOS voices), so the app never sees a key.
 struct APIClient {
-    /// Simulator: http://localhost:3000. Real phone: http://<this Mac's IP>:3000 (set in Settings).
+    /// Simulator: this Mac (localhost). Real phone: this Mac over Tailscale. Settings can override.
+    #if targetEnvironment(simulator)
+    static let defaultServer = "http://localhost:3000"
+    #else
+    static let defaultServer = "http://100.91.239.53:3000" // lucas-m1max on the team's Tailscale network
+    #endif
+
     static var baseURL: URL {
         let saved = UserDefaults.standard.string(forKey: "serverURL") ?? ""
-        return URL(string: saved.isEmpty ? "http://localhost:3000" : saved) ?? URL(string: "http://localhost:3000")!
+        return URL(string: saved.isEmpty ? defaultServer : saved) ?? URL(string: defaultServer)!
     }
 
     struct ServerError: LocalizedError {

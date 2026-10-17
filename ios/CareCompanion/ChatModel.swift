@@ -41,14 +41,20 @@ final class ChatModel: ObservableObject {
 
     init() {
         load()
-        if profile.name.isEmpty {
+        if profile.name.isEmpty && !UserDefaults.standard.bool(forKey: "onboarded") {
             showWelcome = true
         } else {
             let rest = plan.medications.isEmpty
                 ? "Show me a photo of your medication plan, or just talk to me."
                 : "Ask me what to take today, or show me a new letter."
-            messages = [ChatMessage(role: .assistant, text: "Hello again, \(profile.name)! \(rest)")]
+            messages = [ChatMessage(role: .assistant, text: "Hello again\(greetingName)! \(rest)")]
         }
+    }
+
+    /// ", Maggie" (how they like to be called), or "" if unknown.
+    private var greetingName: String {
+        let name = profile.address_as.isEmpty ? profile.name : profile.address_as
+        return name.isEmpty ? "" : ", \(name)"
     }
 
     /// Nothing is being recorded, written down or answered right now.
@@ -251,6 +257,7 @@ final class ChatModel: ObservableObject {
         endCall()
         plan = Plan()
         profile = Profile()
+        UserDefaults.standard.removeObject(forKey: "onboarded")
         takenToday = [:]
         skills = []
         save()
@@ -290,6 +297,9 @@ final class ChatModel: ObservableObject {
         if endCallAfterReply {
             // Wait for the goodbye to be heard; if the user interrupted, they are taking over anyway.
             endCall()
+        } else if reply.cards.contains(where: { $0.type.hasPrefix("confirm_") }) {
+            // Saving needs a tap on Yes/No, so don't start listening over the card.
+            status = "Please check the card and tap Yes or No."
         } else if finished && canSend {
             try? await Task.sleep(for: .milliseconds(300)) // let the speaker go quiet first
             if isCallMode && canSend && !isSpeaking { startRecording() }
@@ -337,7 +347,9 @@ final class ChatModel: ObservableObject {
             case "save_profile":
                 guard let newProfile = action.profile else { continue }
                 profile = newProfile
-                if isCallMode && !newProfile.name.isEmpty { endCallAfterReply = true }
+                // Onboarding is done once a profile is saved, even if they skipped their name.
+                UserDefaults.standard.set(true, forKey: "onboarded")
+                if isCallMode { endCallAfterReply = true }
             default:
                 continue
             }

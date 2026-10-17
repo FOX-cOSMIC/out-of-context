@@ -88,7 +88,7 @@ struct ChatView: View {
 
     private var welcome: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Hello! I'm your Care Companion.")
+            Text("Hello! I'm Agatha.")
                 .font(.title.bold())
             Text("Let's get to know each other. Tap Start and I will ask you a few short questions out loud, like a phone call. Just answer in your own words.")
                 .font(.title3)

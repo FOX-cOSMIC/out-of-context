@@ -33,7 +33,7 @@ struct TalkButton: View {
         .buttonStyle(.plain)
         .disabled(model.isBusy)
         .opacity(model.isBusy ? 0.5 : 1)
-        .accessibilityLabel(model.isRecording ? "Stop listening" : "Talk to Care Companion")
+        .accessibilityLabel(model.isRecording ? "Stop listening" : "Talk to Agatha")
         .onAppear {
             withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
         }
