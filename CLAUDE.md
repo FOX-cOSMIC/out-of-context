@@ -28,7 +28,12 @@ write the code itself:
    CHANGES NEEDED goes back to a builder; only APPROVE gets committed.
 4. The coordinator commits each approved change with a clear message and pushes right away
    (pull often, push often).
-All agents run on Opus. Small single-file fixes can be done directly without this workflow.
+All agents run on Opus. Use subagents generously: the coordinator delegates and keeps its own context free.
+- **Building** (code, prompts, UI, anything that ships): builder agent(s), then a reviewer on every change.
+- **Tasks** (setup, lookups, research, file chores, screenshots, renders, running a test): a single
+  subagent (general-purpose or builder) does it; **no reviewer** for tasks.
+- Agent types in `.claude/agents/` load when a Claude Code session starts. In a session started before
+  they existed, dispatch a general-purpose agent told to follow `.claude/agents/<name>.md`.
 
 ## The challenge
 Theme: **AI education for everyone.** Build a working prototype that helps one real audience learn or use AI
