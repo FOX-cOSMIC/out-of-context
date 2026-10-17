@@ -26,6 +26,7 @@ struct APIClient {
         let taken: [String: Bool]
         let today: String
         let skills: [String]
+        let profile: Profile
     }
 
     func chat(_ request: ChatRequest) async throws -> ChatReply {
@@ -47,11 +48,13 @@ struct APIClient {
         return try JSONDecoder().decode(Result.self, from: try await send(urlRequest)).text
     }
 
-    func speak(_ text: String) async throws -> Data {
+    /// `rate` (words per minute) is optional; nil leaves it out so the server uses its default.
+    func speak(_ text: String, rate: Int? = nil) async throws -> Data {
+        struct Body: Encodable { let text: String; let rate: Int? }
         var urlRequest = URLRequest(url: Self.baseURL.appending(path: "api/speak"))
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.httpBody = try JSONEncoder().encode(["text": text])
+        urlRequest.httpBody = try JSONEncoder().encode(Body(text: text, rate: rate))
         urlRequest.timeoutInterval = 30
         return try await send(urlRequest)
     }

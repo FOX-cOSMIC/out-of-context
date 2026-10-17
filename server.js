@@ -121,12 +121,33 @@ function planAsText(plan = {}) {
       .filter(([, v]) => v)
       .map(([k, v]) => `${k}: ${v}`)
       .join(", ");
-    return `- ${m.name} ${m.strength} (${m.purpose}); ${when}; ${m.instructions}`;
+    return `- name: "${m.name}", strength: ${m.strength} (${m.purpose}); ${when}; ${m.instructions}`;
   });
   const appts = (plan.appointments || []).map(
     (a) => `- ${a.title}, ${a.date} ${a.time}, ${a.place}; bring: ${a.bring}; ${a.preparation}`,
   );
   return `Medications:\n${meds.join("\n") || "- none"}\n\nAppointments:\n${appts.join("\n") || "- none"}`;
+}
+
+// The "getting to know you" profile the phone keeps. All strings; "" = unknown.
+const PROFILE_FIELDS = [
+  "name", "address_as", "wake_time", "breakfast_time", "lunch_time", "dinner_time", "bed_time",
+  "hearing", "eyesight", "tech_comfort", "helper_name", "helper_relation", "doctor_name",
+];
+
+const PROFILE_SCHEMA = {
+  type: "object",
+  properties: Object.fromEntries(PROFILE_FIELDS.map((f) => [f, { type: "string" }])),
+  required: PROFILE_FIELDS,
+  additionalProperties: false,
+};
+
+// The profile as short text for Claude; says plainly when nothing is known yet.
+function profileAsText(profile) {
+  const p = profile && typeof profile === "object" ? profile : {};
+  const known = PROFILE_FIELDS.filter((f) => typeof p[f] === "string" && p[f].trim());
+  if (!known.length) return "none yet (new user: no name known)";
+  return PROFILE_FIELDS.map((f) => `- ${f}: ${(typeof p[f] === "string" && p[f].trim()) || "(unknown)"}`).join("\n");
 }
 
 // ---------- conversation (the phone app talks to this) ----------
@@ -193,6 +214,12 @@ const CHAT_TOOLS = [
       additionalProperties: false,
     },
   },
+  {
+    name: "save_profile",
+    description:
+      "Save what you learned about the user in the getting-to-know-you call. Only call this after you read the summary back and they agreed. Send all fields; use an empty string for anything unknown or skipped.",
+    input_schema: PROFILE_SCHEMA,
+  },
 ].map((t) => ({ ...t, strict: true }));
 
 function runChatTool(name, input, cards, actions) {
@@ -212,6 +239,9 @@ function runChatTool(name, input, cards, actions) {
     case "mark_taken":
       actions.push({ type: "mark_taken", ...input });
       return `Marked as taken (${input.slot}): ${input.names.join(", ")}.`;
+    case "save_profile":
+      actions.push({ type: "save_profile", profile: input });
+      return "Profile saved on the phone.";
     default:
       return `Unknown tool ${name}`;
   }
@@ -230,13 +260,13 @@ function historyToMessages(history) {
   });
 }
 
-async function chat({ history, plan, taken = {}, today, skills = [] }) {
+async function chat({ history, plan, taken = {}, today, skills = [], profile }) {
   if (!client) throw new Error("NO_API_KEY");
   const system = [
     { type: "text", text: await readPrompt("chat.md"), cache_control: { type: "ephemeral" } },
     {
       type: "text",
-      text: `Today: ${today || new Date().toDateString()}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}`,
+      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}`,
     },
   ];
   const messages = historyToMessages(history);
@@ -390,9 +420,11 @@ const routes = {
 
   // Local text-to-speech on this Mac (macOS voices). Returns m4a audio.
   "POST /api/speak": async (req, res) => {
-    const { text } = await readJson(req);
+    const { text, rate } = await readJson(req);
     if (!text || !text.trim()) return sendJson(res, 400, { error: "Nothing to say." });
-    const audio = await speak(text.trim().slice(0, 4000));
+    // Optional speaking speed in words per minute, kept to a comfortable 120-220.
+    const wpm = Number.isFinite(rate) ? Math.min(220, Math.max(120, Math.round(rate))) : undefined;
+    const audio = await speak(text.trim().slice(0, 4000), wpm);
     res.writeHead(200, { "Content-Type": "audio/mp4", "Content-Length": audio.length });
     res.end(audio);
   },

@@ -29,6 +29,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Care Companion reads photos of your medication plan and letters.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Care Companion talks to the helper computer on your wifi.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Care Companion listens when you tap Talk, so you can speak instead of typing.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

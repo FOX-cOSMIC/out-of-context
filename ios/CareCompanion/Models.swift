@@ -43,6 +43,51 @@ struct Plan: Codable {
     var appointments: [Appointment] = []
 }
 
+/// What the "getting to know you" call learned about the user. "" = unknown.
+struct Profile: Codable, Equatable {
+    var name = ""
+    var address_as = ""
+    var wake_time = ""
+    var breakfast_time = ""
+    var lunch_time = ""
+    var dinner_time = ""
+    var bed_time = ""
+    var hearing = ""
+    var eyesight = ""
+    var tech_comfort = ""
+    var helper_name = ""
+    var helper_relation = ""
+    var doctor_name = ""
+
+    init() {}
+
+    /// Missing fields become "" so an older or partial profile still loads.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        func field(_ key: CodingKeys) -> String { ((try? c.decodeIfPresent(String.self, forKey: key)) ?? nil) ?? "" }
+        name = field(.name)
+        address_as = field(.address_as)
+        wake_time = field(.wake_time)
+        breakfast_time = field(.breakfast_time)
+        lunch_time = field(.lunch_time)
+        dinner_time = field(.dinner_time)
+        bed_time = field(.bed_time)
+        hearing = field(.hearing)
+        eyesight = field(.eyesight)
+        tech_comfort = field(.tech_comfort)
+        helper_name = field(.helper_name)
+        helper_relation = field(.helper_relation)
+        doctor_name = field(.doctor_name)
+    }
+
+    /// True when the user said hearing or eyesight is difficult: then we speak more slowly.
+    var prefersSlowSpeech: Bool {
+        let words = ["poor", "hard", "bad", "difficult", "not good"]
+        let said = (hearing + " " + eyesight).lowercased()
+        return words.contains { said.contains($0) }
+    }
+}
+
 enum Slot: String, CaseIterable, Codable {
     case morning, midday, evening, night
     var label: String { rawValue.capitalized }
@@ -62,9 +107,10 @@ struct Card: Codable, Hashable {
 
 /// Something Claude asks the app to do, e.g. tick off medicines.
 struct ChatAction: Codable {
-    var type: String // mark_taken
+    var type: String // mark_taken | save_profile
     var slot: String?
     var names: [String]?
+    var profile: Profile?
 }
 
 struct ChatReply: Codable {
@@ -84,6 +130,8 @@ struct ChatMessage: Identifiable {
     var cards: [Card] = []
     /// For confirm cards: index -> true (Yes) / false (No) once answered.
     var answers: [Int: Bool] = [:]
+    /// Sent to the server but not shown (e.g. "the user tapped Start").
+    var hidden = false
 }
 
 // MARK: - AI skills the user practises

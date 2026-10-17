@@ -26,6 +26,7 @@ targets:
         NSMicrophoneUsageDescription: Care Companion listens when you tap Talk, so you can speak instead of typing.
         NSCameraUsageDescription: Care Companion reads photos of your medication plan and letters.
         NSPhotoLibraryUsageDescription: Care Companion reads photos of your medication plan and letters.
+        NSLocalNetworkUsageDescription: Care Companion talks to the helper computer on your wifi.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
           NSAllowsArbitraryLoads: true

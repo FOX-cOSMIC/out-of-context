@@ -5,6 +5,8 @@ import UIKit
 struct TalkButton: View {
     @EnvironmentObject private var model: ChatModel
     @State private var pulse = false
+    /// Still clearly the biggest thing on screen, but leaves room for the conversation.
+    static let size: CGFloat = 190
 
     var body: some View {
         Button(action: talk) {
@@ -19,14 +21,14 @@ struct TalkButton: View {
                     .shadow(radius: 8, y: 4)
                 VStack(spacing: 6) {
                     Image(systemName: model.isRecording ? "stop.fill" : "mic.fill")
-                        .font(.system(size: 64, weight: .bold))
+                        .font(.system(size: 54, weight: .bold))
                     Text(model.isRecording ? "I'm listening.\nTap when done" : "Tap to talk")
                         .font(.title2.weight(.bold))
                         .multilineTextAlignment(.center)
                 }
                 .foregroundStyle(.white)
             }
-            .frame(width: 230, height: 230)
+            .frame(width: TalkButton.size, height: TalkButton.size)
         }
         .buttonStyle(.plain)
         .disabled(model.isBusy)
@@ -42,6 +44,44 @@ struct TalkButton: View {
         guard !model.isBusy else { return }
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         model.toggleRecording()
+    }
+}
+
+// MARK: - First launch: the big "Start" button
+
+/// Same size and weight as the talk button, so the first step is impossible to miss.
+struct StartButton: View {
+    @EnvironmentObject private var model: ChatModel
+    @State private var pulse = false
+
+    var body: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            model.startOnboarding()
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(Color.green.opacity(0.25))
+                    .scaleEffect(pulse ? 1.12 : 0.96)
+                Circle()
+                    .fill(Color.green)
+                    .padding(14)
+                    .shadow(radius: 8, y: 4)
+                VStack(spacing: 6) {
+                    Image(systemName: "phone.fill")
+                        .font(.system(size: 54, weight: .bold))
+                    Text("Start")
+                        .font(.largeTitle.weight(.bold))
+                }
+                .foregroundStyle(.white)
+            }
+            .frame(width: TalkButton.size, height: TalkButton.size)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Start getting to know each other")
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
+        }
     }
 }
 

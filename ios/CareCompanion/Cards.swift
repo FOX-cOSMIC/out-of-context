@@ -106,7 +106,7 @@ struct CardView: View {
                 }
                 .buttonStyle(BigButtonStyle(color: .gray))
             }
-            .disabled(model.isBusy)
+            .disabled(!model.canSend)
         }
     }
 }

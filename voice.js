@@ -41,18 +41,28 @@ export async function transcribe(audioBuffer) {
       ["-m", WHISPER_MODEL, "-f", wav, "-l", WHISPER_LANG, "-nt", "-np", "-bs", "5", "-bo", "5"],
       { maxBuffer: 10 * 1024 * 1024 },
     );
-    return stdout.replace(/\s+/g, " ").trim();
+    return dropSilenceFiller(stdout.replace(/\s+/g, " ").trim());
   });
 }
 
+// Whisper "hears" words in silence ("you", "Thank you.", "[Music]"). Treat those as nothing.
+const SILENCE_FILLER = new Set(["you", "thank you", "thanks for watching", "bye", "blank_audio", "silence"]);
+function dropSilenceFiller(text) {
+  if (text.length < 2) return "";
+  if (/^(\s*(\[[^\]]*\]|\([^)]*\)))+\s*$/.test(text)) return ""; // only [..] or (..) parts
+  const bare = text.toLowerCase().replace(/[^\p{L}\p{N}_\s]/gu, "").replace(/\s+/g, " ").trim();
+  return SILENCE_FILLER.has(bare) ? "" : text;
+}
+
 // Text -> spoken audio (AAC in .m4a, plays in browsers and on iPhone)
-export async function speak(text) {
+// `rate` (words per minute) is optional; the caller clamps it. Default: SAY_RATE.
+export async function speak(text, rate) {
   return withTempDir(async (dir) => {
     const textFile = path.join(dir, "text.txt");
     const aiff = path.join(dir, "speech.aiff");
     const m4a = path.join(dir, "speech.m4a");
     await fs.writeFile(textFile, text);
-    await run("say", ["-v", SAY_VOICE, "-r", SAY_RATE, "-f", textFile, "-o", aiff]);
+    await run("say", ["-v", SAY_VOICE, "-r", String(rate || SAY_RATE), "-f", textFile, "-o", aiff]);
     await run("afconvert", ["-f", "m4af", "-d", "aac", aiff, m4a]);
     return fs.readFile(m4a);
   });

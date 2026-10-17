@@ -9,6 +9,7 @@ struct ChatView: View {
     @State private var showCamera = false
     @State private var showPhotoLibrary = false
     @State private var showSettings = false
+    @FocusState private var typing: Bool
 
     var body: some View {
         NavigationStack {
@@ -21,10 +22,21 @@ struct ChatView: View {
             .navigationTitle("Care Companion")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                Button { showSettings = true } label: {
-                    Image(systemName: "gearshape").font(.title3)
+                ToolbarItem(placement: .topBarLeading) {
+                    if !model.showWelcome && !model.isCallMode {
+                        Button { model.startCall() } label: {
+                            Label("Call", systemImage: "phone.fill").labelStyle(.titleAndIcon).font(.headline)
+                        }
+                        .disabled(!model.canSend)
+                        .accessibilityLabel("Start a call: talk hands-free")
+                    }
                 }
-                .accessibilityLabel("Settings")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape").font(.title3)
+                    }
+                    .accessibilityLabel("Settings")
+                }
             }
             .sheet(isPresented: $showSettings) { SettingsView() }
             .fullScreenCover(isPresented: $showCamera) {
@@ -50,7 +62,8 @@ struct ChatView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
-                    ForEach(model.messages) { message in
+                    if model.showWelcome { welcome }
+                    ForEach(model.messages.filter { !$0.hidden }) { message in
                         MessageRow(message: message).id(message.id)
                     }
                     if model.isBusy {
@@ -73,53 +86,124 @@ struct ChatView: View {
         }
     }
 
+    private var welcome: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Hello! I'm your Care Companion.")
+                .font(.title.bold())
+            Text("Let's get to know each other. Tap Start and I will ask you a few short questions out loud, like a phone call. Just answer in your own words.")
+                .font(.title3)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18))
+    }
+
     // MARK: - Talk / photo / type
 
-    private var inputBar: some View {
-        VStack(spacing: 12) {
-            if !model.status.isEmpty && !model.isBusy {
+    @ViewBuilder private var inputBar: some View {
+        if model.showWelcome {
+            VStack(spacing: 10) {
+                StartButton()
+                Text("Tap Start to begin")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(.bar)
+        } else {
+            controls
+        }
+    }
+
+    /// "Listening…" / "Thinking…" / "Speaking…" while a call is on.
+    private var callLabel: String {
+        if model.isRecording { return "Listening…" }
+        if model.isBusy { return "Thinking…" }
+        if model.isSpeaking { return "Speaking…" }
+        return model.status.isEmpty ? "Tap to talk when you're ready" : model.status
+    }
+
+    private var controls: some View {
+        VStack(spacing: 10) {
+            if model.isCallMode {
+                HStack(spacing: 12) {
+                    Text(callLabel)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(model.isRecording ? .red : .primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.updatesFrequently)
+                    Button { model.endCall() } label: {
+                        Label("End call", systemImage: "phone.down.fill")
+                            .padding(.horizontal, 16)
+                            .frame(minHeight: 52)
+                    }
+                    .buttonStyle(BigButtonStyle(color: .red))
+                }
+            } else if !model.status.isEmpty && !model.isBusy {
                 Text(model.status)
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(model.isRecording ? .red : .secondary)
                     .multilineTextAlignment(.center)
             }
-            TalkButton()
-            Text("Tap the button or shake your phone to talk")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-            Menu {
-                if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    Button { showCamera = true } label: { Label("Take a photo", systemImage: "camera") }
+            if !typing {
+                TalkButton()
+                if !model.isCallMode {
+                    Text("Tap the button or shake your phone to talk")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
-                Button { showPhotoLibrary = true } label: { Label("Choose a photo", systemImage: "photo") }
-            } label: {
-                Label("Show me a photo", systemImage: "camera.fill")
-                    .frame(maxWidth: .infinity, minHeight: 56)
+                photoButton
             }
-            .buttonStyle(BigButtonStyle(color: .indigo))
-            .disabled(model.isBusy || model.isRecording)
-            HStack {
-                TextField("Or type here", text: $typed, axis: .vertical)
-                    .font(.title3)
-                    .padding(12)
-                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                    .submitLabel(.send)
-                    .onSubmit(sendTyped)
-                if !typed.isEmpty {
-                    Button(action: sendTyped) {
-                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 40))
-                    }
-                    .accessibilityLabel("Send")
-                }
-            }
+            typeField
         }
         .padding(16)
         .background(.bar)
     }
 
+    private var photoButton: some View {
+        Menu {
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button { showCamera = true } label: { Label("Take a photo", systemImage: "camera") }
+            }
+            Button { showPhotoLibrary = true } label: { Label("Choose a photo", systemImage: "photo") }
+        } label: {
+            Label("Show me a photo", systemImage: "camera.fill")
+                .frame(maxWidth: .infinity, minHeight: 52)
+        }
+        .buttonStyle(BigButtonStyle(color: .indigo))
+        .disabled(!model.canSend)
+    }
+
+    private var typeField: some View {
+        HStack {
+            TextField("Or type here", text: $typed, axis: .vertical)
+                .font(.title3)
+                .padding(12)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                .submitLabel(.send)
+                .focused($typing)
+                .onSubmit(sendTyped)
+                .disabled(!model.canSend)
+            if !typed.isEmpty {
+                Button(action: sendTyped) {
+                    Image(systemName: "arrow.up.circle.fill").font(.system(size: 40))
+                }
+                .disabled(!model.canSend)
+                .accessibilityLabel("Send")
+            }
+            if typing {
+                Button("Done") { typing = false }
+                    .font(.headline)
+            }
+        }
+    }
+
     private func sendTyped() {
+        guard model.canSend else { return }
         let text = typed
         typed = ""
+        typing = false
         Task { await model.send(text: text) }
     }
 }

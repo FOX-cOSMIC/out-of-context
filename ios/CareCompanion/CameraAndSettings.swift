@@ -56,12 +56,12 @@ struct SettingsView: View {
                 Section {
                     Button("Delete all my data", role: .destructive) { confirmDelete = true }
                 } footer: {
-                    Text("Your plan is saved only on this phone.")
+                    Text("Your plan and profile are saved only on this phone.")
                 }
             }
             .navigationTitle("Settings")
             .toolbar { Button("Done") { dismiss() } }
-            .confirmationDialog("Delete your plan, ticks and skills?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            .confirmationDialog("Delete your plan, profile, ticks and skills?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete", role: .destructive) {
                     model.deleteAllData()
                     dismiss()
