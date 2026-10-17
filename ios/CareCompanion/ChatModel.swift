@@ -52,14 +52,16 @@ final class ChatModel: ObservableObject {
 
     init() {
         load()
-        if profile.name.isEmpty && !UserDefaults.standard.bool(forKey: "onboarded") {
-            showWelcome = true
-        } else {
-            let rest = plan.medications.isEmpty
-                ? "Show me a photo of your medication plan, or just talk to me."
-                : "Ask me what to take today, or show me a new letter."
-            messages = [ChatMessage(role: .assistant, text: "Hello again\(greetingName)! \(rest)")]
+        // Demo: no "getting to know you" call; start as the predefined person.
+        if profile.name.isEmpty {
+            profile = DemoPerson.profile
+            save()
         }
+        showWelcome = false
+        let rest = plan.medications.isEmpty
+            ? "Show me a photo of your medication plan, or just talk to me."
+            : "Ask me what to take today, or show me a new letter."
+        messages = [ChatMessage(role: .assistant, text: "Hello again\(greetingName)! \(rest)")]
     }
 
     /// ", Maggie" (how they like to be called), or "" if unknown.
@@ -373,14 +375,21 @@ final class ChatModel: ObservableObject {
 
     func deleteAllData() {
         endCall()
-        plan = Plan()
-        profile = Profile()
+        plan = DemoPerson.plan
+        profile = DemoPerson.profile
         UserDefaults.standard.removeObject(forKey: "onboarded")
         takenToday = [:]
         skills = []
         save()
         messages = []
-        showWelcome = true
+        showWelcome = false
+    }
+
+    /// Demo Plan B: load Margaret's sample medication plan without scanning it.
+    func loadDemoPlan() {
+        plan = DemoPerson.samplePlan
+        takenToday = [:]
+        save()
     }
 
     /// Only one of these runs at a time: every way in checks `canSend` first.

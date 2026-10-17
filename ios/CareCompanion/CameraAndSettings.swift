@@ -60,6 +60,14 @@ struct SettingsView: View {
                     Text("Agatha listens again by herself after speaking. Best in a quiet room.")
                 }
                 Section {
+                    Button("Load Margaret's medication plan (demo)") {
+                        model.loadDemoPlan()
+                        dismiss()
+                    }
+                } footer: {
+                    Text("For the demo, if scanning the plan does not work.")
+                }
+                Section {
                     Button("Delete all my data", role: .destructive) { confirmDelete = true }
                 } footer: {
                     Text("Your plan and profile are saved only on this phone.")
