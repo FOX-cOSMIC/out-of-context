@@ -45,12 +45,8 @@ struct ChatView: View {
         VStack(spacing: 0) {
             if model.showWelcome {
                 welcomeScreen
-            } else if showConversation {
-                compactHeader
-                SkillsBar()
-                conversation
-                controls
             } else {
+                // One simple screen: Agatha, what you said, her answer (and its card).
                 homeScreen
             }
         }
@@ -81,37 +77,68 @@ struct ChatView: View {
         ScrollView {
             VStack(spacing: Theme.Metrics.spacingLarge) {
                 hero { TalkButton(circle: 190, showLabel: false) }
-                VStack(spacing: Theme.Metrics.spacingSmall) {
-                    Text(userName.isEmpty ? "Hello!" : "Hello \(userName)!")
-                        .font(Theme.Fonts.heroGreeting)
-                        .foregroundStyle(Theme.Colors.textSecondary)
-                    Text(model.isRecording || model.isStartingMic ? TalkButtonLabel.text(model) : "How are you doing today?")
-                        .font(Theme.Fonts.heroTitle)
-                        .foregroundStyle(model.isRecording || model.isStartingMic ? Theme.Colors.danger : Theme.Colors.textPrimary)
-                    Text("Tap Agatha to talk")
-                        .font(Theme.Fonts.hint)
-                        .foregroundStyle(Theme.Colors.textSecondary)
-                    if !model.status.isEmpty {
-                        Text(model.status).font(Theme.Fonts.status).foregroundStyle(Theme.Colors.textSecondary)
-                    }
-                }
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, Theme.Metrics.screenPadding)
-                .padding(.top, -36) // tuck the greeting up into the white cloud edge
-                if hasEarlierConversation {
-                    Button { homeShown = false } label: {
-                        Label("See our conversation", systemImage: "bubble.left.and.bubble.right.fill")
-                            .font(Theme.Fonts.buttonLabel)
-                            .frame(maxWidth: .infinity, minHeight: Theme.Metrics.bigButtonHeight)
-                    }
-                    .buttonStyle(BigButtonStyle(color: Theme.Palette.purple))
+                currentTurn
                     .padding(.horizontal, Theme.Metrics.screenPadding)
-                }
+                    .padding(.top, -36) // tuck it up into the white cloud edge
                 Spacer(minLength: Theme.Metrics.screenPadding)
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .background(alignment: .top) { heroBackdrop }
+    }
+
+    // MARK: - One screen only: what is happening right now, under Agatha (no chat history)
+
+    private var lastUser: ChatMessage? { visibleMessages.last { $0.role == .user } }
+    private var lastAgatha: ChatMessage? { visibleMessages.last { $0.role == .assistant } }
+    private var talking: Bool { model.isRecording || model.isStartingMic }
+
+    @ViewBuilder private var currentTurn: some View {
+        VStack(spacing: Theme.Metrics.spacingLarge) {
+            if talking {
+                Text(TalkButtonLabel.text(model))
+                    .font(Theme.Fonts.heroTitle)
+                    .foregroundStyle(Theme.Colors.danger)
+                if let words = model.liveText, !words.isEmpty {
+                    Text("“\(words)”")
+                        .font(Theme.Fonts.message)
+                        .foregroundStyle(Theme.Colors.textPrimary)
+                }
+            } else if model.isBusy {
+                if let said = lastUser?.text, !said.isEmpty {
+                    Text("“\(said)”").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
+                }
+                HStack(spacing: Theme.Metrics.spacingRegular) {
+                    ProgressView().tint(Theme.Colors.accent)
+                    Text("Thinking…")
+                }
+                .font(Theme.Fonts.heroGreeting)
+                .foregroundStyle(Theme.Colors.textSecondary)
+            } else if hasEarlierConversation, let answer = lastAgatha {
+                if let said = lastUser?.text, !said.isEmpty {
+                    Text("You: “\(said)”").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
+                }
+                MessageRow(message: answer)
+                Text("Tap Agatha to talk").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
+            } else {
+                VStack(spacing: Theme.Metrics.spacingSmall) {
+                    Text(userName.isEmpty ? "Hello!" : "Hello \(userName)!")
+                        .font(Theme.Fonts.heroGreeting)
+                        .foregroundStyle(Theme.Colors.textSecondary)
+                    Text("How are you doing today?")
+                        .font(Theme.Fonts.heroTitle)
+                        .foregroundStyle(Theme.Colors.textPrimary)
+                    Text("Tap Agatha to talk")
+                        .font(Theme.Fonts.hint)
+                        .foregroundStyle(Theme.Colors.textSecondary)
+                }
+            }
+            if !model.status.isEmpty && !model.isBusy && !talking {
+                Text(model.status).font(Theme.Fonts.status).foregroundStyle(Theme.Colors.textSecondary)
+            }
+        }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
     }
 
     /// Lavender behind the status bar and the top of the hero, white under the cloud edge.
