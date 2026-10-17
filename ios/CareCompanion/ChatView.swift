@@ -122,6 +122,22 @@ struct ChatView: View {
         let listening = model.isRecording || model.isStartingMic
         return HStack(spacing: Theme.Metrics.spacingMedium) {
             Button {
+                showTyping.toggle()
+                typing = showTyping
+            } label: {
+                VStack(spacing: 2) {
+                    Image(systemName: "keyboard").font(.system(size: 24, weight: .semibold))
+                    Text("Type").font(Theme.Typeface.body(16, weight: .bold))
+                }
+                .foregroundStyle(Theme.Palette.purpleDeep)
+                .frame(width: 84, height: 76)
+                .background(Theme.Palette.lavender, in: RoundedRectangle(cornerRadius: 24))
+            }
+            .buttonStyle(.plain)
+            .disabled(listening || model.isBusy)
+            .accessibilityLabel("Type instead of talking")
+
+            Button {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                 showTyping = false
                 model.toggleRecording()
@@ -147,22 +163,6 @@ struct ChatView: View {
             .disabled(model.isBusy)
             .opacity(model.isBusy ? 0.5 : 1)
             .accessibilityLabel(listening ? "Done talking" : "Tap to talk to Agatha")
-
-            Button {
-                showTyping.toggle()
-                typing = showTyping
-            } label: {
-                VStack(spacing: 2) {
-                    Image(systemName: "keyboard").font(.system(size: 24, weight: .semibold))
-                    Text("Type").font(Theme.Typeface.body(16, weight: .bold))
-                }
-                .foregroundStyle(Theme.Palette.purpleDeep)
-                .frame(width: 84, height: 76)
-                .background(Theme.Palette.lavender, in: RoundedRectangle(cornerRadius: 24))
-            }
-            .buttonStyle(.plain)
-            .disabled(listening || model.isBusy)
-            .accessibilityLabel("Type instead of talking")
         }
         .padding(.horizontal, Theme.Metrics.screenPadding)
     }
