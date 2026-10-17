@@ -1,0 +1,31 @@
+# Generate the Xcode project with:  cd ios && xcodegen generate
+name: CareCompanion
+options:
+  bundleIdPrefix: com.outofcontext
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  CareCompanion:
+    type: application
+    platform: iOS
+    sources: [CareCompanion]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.outofcontext.carecompanion
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+    info:
+      path: CareCompanion/Info.plist
+      properties:
+        CFBundleDisplayName: Care Companion
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSMicrophoneUsageDescription: Care Companion listens when you tap Talk, so you can speak instead of typing.
+        NSCameraUsageDescription: Care Companion reads photos of your medication plan and letters.
+        NSPhotoLibraryUsageDescription: Care Companion reads photos of your medication plan and letters.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+          NSAllowsArbitraryLoads: true
