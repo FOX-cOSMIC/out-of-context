@@ -73,7 +73,7 @@ struct SOSView: View {
 
             // Doctor
             HelpCard(
-                title: p.doctor_name.isEmpty ? "Call my doctor" : "Call Dr. \(p.doctor_name)",
+                title: p.doctor_name.isEmpty ? "Call my doctor" : "Call \(p.doctor_name)",
                 subtitle: "My family doctor",
                 background: Theme.Palette.mint,
                 icon: {

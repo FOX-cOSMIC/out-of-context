@@ -248,16 +248,25 @@ struct DemoHistory {
                           place: "Example Hair Salon", kind: .other),
         ]
         // The two appointments from her plan (same dates as DemoPerson).
+        events += DemoPerson.plan.appointments.compactMap(Self.event(for:))
+        self.events = events.sorted { $0.date < $1.date }
+    }
+
+    /// A saved appointment ("Tuesday, 27 October 2026", "11:00") as a calendar event; nil if the date can't be read.
+    static func event(for appt: Appointment) -> CalendarEvent? {
         let parse = DateFormatter()
         parse.locale = Locale(identifier: "en_GB")
-        parse.calendar = cal
-        parse.dateFormat = "EEEE, d MMMM yyyy HH:mm"
-        for appt in DemoPerson.plan.appointments {
-            guard let date = parse.date(from: "\(appt.date) \(appt.time)") else { continue }
-            events.append(CalendarEvent(date: date, title: appt.title, place: appt.place, kind: .doctor,
-                                        note: "Bring: \(appt.bring). \(appt.preparation)", fromPlan: true))
+        parse.calendar = calendar
+        let text = "\(appt.date) \(appt.time)".trimmingCharacters(in: .whitespaces)
+        for pattern in ["EEEE, d MMMM yyyy HH:mm", "EEEE d MMMM yyyy HH:mm", "d MMMM yyyy HH:mm", "EEEE, d MMMM yyyy H:mm"] {
+            parse.dateFormat = pattern
+            if let date = parse.date(from: text) {
+                let bring = appt.bring.isEmpty ? "" : "Bring: \(appt.bring). "
+                return CalendarEvent(date: date, title: appt.title, place: appt.place, kind: .doctor,
+                                     note: (bring + appt.preparation).isEmpty ? nil : bring + appt.preparation, fromPlan: true)
+            }
         }
-        self.events = events.sorted { $0.date < $1.date }
+        return nil
     }
 
     // MARK: - Doses

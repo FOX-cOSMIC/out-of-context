@@ -194,10 +194,10 @@ const CHAT_TOOLS = [
   {
     name: "open_screen",
     description:
-      "Open a screen of the app for the user. Use when they ask to see it: \"show me my pills\" -> pills, \"I want to scan a letter\" -> scan, \"I need help\" or an emergency -> sos, \"my notes\" or \"my papers\" -> notes, \"back to Agatha\" -> home. Then say which screen you opened.",
+      "Open a screen of the app for the user. Use when they ask to see it: \"show me my pills\" -> pills, \"I want to scan a letter\" -> scan, \"I need help\" or an emergency -> sos, \"my notes\" or \"my papers\" -> notes, \"how did I do this week/month\" overview -> history, \"show me my calendar\" -> calendar, \"back to Agatha\" -> home. Then say which screen you opened.",
     input_schema: {
       type: "object",
-      properties: { screen: { type: "string", enum: ["home", "pills", "scan", "notes", "sos"] } },
+      properties: { screen: { type: "string", enum: ["home", "pills", "scan", "notes", "sos", "history", "calendar"] } },
       required: ["screen"],
       additionalProperties: false,
     },
@@ -228,9 +228,69 @@ const CHAT_TOOLS = [
       additionalProperties: false,
     },
   },
-].map((t) => ({ ...t, strict: true }));
+  {
+    name: "update_stock",
+    description:
+      "Change how many tablets of a medicine the user has at home. Use when they say they got a new pack or counted their tablets. mode set: \"I have 120 Metformin now\" or a new pack when the old one is used up; mode add: \"another pack\", \"one more box\", or when they say they got more on top of what is left. count is the number of tablets they said. name exactly as written in the saved plan. Then say the new count out loud.",
+    input_schema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        count: { type: "integer" },
+        mode: { type: "string", enum: ["set", "add"] },
+      },
+      required: ["name", "count", "mode"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "add_appointment",
+    description:
+      "The user tells you about an appointment by voice: show it as a card with Yes/No buttons. Nothing is saved until they tap Yes. date like \"Tuesday, 27 October 2026\" (work out the weekday and year from Today), time as 24-hour \"11:00\". Use \"\" for place, bring or preparation they did not mention; never invent them.",
+    input_schema: APPOINTMENT_ITEM,
+  },
+  {
+    name: "create_document",
+    description:
+      "Make a document on the phone. kind doctor_summary: a PDF summary for the doctor's visit (medicines, tablets left, how they took them, missed doses, how they felt, their questions, upcoming appointments), saved in Notes, under My papers. title e.g. \"Summary for Dr Hoffmann\". Nothing is sent: sharing only happens if the user taps Share. Then say what you made and where to find it.",
+    input_schema: {
+      type: "object",
+      properties: { kind: { type: "string", enum: ["doctor_summary"] }, title: { type: "string" } },
+      required: ["kind", "title"],
+      additionalProperties: false,
+    },
+  },
+].map((t) => ({ ...t, strict: t.name !== "save_profile" }));
+// All tools strict would exceed the API's compiled-grammar size limit (400 "grammar is too large").
+// save_profile is the one left non-strict: the app's Profile decoder already accepts missing fields.
 
-function runChatTool(name, input, cards, actions, hasPhoto = false) {
+// The saved plan medicine Claude means: exact name first, then a loose match ("Metformin" for "Metformin 500 mg").
+function findMedication(plan, spoken) {
+  const meds = Array.isArray(plan?.medications) ? plan.medications : [];
+  const s = String(spoken || "").toLowerCase();
+  return (
+    meds.find((m) => String(m.name).toLowerCase() === s) ||
+    meds.find((m) => {
+      const n = String(m.name).toLowerCase();
+      return n && (n.includes(s) || s.includes(n));
+    })
+  );
+}
+
+// Tablets per day: "1" -> 1, "1/2" -> 0.5, "" -> 0 (same rule as the app's PillStock).
+function tabletsPerDay(med) {
+  const amount = (raw) => {
+    const d = String(raw || "").trim().replace(",", ".");
+    if (/^\d+(\.\d+)?$/.test(d)) return Number(d);
+    const f = /^(\d+)\s*\/\s*(\d+)$/.exec(d);
+    return f && Number(f[2]) > 0 ? Number(f[1]) / Number(f[2]) : 0;
+  };
+  return Object.values(med?.times || {}).reduce((sum, v) => sum + amount(v), 0);
+}
+
+// ctx: { hasPhoto, plan, stock } from the request, for tools that need to know what is saved.
+function runChatTool(name, input, cards, actions, ctx = {}) {
+  const { hasPhoto = false, plan = {}, stock = {} } = ctx;
   switch (name) {
     case "show_schedule":
       cards.push({ type: "schedule", slot: input.slot });
@@ -256,6 +316,10 @@ function runChatTool(name, input, cards, actions, hasPhoto = false) {
       return "Profile saved on the phone.";
     case "open_screen":
       actions.push({ type: "open_screen", screen: input.screen });
+      if (input.screen === "history")
+        return "The \"My week & month\" overview is now open on the phone (Pills tab). Tell the user what they see there.";
+      if (input.screen === "calendar")
+        return "\"My calendar\" is now open on the phone (Pills tab): a month view and what is coming up. Tell the user what they see there.";
       return `The ${input.screen} screen is now open on the phone. Tell the user what they see there.`;
     case "save_note":
       actions.push({ type: "save_note", title: input.title, text: input.text, kind: input.kind });
@@ -264,6 +328,23 @@ function runChatTool(name, input, cards, actions, hasPhoto = false) {
       if (!hasPhoto) return "There is no photo in this conversation to keep. Nothing was saved; ask the user to show the paper first.";
       actions.push({ type: "save_document", title: input.title, summary: input.summary });
       return `The photo is kept in Notes, under My papers, as "${input.title}".`;
+    case "update_stock": {
+      const med = findMedication(plan, input.name);
+      const medName = med?.name || input.name;
+      const before = Number.isInteger(stock?.[medName]) ? stock[medName] : 0;
+      const count = Math.max(0, input.mode === "add" ? before + input.count : input.count);
+      actions.push({ type: "update_stock", name: medName, count });
+      const perDay = med ? tabletsPerDay(med) : 0;
+      const days = perDay > 0 ? `, about ${Math.floor(count / perDay)} days` : "";
+      const note = med ? "" : " (This medicine is not on the saved plan.)";
+      return `Saved: ${medName} now has ${count} tablets${days}.${note} Say the new count out loud.`;
+    }
+    case "add_appointment":
+      cards.push({ type: "confirm_appointments", appointments: [input] });
+      return "The appointment card with Yes/No buttons is on screen. Nothing is saved yet: read it back in one sentence and ask them to tap Yes if it is right.";
+    case "create_document":
+      actions.push({ type: "create_document", kind: input.kind, title: input.title });
+      return `The PDF "${input.title}" is saved in Notes, under My papers. Tell the user; they can open it there and only share it if they tap Share.`;
     default:
       return `Unknown tool ${name}`;
   }
@@ -298,17 +379,25 @@ function historySummaryAsText(summary) {
   return summary.length > 1200 ? `${summary.slice(0, 1200)}…` : summary;
 }
 
-async function chat({ history, plan, taken = {}, today, skills = [], profile, notes = [], history_summary }) {
+// The app's pill counts in short text (e.g. "Simvastatin 6 left (~6 days, LOW); …"), trimmed.
+function stockSummaryAsText(summary) {
+  if (typeof summary !== "string" || !summary.trim()) return "not counted";
+  return summary.length > 800 ? `${summary.slice(0, 800)}…` : summary;
+}
+
+async function chat({ history, plan, taken = {}, today, skills = [], profile, notes = [], history_summary, stock_summary, stock }) {
   if (!client) throw new Error("NO_API_KEY");
   const system = [
     { type: "text", text: await readPrompt("chat.md"), cache_control: { type: "ephemeral" } },
     {
       type: "text",
-      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}\n\nNotes saved on the phone (newest last):\n${notesAsText(notes)}\n\nRecent history and calendar:\n${historySummaryAsText(history_summary)}`,
+      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}\n\nNotes saved on the phone (newest last):\n${notesAsText(notes)}\n\nRecent history and calendar:\n${historySummaryAsText(history_summary)}\n\nTablets left at home (pill stock):\n${stockSummaryAsText(stock_summary)}`,
     },
   ];
   // The app can only keep a photo the user really sent (only the newest one is kept).
   const hasPhoto = history.some((m) => typeof m.image === "string" && m.image.length > 0);
+  const stockCounts = stock && typeof stock === "object" && !Array.isArray(stock) ? stock : {};
+  const toolContext = { hasPhoto, plan: plan || {}, stock: stockCounts };
   const messages = historyToMessages(history);
   const cards = [];
   const actions = [];
@@ -339,7 +428,7 @@ async function chat({ history, plan, taken = {}, today, skills = [], profile, no
       content: toolUses.map((t) => ({
         type: "tool_result",
         tool_use_id: t.id,
-        content: runChatTool(t.name, t.input, cards, actions, hasPhoto),
+        content: runChatTool(t.name, t.input, cards, actions, toolContext),
       })),
     });
   }

@@ -1,4 +1,5 @@
 import SwiftUI
+import PDFKit
 
 /// "How are you feeling?": a mood tap or a voice note, both answered by Agatha in the conversation.
 /// Below: the notes Agatha wrote down and the papers she kept.
@@ -111,7 +112,7 @@ struct NotesView: View {
             Button("Delete", role: .destructive) { model.deletePaper(paper) }
             Button("Keep it", role: .cancel) {}
         } message: { paper in
-            Text("The photo of \u{201C}\(paper.title)\u{201D} will be gone for good.")
+            Text("\u{201C}\(paper.title)\u{201D} will be gone for good.")
         }
         .sheet(item: $paperToShow) { paper in PaperSheet(paper: paper) }
     }
@@ -181,7 +182,7 @@ struct NotesView: View {
                         Text(paper.date.formatted(date: .abbreviated, time: .omitted))
                             .font(Theme.Typeface.body(16))
                             .foregroundStyle(Theme.Palette.inkMuted)
-                        Text("Tap to see the photo")
+                        Text(paper.pdfURL == nil ? "Tap to see the photo" : "Tap to open the document")
                             .font(Theme.Typeface.body(16, weight: .bold))
                             .foregroundStyle(Theme.Palette.purpleDeep)
                     }
@@ -191,7 +192,7 @@ struct NotesView: View {
                 }
             }
             .buttonStyle(PressableCardStyle())
-            .accessibilityLabel("\(paper.title). Tap to see the photo.")
+            .accessibilityLabel("\(paper.title). \(paper.pdfURL == nil ? "Tap to see the photo." : "Tap to open the document.")")
             deleteButton("Delete paper") { paperToDelete = paper }
         }
         .padding(18)
@@ -246,7 +247,8 @@ private struct PaperImage: View {
     }
 }
 
-/// Full photo of a kept paper, with a big Close button.
+/// Full photo of a kept paper (or the PDF of a document Agatha made), with a big Close button.
+/// A document can be shared, but only when the user taps Share (the iOS share sheet lets them pick who).
 private struct PaperSheet: View {
     let paper: SavedPaper
     @Environment(\.dismiss) private var dismiss
@@ -256,21 +258,59 @@ private struct PaperSheet: View {
             Text(paper.title)
                 .font(Theme.Typeface.heading(26))
                 .foregroundStyle(Theme.Palette.ink)
-            ScrollView {
-                if let image = UIImage(contentsOfFile: paper.fileURL.path(percentEncoded: false)) {
-                    Image(uiImage: image).resizable().scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                } else {
-                    Text("The photo could not be found on this phone.")
-                        .font(Theme.Typeface.body(19))
-                        .foregroundStyle(Theme.Palette.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
+            if let pdf = paper.pdfURL, FileManager.default.fileExists(atPath: pdf.path(percentEncoded: false)) {
+                PDFDocumentView(url: pdf)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.Palette.lavenderBorder, lineWidth: 2))
+                ShareLink(item: pdf, preview: SharePreview(paper.title)) {
+                    Label("Share", systemImage: "square.and.arrow.up")
                 }
+                .buttonStyle(PurpleButtonStyle(color: Theme.Palette.green))
+            } else if paper.pdfURL != nil {
+                Text("The document could not be found on this phone.")
+                    .font(Theme.Typeface.body(19))
+                    .foregroundStyle(Theme.Palette.inkSoft)
+                Spacer()
+            } else {
+                photo
             }
             Button("Close") { dismiss() }
                 .buttonStyle(PurpleButtonStyle())
         }
         .padding(22)
         .background(Theme.Palette.page.ignoresSafeArea())
+    }
+
+    private var photo: some View {
+        ScrollView {
+            if let image = UIImage(contentsOfFile: paper.fileURL.path(percentEncoded: false)) {
+                Image(uiImage: image).resizable().scaledToFit()
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                Text("The photo could not be found on this phone.")
+                    .font(Theme.Typeface.body(19))
+                    .foregroundStyle(Theme.Palette.inkSoft)
+            }
+        }
+    }
+}
+
+/// A PDF shown with PDFKit: pages fit the width, scroll down to read on.
+private struct PDFDocumentView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> PDFView {
+        let view = PDFView()
+        view.autoScales = true
+        view.displayMode = .singlePageContinuous
+        view.displayDirection = .vertical
+        view.document = PDFDocument(url: url)
+        return view
+    }
+
+    func updateUIView(_ view: PDFView, context: Context) {
+        if view.document?.documentURL != url { view.document = PDFDocument(url: url) }
     }
 }
 

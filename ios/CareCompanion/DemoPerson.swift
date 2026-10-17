@@ -39,6 +39,15 @@ enum DemoPerson {
         return p
     }
 
+    /// Tablets left at home per medicine (key = medicine name). Simvastatin is running low.
+    static let stock: [String: Int] = [
+        "Ramipril": 41,
+        "Metformin": 23,
+        "Simvastatin": 6,
+        "Acetylsalicylic acid (ASS 100)": 58,
+        "Pantoprazole": 34,
+    ]
+
     /// The five medicines on the sample plan image (Settings: load it if scanning fails).
     static let samplePlan = Plan(medications: [
         med("Ramipril", "5 mg", "for high blood pressure", morning: "1"),

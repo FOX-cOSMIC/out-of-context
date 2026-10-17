@@ -4,6 +4,8 @@ import SwiftUI
 /// and the next five things coming up as big cards.
 struct CalendarView: View {
     var history: DemoHistory = .shared
+    /// The appointments saved in the app now (e.g. added by voice); the demo ones are in `history` already.
+    var appointments: [Appointment] = []
     @Environment(\.dismiss) private var dismiss
     @AppStorage("calendarGoogle") private var googleConnected = false
     @AppStorage("calendarApple") private var appleConnected = false
@@ -15,7 +17,9 @@ struct CalendarView: View {
 
     /// The app's own appointments, plus the events of each connected calendar.
     private var visible: [DemoHistory.CalendarEvent] {
-        history.visibleEvents(google: googleConnected, apple: appleConnected)
+        let base = history.visibleEvents(google: googleConnected, apple: appleConnected)
+        let added = appointments.compactMap(DemoHistory.event(for:)).filter { new in !base.contains { $0.id == new.id } }
+        return (base + added).sorted { $0.date < $1.date }
     }
 
     var body: some View {

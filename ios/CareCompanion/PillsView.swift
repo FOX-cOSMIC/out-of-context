@@ -45,6 +45,13 @@ struct PillsView: View {
                 }
             }
 
+            let low = model.lowStockMedicines
+            if !low.isEmpty {
+                LowStockBanner(lines: low.map { med in
+                    "\(med.name): \(PillStock.label(count: model.stockCount(med) ?? 0, med: med))"
+                })
+            }
+
             HStack(spacing: 12) {
                 OverviewButton(title: "My week & month", icon: "chart.bar.fill",
                                color: Theme.Palette.green, background: Theme.Palette.mint) { showHistory = true }
@@ -62,6 +69,7 @@ struct PillsView: View {
                         slot: dose.slot,
                         time: time(for: dose.slot),
                         state: taken ? .taken : (dose.id == dueID ? .due : .later),
+                        stock: model.stockCount(dose.med),
                         toggle: { withAnimation(.snappy) { model.toggleTaken(dose.med, slot: dose.slot) } }
                     )
                 }
@@ -75,13 +83,19 @@ struct PillsView: View {
             }
         }
         .sheet(isPresented: $showHistory) { HistoryView() }
-        .sheet(isPresented: $showCalendar) { CalendarView() }
+        .sheet(isPresented: $showCalendar) { CalendarView(appointments: model.plan.appointments) }
         // Demo launch argument -demoSheet: open the week/month overview or the calendar by itself.
         .task(id: navigator.demoSheet) {
             guard let sheet = navigator.demoSheet else { return }
             try? await Task.sleep(for: .milliseconds(400))
             navigator.demoSheet = nil
-            if sheet == .history { showHistory = true } else { showCalendar = true }
+            if sheet == .history {
+                showCalendar = false
+                showHistory = true
+            } else {
+                showHistory = false
+                showCalendar = true
+            }
         }
     }
 
@@ -124,6 +138,41 @@ struct PillsView: View {
         f.locale = Locale(identifier: "en_GB")
         f.dateFormat = "EEEE, d MMMM"
         return f.string(from: Date())
+    }
+}
+
+// MARK: - "Running low" banner
+
+private struct LowStockBanner: View {
+    let lines: [String]
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(Theme.Palette.orangeDark)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Running low")
+                    .font(Theme.Typeface.heading(22))
+                    .foregroundStyle(Theme.Palette.orangeText)
+                ForEach(lines, id: \.self) { line in
+                    Text(line)
+                        .font(Theme.Typeface.body(19, weight: .bold))
+                        .foregroundStyle(Theme.Palette.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Text("Time to refill: ask your pharmacy or doctor.")
+                    .font(Theme.Typeface.body(18))
+                    .foregroundStyle(Theme.Palette.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.Palette.peach, in: RoundedRectangle(cornerRadius: 22))
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(Theme.Palette.orange, lineWidth: 2))
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -195,6 +244,8 @@ private struct DoseCard: View {
     let slot: Slot
     let time: String
     let state: State
+    /// Tablets left at home (nil = not counted).
+    let stock: Int?
     let toggle: () -> Void
 
     var body: some View {
@@ -216,6 +267,7 @@ private struct DoseCard: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     statusLine
+                    stockLine
                 }
                 Spacer(minLength: 0)
             }
@@ -253,6 +305,24 @@ private struct DoseCard: View {
             Label("Later today", systemImage: "moon")
                 .font(Theme.Typeface.body(19))
                 .foregroundStyle(Theme.Palette.inkMuted)
+        }
+    }
+
+    /// "23 left · about 11 days"; orange with "Running low — time to refill" under a week.
+    @ViewBuilder private var stockLine: some View {
+        if let stock {
+            let low = PillStock.isLow(count: stock, med: med)
+            VStack(alignment: .leading, spacing: 2) {
+                Label(PillStock.label(count: stock, med: med), systemImage: low ? "exclamationmark.triangle.fill" : "shippingbox")
+                    .font(Theme.Typeface.body(18, weight: low ? .bold : .regular))
+                    .foregroundStyle(low ? Theme.Palette.orangeText : Theme.Palette.inkMuted)
+                if low {
+                    Text("Running low — time to refill")
+                        .font(Theme.Typeface.body(18, weight: .bold))
+                        .foregroundStyle(Theme.Palette.orangeText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
     }
 

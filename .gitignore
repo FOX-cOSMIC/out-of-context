@@ -14,3 +14,6 @@ DerivedData/
 build/
 video/render/out/
 video/render/clips/
+
+# Screen recordings for the demo video (large; kept locally)
+video/recordings/*.mp4

@@ -7,6 +7,8 @@ final class ChatModel: ObservableObject {
     @Published private(set) var plan = Plan()
     @Published private(set) var profile = Profile()
     @Published private(set) var takenToday: [String: Bool] = [:]
+    /// Tablets left at home per medicine (key = medicine name as on the plan). Missing = not counted.
+    @Published private(set) var stock: [String: Int] = [:]
     @Published private(set) var skills: Set<Skill> = []
     @Published var isRecording = false
     @Published var isBusy = false
@@ -29,6 +31,8 @@ final class ChatModel: ObservableObject {
     @Published private(set) var papers: [SavedPaper] = []
     /// A screen Agatha opened (open_screen); RootView switches the tab and clears it.
     @Published var pendingTab: AppTab?
+    /// A sheet Agatha opened (open_screen history/calendar); RootView shows Pills, opens it and clears this.
+    @Published var pendingSheet: DemoSheet?
 
     private let api = APIClient()
     private let recorder = VoiceRecorder()
@@ -60,11 +64,16 @@ final class ChatModel: ObservableObject {
     }
 
     init() {
-        load()
+        let hadStock = load()
         // Demo: no "getting to know you" call; start as the predefined person.
         if profile.name.isEmpty {
             profile = DemoPerson.profile
             if plan.medications.isEmpty { plan = DemoPerson.plan }
+            save()
+        }
+        // First run (or first run with pill counts): Margaret's demo counts.
+        if !hadStock {
+            stock = DemoPerson.stock
             save()
         }
         showWelcome = false
@@ -400,9 +409,55 @@ final class ChatModel: ObservableObject {
     }
 
     func toggleTaken(_ med: Medication, slot: Slot) {
-        let key = takenKey(med.name, slot)
-        takenToday[key] = !(takenToday[key] ?? false)
+        setTaken(med.name, slot: slot, taken: !isTaken(med, slot: slot))
         save()
+    }
+
+    /// The one place a dose is ticked or unticked: a newly taken dose comes out of the pill count,
+    /// an untick puts it back. Ticking an already ticked dose changes nothing (no double counting).
+    private func setTaken(_ name: String, slot: Slot, taken: Bool) {
+        let key = takenKey(name, slot)
+        let was = takenToday[key] ?? false
+        guard was != taken else { return }
+        takenToday[key] = taken
+        guard let med = plan.medications.first(where: { $0.name == name }),
+              let count = stock[med.name] else { return }
+        let used = PillStock.tabletsUsed(med.times.dose(for: slot))
+        stock[med.name] = max(0, count + (taken ? -used : used))
+    }
+
+    // MARK: - Pill stock
+
+    /// Tablets left for this medicine, or nil when not counted.
+    func stockCount(_ med: Medication) -> Int? { stock[med.name] }
+
+    /// Medicines with fewer than a week of tablets left.
+    var lowStockMedicines: [Medication] {
+        plan.medications.filter { med in stock[med.name].map { PillStock.isLow(count: $0, med: med) } ?? false }
+    }
+
+    /// "Simvastatin 6 left (~6 days, LOW); Metformin 23 left (~11 days); …" for Agatha.
+    var stockSummary: String {
+        let lines = plan.medications.map { med -> String in
+            guard let count = stock[med.name] else { return "\(med.name): not counted" }
+            let days = PillStock.daysLeft(count: count, med: med).map { "~\($0) days" } ?? "no daily dose"
+            return "\(med.name) \(count) left (\(days)\(PillStock.isLow(count: count, med: med) ? ", LOW" : ""))"
+        }
+        var text = lines.isEmpty ? "no medicines saved" : lines.joined(separator: "; ")
+        // The next pharmacy pickup, when the calendar is connected (same rule as the history summary).
+        if DemoHistory.anyCalendarConnected,
+           let pickup = DemoHistory.shared.events.first(where: { $0.kind == .pharmacy && $0.date >= Date() }) {
+            text += ". Next pharmacy pickup in the calendar: \(DemoHistory.shortDate(pickup.date)) \(DemoHistory.timeText(pickup.date)), \(pickup.place)"
+            if let note = pickup.note { text += " (\(note))" }
+        }
+        return text
+    }
+
+    /// The saved plan medicine Claude means: exact name first, then a loose match ("Ramipril" for "Ramipril 5 mg").
+    private func medication(named spoken: String) -> Medication? {
+        let s = spoken.lowercased()
+        return plan.medications.first { $0.name.lowercased() == s }
+            ?? plan.medications.first { $0.name.lowercased().contains(s) || s.contains($0.name.lowercased()) }
     }
 
     func isTaken(_ med: Medication, slot: Slot) -> Bool {
@@ -419,8 +474,12 @@ final class ChatModel: ObservableObject {
         profile = DemoPerson.profile
         UserDefaults.standard.removeObject(forKey: "onboarded")
         takenToday = [:]
+        stock = DemoPerson.stock
         skills = []
-        for paper in papers { try? FileManager.default.removeItem(at: paper.fileURL) }
+        for paper in papers {
+            try? FileManager.default.removeItem(at: paper.fileURL)
+            if let pdf = paper.pdfURL { try? FileManager.default.removeItem(at: pdf) }
+        }
         notes = []
         papers = []
         save()
@@ -432,6 +491,7 @@ final class ChatModel: ObservableObject {
     func loadDemoPlan() {
         plan = DemoPerson.samplePlan
         takenToday = [:]
+        stock = DemoPerson.stock // ticks were cleared, so the counts start fresh too
         save()
     }
 
@@ -449,7 +509,9 @@ final class ChatModel: ObservableObject {
                 skills: skills.map(\.rawValue),
                 profile: profile,
                 notes: notesForServer(),
-                history_summary: DemoHistory.shared.summaryForAgatha
+                history_summary: DemoHistory.shared.summaryForAgatha,
+                stock_summary: stockSummary,
+                stock: stock
             ))
         } catch {
             isBusy = false
@@ -522,10 +584,7 @@ final class ChatModel: ObservableObject {
                 guard let slot = action.slot, let names = action.names else { continue }
                 for name in names {
                     // Claude may say "Ramipril" for "Ramipril (Ramipril-ratio)": match loosely.
-                    let spoken = name.lowercased()
-                    let med = plan.medications.first { $0.name.lowercased() == spoken }
-                        ?? plan.medications.first { $0.name.lowercased().contains(spoken) || spoken.contains($0.name.lowercased()) }
-                    takenToday[takenKey(med?.name ?? name, Slot(rawValue: slot) ?? .morning)] = true
+                    setTaken(medication(named: name)?.name ?? name, slot: Slot(rawValue: slot) ?? .morning, taken: true)
                 }
             case "open_screen":
                 switch action.screen {
@@ -534,8 +593,15 @@ final class ChatModel: ObservableObject {
                 case "scan": pendingTab = .scan
                 case "notes": pendingTab = .notes
                 case "sos": pendingTab = .sos
+                case "history": pendingSheet = .history
+                case "calendar": pendingSheet = .calendar
                 default: continue
                 }
+            case "update_stock":
+                guard let name = action.name, let count = action.count else { continue }
+                stock[medication(named: name)?.name ?? name] = max(0, count)
+            case "create_document":
+                createDoctorSummary(title: action.title)
             case "save_note":
                 guard let text = action.text, !text.isEmpty else { continue }
                 notes.append(SavedNote(date: Date(), title: action.title ?? "Note", text: text, kind: action.kind ?? "note"))
@@ -563,6 +629,7 @@ final class ChatModel: ObservableObject {
 
     func deletePaper(_ paper: SavedPaper) {
         try? FileManager.default.removeItem(at: paper.fileURL)
+        if let pdf = paper.pdfURL { try? FileManager.default.removeItem(at: pdf) }
         papers.removeAll { $0.id == paper.id }
         save()
     }
@@ -576,6 +643,43 @@ final class ChatModel: ObservableObject {
             papers.append(paper)
         } catch {
             status = "I could not keep that photo. Please try again."
+        }
+    }
+
+    /// The summary for the doctor (create_document): a PDF plus a picture of its first page, under "My papers".
+    private func createDoctorSummary(title: String?) {
+        let summary = DoctorSummary(
+            patientName: profile.name,
+            doctorName: profile.doctor_name,
+            date: Date(),
+            medications: plan.medications,
+            stock: stock,
+            history: DemoHistory.shared,
+            notes: notes,
+            appointments: plan.appointments,
+            includeCalendar: DemoHistory.anyCalendarConnected
+        )
+        let data = summary.pdfData()
+        let id = UUID().uuidString
+        let low = lowStockMedicines.map(\.name)
+        let paper = SavedPaper(
+            date: Date(),
+            title: (title?.isEmpty == false ? title! : summary.title),
+            summary: "Your medicines, how you have been taking them, your notes and questions, and what is coming up."
+                + (low.isEmpty ? "" : " Running low: \(low.joined(separator: ", "))."),
+            fileName: "summary-\(id).jpg",
+            pdfFileName: "summary-\(id).pdf"
+        )
+        do {
+            guard let pdfURL = paper.pdfURL else { return }
+            try data.write(to: pdfURL, options: .atomic)
+            // The first page as the thumbnail; without it Notes shows a document icon.
+            if let thumb = DoctorSummary.firstPageImage(pdf: data)?.jpegData(compressionQuality: 0.85) {
+                try? thumb.write(to: paper.fileURL, options: .atomic)
+            }
+            papers.append(paper)
+        } catch {
+            status = "I could not make the summary. Please try again."
         }
     }
 
@@ -609,13 +713,21 @@ final class ChatModel: ObservableObject {
         defaults.set(try? JSONEncoder().encode(plan), forKey: "plan")
         defaults.set(try? JSONEncoder().encode(profile), forKey: "profile")
         defaults.set(try? JSONEncoder().encode(takenToday), forKey: "taken-\(todayKey)")
+        defaults.set(try? JSONEncoder().encode(stock), forKey: "stock")
         defaults.set(try? JSONEncoder().encode(Array(skills)), forKey: "skills")
         defaults.set(try? JSONEncoder().encode(notes), forKey: "notes")
         defaults.set(try? JSONEncoder().encode(papers), forKey: "papers")
     }
 
-    private func load() {
+    /// Returns true when pill counts were saved before (false on the first run).
+    @discardableResult
+    private func load() -> Bool {
         let defaults = UserDefaults.standard
+        var hadStock = false
+        if let data = defaults.data(forKey: "stock"), let saved = try? JSONDecoder().decode([String: Int].self, from: data) {
+            stock = saved
+            hadStock = true
+        }
         if let data = defaults.data(forKey: "plan"), let saved = try? JSONDecoder().decode(Plan.self, from: data) {
             plan = saved
         }
@@ -635,6 +747,7 @@ final class ChatModel: ObservableObject {
         if let data = defaults.data(forKey: "papers"), let saved = try? JSONDecoder().decode([SavedPaper].self, from: data) {
             papers = saved
         }
+        return hadStock
     }
 
     /// Shrinks a photo to max 1600 px and encodes it as a JPEG data URL.

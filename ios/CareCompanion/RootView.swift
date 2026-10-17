@@ -31,6 +31,13 @@ struct RootView: View {
             if tab == .talk { navigator.goHome() } else { navigator.tab = tab }
             model.pendingTab = nil
         }
+        // Agatha opened "My week & month" or "My calendar" (open_screen history/calendar): Pills tab, then the sheet.
+        .onChange(of: model.pendingSheet) { _, sheet in
+            guard let sheet else { return }
+            navigator.tab = .pills
+            navigator.demoSheet = sheet
+            model.pendingSheet = nil
+        }
         // Agatha's medication-reminder call: its own window above everything (tab bar, sheets).
         .onChange(of: calls.activeCall != nil) { _, showing in
             if showing { CallWindow.show(scheduler: calls, model: model) } else { CallWindow.hide() }

@@ -36,6 +36,10 @@ struct APIClient {
         let notes: [NoteSummary]
         /// Margaret's recent doses, moods and calendar in short text (DemoHistory.summaryForAgatha).
         var history_summary: String? = nil
+        /// Pills left per medicine in short text, e.g. "Simvastatin 6 left (~6 days, LOW); …".
+        var stock_summary: String? = nil
+        /// The same counts by medicine name, so the server can work out "another pack of 120".
+        var stock: [String: Int]? = nil
     }
 
     /// A saved note as Agatha sees it (text trimmed by the app).

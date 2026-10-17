@@ -107,15 +107,17 @@ struct Card: Codable, Hashable {
 
 /// Something Claude asks the app to do, e.g. tick off medicines.
 struct ChatAction: Codable {
-    var type: String // mark_taken | save_profile | open_screen | save_note | save_document
+    var type: String // mark_taken | save_profile | open_screen | save_note | save_document | update_stock | create_document
     var slot: String?
     var names: [String]?
     var profile: Profile?
-    var screen: String? // open_screen: home | pills | scan | notes | sos
-    var title: String?  // save_note, save_document
+    var screen: String? // open_screen: home | pills | scan | notes | sos | history | calendar
+    var title: String?  // save_note, save_document, create_document
     var text: String?   // save_note
-    var kind: String?   // save_note: note | doctor_questions | feeling
+    var kind: String?   // save_note: note | doctor_questions | feeling; create_document: doctor_summary
     var summary: String? // save_document
+    var name: String?   // update_stock: the medicine
+    var count: Int?     // update_stock: the new number of tablets left
 }
 
 // MARK: - Notes and papers Agatha keeps (only on this phone)
@@ -139,15 +141,22 @@ struct SavedNote: Codable, Identifiable, Hashable {
 }
 
 /// A photo of a letter or form the user asked Agatha to keep, saved as a JPEG in the app's Documents folder.
+/// A document Agatha made (e.g. the summary for the doctor) also has a PDF; its JPEG is then the first page.
 struct SavedPaper: Codable, Identifiable, Hashable {
     var id = UUID()
     var date: Date
     var title: String
     var summary: String
     var fileName: String
+    /// The PDF in Documents, for documents Agatha created (nil for kept photos).
+    var pdfFileName: String? = nil
 
     var fileURL: URL {
         URL.documentsDirectory.appending(path: fileName)
+    }
+
+    var pdfURL: URL? {
+        pdfFileName.map { URL.documentsDirectory.appending(path: $0) }
     }
 }
 
