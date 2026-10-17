@@ -3,6 +3,7 @@
 One slide per spoken line (app-style phone screen + caption), rendered with headless Chrome,
 then stitched with ffmpeg. Audio lines are placed at their `at` time from video/voices/lines.json.
 
+Real app: run video/render/record-scenes.sh first (Mac with Xcode + Simulator); its clips go in the phone.
 Run:  python3 video/render/build.py      ->  video/agatha-demo.mp4
 """
 import html, json, subprocess, pathlib
@@ -42,7 +43,14 @@ h1{font-size:76px;line-height:1.08;letter-spacing:-1px;margin-bottom:28px}
 .small{font-size:20px;color:#5A5470}
 """
 
+CLIPS = ROOT / "video" / "render" / "clips"
+SCENE_CLIP = {"01-hook": "home", "02-call": "call", "03-scan": "scan", "04-safety": "safety",
+              "05-memory": "memory", "06-family": "family", "07-close": "home"}
+REAL = all((CLIPS / f"{c}.mp4").exists() for c in SCENE_CLIP.values())
+
 def phone(scene, step):
+    if REAL:   # real app recording is overlaid here later
+        return '<div class="scr" style="background:#000"></div>'
     m = '<div class="mascot">A</div>'
     if scene == "01-hook":
         return f'<div class="scr">{m}<div style="text-align:center;font-size:40px;font-weight:700">Good morning, Margaret</div><div class="card" style="background:#E3F6F1">☀️ Morning · 8:00<br><b>4 pills</b> with breakfast</div><div class="card" style="background:#FFF1E3">🌙 Evening · 18:30<br><b>1 pill</b> with dinner</div><div style="flex:1"></div><div class="btn p">🎙 Tap and talk to Agatha</div></div>'
@@ -96,20 +104,44 @@ for i, ln in enumerate(lines):
     starts.append(0.0 if i == 0 else secs(ln["at"]))
     pngs.append(slide(i, ln, step))
 
-concat = OUT / "slides.txt"
-with open(concat, "w") as f:
-    for i, png in enumerate(pngs):
-        end = starts[i + 1] if i + 1 < len(starts) else TOTAL
-        f.write(f"file '{png}'\nduration {end - starts[i]:.2f}\n")
-    f.write(f"file '{pngs[-1]}'\n")
-
-cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(concat)]
-for ln in lines:
-    cmd += ["-i", str(VOICES / (ln["file"] + ".wav"))]
-mix = "".join(f"[{k+1}:a]adelay={secs(ln['at'])*1000}|{secs(ln['at'])*1000}[a{k}];" for k, ln in enumerate(lines))
+audio_in, mix = [], ""
+for k, ln in enumerate(lines):
+    audio_in += ["-i", str(VOICES / (ln["file"] + ".wav"))]
+    ms = secs(ln["at"]) * 1000
+    mix += f"[{k+1}:a]adelay={ms}|{ms}[a{k}];"
 mix += "".join(f"[a{k}]" for k in range(len(lines))) + f"amix=inputs={len(lines)}:normalize=0,apad[aout]"
-cmd += ["-filter_complex", mix, "-map", "0:v", "-map", "[aout]", "-t", str(TOTAL),
-        "-vf", "fps=30,format=yuv420p", "-c:v", "libx264", "-preset", "fast", "-crf", "23", "-tune", "stillimage",
-        "-c:a", "aac", "-b:a", "160k", str(ROOT / "video" / "agatha-demo.mp4")]
+enc = ["-c:v", "libx264", "-preset", "fast", "-crf", "23", "-pix_fmt", "yuv420p", "-r", "30"]
+
+if REAL:
+    # each line: its slide as background, the real Simulator clip in the phone screen (x 1306, y 76, 438x928)
+    scene_start, segs = {}, []
+    for i, (ln, png) in enumerate(zip(lines, pngs)):
+        scene_start.setdefault(ln["scene"], starts[i])
+        end = starts[i + 1] if i + 1 < len(starts) else TOTAL
+        dur = end - starts[i]
+        clip = CLIPS / f"{SCENE_CLIP[ln['scene']]}.mp4"
+        off = 1.5 + starts[i] - scene_start[ln["scene"]]   # skip the cold launch
+        seg = OUT / f"seg{i:02d}.mp4"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-t", f"{dur:.2f}", "-i", str(png),
+                        "-ss", f"{off:.2f}", "-i", str(clip), "-filter_complex",
+                        "[1:v]scale=-2:928,tpad=stop_mode=clone:stop_duration=60[c];"
+                        "[0:v][c]overlay=x=1306+(438-overlay_w)/2:y=76:shortest=1",
+                        "-t", f"{dur:.2f}", "-an", *enc, str(seg)], check=True)
+        segs.append(seg)
+    concat = OUT / "segs.txt"
+    concat.write_text("".join(f"file '{s}'\n" for s in segs))
+    video_in = ["-f", "concat", "-safe", "0", "-i", str(concat)]
+else:
+    concat = OUT / "slides.txt"
+    with open(concat, "w") as f:
+        for i, png in enumerate(pngs):
+            end = starts[i + 1] if i + 1 < len(starts) else TOTAL
+            f.write(f"file '{png}'\nduration {end - starts[i]:.2f}\n")
+        f.write(f"file '{pngs[-1]}'\n")
+    video_in = ["-f", "concat", "-safe", "0", "-i", str(concat)]
+
+cmd = ["ffmpeg", "-y", "-loglevel", "error", *video_in, *audio_in, "-filter_complex", mix,
+       "-map", "0:v", "-map", "[aout]", "-t", str(TOTAL), *enc, "-c:a", "aac", "-b:a", "160k",
+       str(ROOT / "video" / "agatha-demo.mp4")]
 subprocess.run(cmd, check=True)
-print("wrote video/agatha-demo.mp4")
+print("wrote video/agatha-demo.mp4", "(real app clips)" if REAL else "(drawn screens: run record-scenes.sh on a Mac with Xcode for the real app)")
