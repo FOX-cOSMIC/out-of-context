@@ -73,18 +73,82 @@ struct ChatView: View {
 
     // MARK: - Hero (home of the Talk tab)
 
+    @State private var showTyping = false
+
+    /// Minimal home: date, small Agatha, the big question or the current turn, and a talk/type pill.
     private var homeScreen: some View {
-        ScrollView {
-            VStack(spacing: Theme.Metrics.spacingLarge) {
-                hero { TalkButton(circle: 190, showLabel: false) }
-                currentTurn
-                    .padding(.horizontal, Theme.Metrics.screenPadding)
-                    .padding(.top, -36) // tuck it up into the white cloud edge
-                Spacer(minLength: Theme.Metrics.screenPadding)
+        VStack(spacing: 0) {
+            ZStack {
+                Text(Date().formatted(.dateTime.day().month(.abbreviated)))
+                    .font(Theme.Fonts.hint)
+                    .foregroundStyle(Theme.Colors.textSecondary)
+                HStack {
+                    Spacer()
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape").font(Theme.Fonts.toolbarIcon)
+                            .frame(width: Theme.Metrics.minTouch, height: Theme.Metrics.minTouch)
+                            .opacity(0.6)
+                    }
+                    .foregroundStyle(Theme.Palette.purpleDeep)
+                    .accessibilityLabel("Settings")
+                }
             }
+            .padding(.horizontal, Theme.Metrics.screenPadding)
+
+            ScrollView {
+                VStack(spacing: Theme.Metrics.spacingLarge) {
+                    TalkButton(circle: 120, showLabel: false)
+                        .padding(.top, Theme.Metrics.spacingMedium)
+                    currentTurn
+                        .padding(.horizontal, Theme.Metrics.screenPadding)
+                }
+                .padding(.bottom, Theme.Metrics.screenPadding)
+            }
+            .scrollDismissesKeyboard(.interactively)
+
+            if showTyping {
+                typeField
+                    .padding(.horizontal, Theme.Metrics.screenPadding)
+                    .padding(.bottom, Theme.Metrics.spacingMedium)
+            }
+            talkTypePill
+                .padding(.bottom, Theme.Metrics.spacingMedium)
         }
-        .scrollDismissesKeyboard(.interactively)
-        .background(alignment: .top) { heroBackdrop }
+        .background(Theme.Palette.page.ignoresSafeArea())
+    }
+
+    /// The pill at the bottom: talk (tap again when done) and type.
+    private var talkTypePill: some View {
+        let listening = model.isRecording || model.isStartingMic
+        return HStack(spacing: 0) {
+            Button {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                showTyping = false
+                model.toggleRecording()
+            } label: {
+                Image(systemName: listening ? "stop.fill" : "waveform")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(listening ? Theme.Colors.onColor : Theme.Palette.purpleDeep)
+                    .frame(width: 96, height: 64)
+                    .background(listening ? Theme.Colors.danger : Color.clear, in: Capsule())
+            }
+            .disabled(model.isBusy)
+            .accessibilityLabel(listening ? "Done talking" : "Talk to Agatha")
+            Button {
+                showTyping.toggle()
+                typing = showTyping
+            } label: {
+                Image(systemName: "keyboard")
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.purpleDeep)
+                    .frame(width: 96, height: 64)
+            }
+            .disabled(listening || model.isBusy)
+            .accessibilityLabel("Type instead")
+        }
+        .padding(6)
+        .background(Theme.Palette.lavender, in: Capsule())
+        .shadow(color: Theme.Palette.purple.opacity(0.15), radius: 10, y: 4)
     }
 
     // MARK: - One screen only: what is happening right now, under Agatha (no chat history)
@@ -100,14 +164,12 @@ struct ChatView: View {
                     .font(Theme.Fonts.heroTitle)
                     .foregroundStyle(Theme.Colors.danger)
                 if let words = model.liveText, !words.isEmpty {
-                    Text("“\(words)”")
-                        .font(Theme.Fonts.message)
+                    Text(words)
+                        .font(Theme.Typeface.heading(26, weight: .semibold))
                         .foregroundStyle(Theme.Colors.textPrimary)
                 }
             } else if model.isBusy {
-                if let said = lastUser?.text, !said.isEmpty {
-                    Text("“\(said)”").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
-                }
+                if let said = lastUser?.text, !said.isEmpty { youSaid(said) }
                 HStack(spacing: Theme.Metrics.spacingRegular) {
                     ProgressView().tint(Theme.Colors.accent)
                     Text("Thinking…")
@@ -115,23 +177,13 @@ struct ChatView: View {
                 .font(Theme.Fonts.heroGreeting)
                 .foregroundStyle(Theme.Colors.textSecondary)
             } else if let answer = lastAgatha, hasEarlierConversation || model.isCallMode || answer.isError {
-                if let said = lastUser?.text, !said.isEmpty {
-                    Text("You: “\(said)”").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
-                }
+                if let said = lastUser?.text, !said.isEmpty { youSaid(said) }
                 MessageRow(message: answer)
-                Text("Tap Agatha to talk").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
             } else {
-                VStack(spacing: Theme.Metrics.spacingSmall) {
-                    Text(userName.isEmpty ? "Hello!" : "Hello \(userName)!")
-                        .font(Theme.Fonts.heroGreeting)
-                        .foregroundStyle(Theme.Colors.textSecondary)
-                    Text("How are you doing today?")
-                        .font(Theme.Fonts.heroTitle)
-                        .foregroundStyle(Theme.Colors.textPrimary)
-                    Text("Tap Agatha to talk")
-                        .font(Theme.Fonts.hint)
-                        .foregroundStyle(Theme.Colors.textSecondary)
-                }
+                Text(userName.isEmpty ? "What's on your mind?" : "What's on your mind, \(userName)?")
+                    .font(Theme.Typeface.heading(34))
+                    .foregroundStyle(Theme.Colors.textPrimary)
+                    .padding(.top, Theme.Metrics.spacingLarge)
             }
             if !model.status.isEmpty && !model.isBusy && !talking {
                 Text(model.status).font(Theme.Fonts.status).foregroundStyle(Theme.Colors.textSecondary)
@@ -139,6 +191,20 @@ struct ChatView: View {
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
+    }
+
+    /// "You said" block: the user sees exactly what Agatha heard.
+    private func youSaid(_ text: String) -> some View {
+        VStack(alignment: .trailing, spacing: 4) {
+            Text("You said").font(Theme.Fonts.caption).foregroundStyle(Theme.Colors.textSecondary)
+            Text(text)
+                .font(Theme.Fonts.message)
+                .foregroundStyle(Theme.Colors.textPrimary)
+                .padding(Theme.Metrics.bubblePadding)
+                .background(Theme.Colors.userBubble, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .multilineTextAlignment(.leading)
     }
 
     /// Lavender behind the status bar and the top of the hero, white under the cloud edge.
