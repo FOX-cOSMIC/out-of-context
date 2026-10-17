@@ -95,10 +95,16 @@ final class LiveTranscriber {
         return newRequest
     }
 
+    /// Each recognition task gets its own id; results from an older task are ignored.
+    private var taskID = UUID()
+
     private func startTask(_ newRequest: SFSpeechAudioBufferRecognitionRequest, session id: UUID) {
         guard let recognizer else { return }
         request = newRequest
+        let thisTask = UUID()
+        taskID = thisTask
         task = recognizer.recognitionTask(with: newRequest, resultHandler: Self.makeResultHandler { [weak self] words, isFinal, failed in
+            guard self?.taskID == thisTask else { return }
             self?.handle(words: words, isFinal: isFinal, failed: failed, session: id)
         })
     }
@@ -107,6 +113,7 @@ final class LiveTranscriber {
     private func continueListening(session id: UUID) {
         guard let recognizer, engine != nil else { return }
         commitCurrent()
+        task?.cancel() // late results from the old section must not come back
         task = nil
         let next = Self.makeRequest(recognizer)
         feed.set(next)
@@ -160,7 +167,7 @@ final class LiveTranscriber {
         if let words, !words.isEmpty, words != current {
             // A fresh section after a pause: the new words don't continue the old ones, so keep the old.
             let continues = current.isEmpty || words.lowercased().hasPrefix(String(current.lowercased().prefix(8)))
-            if !continues && words.count < current.count { commitCurrent() }
+            if !continues { commitCurrent() }
             current = words
             let all = committed.isEmpty ? current : committed + " " + current
             if all != text {
