@@ -180,3 +180,5 @@ To re-render a sample after editing its HTML (use `--window-size=900,560` for `a
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) (MIT)
 - Apple SwiftUI and AVFoundation
 - All sample documents, names and addresses are fictional.
+- Fonts: [Quicksand](https://github.com/google/fonts/tree/main/ofl/quicksand) (Andrew Paglinawan and the Quicksand Project Authors) and [Atkinson Hyperlegible](https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible) (© 2020 Braille Institute of America), both SIL Open Font License 1.1.
+- Visual design and Agatha mascot: Valentina (`Medication Voice Assistant.html`).

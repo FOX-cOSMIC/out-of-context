@@ -17,11 +17,13 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
     info:
       path: CareCompanion/Info.plist
       properties:
         CFBundleDisplayName: Agatha
         UILaunchScreen: {}
+        UIAppFonts: [Quicksand.ttf, AtkinsonHyperlegible-Regular.ttf, AtkinsonHyperlegible-Bold.ttf]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSMicrophoneUsageDescription: Agatha listens when you tap Talk, so you can speak instead of typing.
         NSSpeechRecognitionUsageDescription: Agatha writes down what you say while you speak.

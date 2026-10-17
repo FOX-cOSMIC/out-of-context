@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="190" viewBox="0 0 390 190">
+    <path d="M34 150 Q30 110 40 70" stroke="#6E8F4E" stroke-width="3" fill="none" stroke-linecap="round"></path>
+    <path d="M36 118 Q14 104 10 84 Q30 92 36 112 Z" fill="#9DBF7A"></path>
+    <g transform="translate(40 62)">
+      <ellipse cx="0" cy="-16" rx="7" ry="14" fill="#FF7A3D"></ellipse>
+      <ellipse cx="0" cy="16" rx="7" ry="14" fill="#FF7A3D"></ellipse>
+      <ellipse cx="-16" cy="0" rx="14" ry="7" fill="#FF7A3D"></ellipse>
+      <ellipse cx="16" cy="0" rx="14" ry="7" fill="#FF7A3D"></ellipse>
+      <ellipse cx="-11" cy="-11" rx="6" ry="13" fill="#FF9A5E" transform="rotate(-45 -11 -11)"></ellipse>
+      <ellipse cx="11" cy="-11" rx="6" ry="13" fill="#FF9A5E" transform="rotate(45 11 -11)"></ellipse>
+      <ellipse cx="-11" cy="11" rx="6" ry="13" fill="#FF9A5E" transform="rotate(45 -11 11)"></ellipse>
+      <ellipse cx="11" cy="11" rx="6" ry="13" fill="#FF9A5E" transform="rotate(-45 11 11)"></ellipse>
+      <circle cx="0" cy="0" r="8" fill="#FFC857"></circle>
+    </g>
+    <path d="M356 150 Q362 116 350 88" stroke="#6E8F4E" stroke-width="3" fill="none" stroke-linecap="round"></path>
+    <path d="M356 124 Q378 112 384 92 Q362 98 356 118 Z" fill="#9DBF7A"></path>
+    <g transform="translate(348 82)">
+      <circle cx="0" cy="-13" r="11" fill="#FF9FB2"></circle>
+      <circle cx="12" cy="-4" r="11" fill="#FF9FB2"></circle>
+      <circle cx="8" cy="11" r="11" fill="#FF9FB2"></circle>
+      <circle cx="-8" cy="11" r="11" fill="#FF9FB2"></circle>
+      <circle cx="-12" cy="-4" r="11" fill="#FF9FB2"></circle>
+      <circle cx="0" cy="0" r="7" fill="#FF7A3D"></circle>
+    </g>
+    <circle cx="300" cy="118" r="5" fill="#FF9FB2"></circle>
+    <circle cx="312" cy="128" r="4" fill="#FF9FB2"></circle>
+    <circle cx="86" cy="104" r="4" fill="#FFC857"></circle>
+    <path d="M0 160 Q28 118 66 140 Q96 108 136 134 Q170 112 200 136 Q236 108 270 134 Q308 112 336 138 Q366 118 390 132 L390 190 L0 190 Z" fill="#FFFFFF"></path>
+  </svg>

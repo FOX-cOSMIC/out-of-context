@@ -37,6 +37,12 @@
 	<string>Agatha reads photos of your medication plan and letters.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Agatha writes down what you say while you speak.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Quicksand.ttf</string>
+		<string>AtkinsonHyperlegible-Regular.ttf</string>
+		<string>AtkinsonHyperlegible-Bold.ttf</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

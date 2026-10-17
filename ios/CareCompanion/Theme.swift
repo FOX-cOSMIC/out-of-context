@@ -5,8 +5,8 @@ import SwiftUI
 // Every colour, font, size, corner radius and spacing the screens use lives in this file.
 // The views only refer to these names (Theme.Colors.accent, Theme.Fonts.message, ...),
 // so a new look means editing the values below, not hunting through the views.
-// The values today are Apple's system colours and text styles, so Dark Mode and
-// larger text sizes keep working automatically.
+// The values map onto Valentina's design (Theme.Palette / Theme.Typeface at the bottom).
+// The palette is light-only, so the app pins the light colour scheme; fonts scale with Dynamic Type.
 
 enum Theme {
 
@@ -14,99 +14,124 @@ enum Theme {
 
     enum Colors {
         /// Behind everything (the screen itself).
-        static let background = Color(.systemGroupedBackground)
+        static let background = Palette.page
         /// Cards, Agatha's speech bubbles, the welcome card and the typing field.
-        static let surface = Color(.secondarySystemGroupedBackground)
-        /// The translucent strip behind the skills bar (top) and the buttons (bottom).
-        static let bar: Material = .bar
+        static let surface = Palette.white
+        /// The strip behind the skills bar (top) and the controls (bottom).
+        static let bar = Palette.page
+        /// Lavender hero behind the mascot on the Talk screen.
+        static let hero = Palette.lavender
+        /// Soft rings around the mascot circle.
+        static let heroRing = Palette.white.opacity(0.55)
 
         /// Main brand colour: the Talk button, links, "Take" buttons, card outlines.
-        static let accent = Color.accentColor
+        static let accent = Palette.purple
         /// The user's own speech bubbles.
-        static let userBubble = Color.accentColor.opacity(0.15)
+        static let userBubble = Palette.lavender
         /// The live bubble while the user is still talking (words appear as Agatha hears them).
-        static let liveBubble = Color.accentColor.opacity(0.08)
+        static let liveBubble = Palette.lavenderLight
         /// Dashed outline around the live bubble.
-        static let liveBubbleBorder = Color.accentColor.opacity(0.5)
+        static let liveBubbleBorder = Palette.lavenderRing
         /// The small "Listening…" label and dot above the live bubble.
-        static let liveIndicator = Color.red
+        static let liveIndicator = Palette.sosRed
         /// Thin outline around Agatha's cards.
-        static let cardBorder = Color.accentColor.opacity(0.3)
+        static let cardBorder = Palette.lavenderBorder
         /// Background of a "Take" button that is not ticked yet.
-        static let takeButtonBackground = Color.accentColor.opacity(0.12)
+        static let takeButtonBackground = Palette.white
+        /// Soft shadow under Agatha's bubbles and cards.
+        static let shadow = Palette.purpleDeep.opacity(0.10)
 
-        /// The big green "Start" button on first launch.
-        static let callGreen = Color.green
-        /// Recording (Talk button while listening, "Listening…" text) and "End call".
-        static let danger = Color.red
+        /// The big "Start" button on first launch.
+        static let callGreen = Palette.purple
+        /// Recording (mascot ring while listening, "Listening…" text) and "End call".
+        static let danger = Palette.sosRed
         /// The "Show me a photo" button.
-        static let photoButton = Color.indigo
+        static let photoButton = Palette.orangeDark
         /// Done / taken / saved / "Yes, right" / a newly learned skill.
-        static let success = Color.green
+        static let success = Palette.green
         /// The "No" button on a "Here is what I read" card.
-        static let neutralButton = Color.gray
+        static let neutralButton = Palette.inkSoft
         /// Background of the "I could not read everything" box.
-        static let warningBackground = Color.orange.opacity(0.15)
+        static let warningBackground = Palette.peach
         /// Text and icons placed on a coloured button.
         static let onColor = Color.white
 
-        /// Normal text. Hierarchical style, so it picks up vibrancy on the translucent bars.
-        static let textPrimary = HierarchicalShapeStyle.primary
+        /// Normal text.
+        static let textPrimary = Palette.ink
         /// Quieter text: hints, explanations, things not done yet.
-        static let textSecondary = HierarchicalShapeStyle.secondary
-        /// Same two text colours as plain Colors, for places that switch between
-        /// a colour and normal text (for example red while recording, otherwise normal).
-        static let textPrimaryColor = Color.primary
-        static let textSecondaryColor = Color.secondary
+        static let textSecondary = Palette.inkSoft
+        /// Same two text colours, for places that switch between a colour and normal text.
+        static let textPrimaryColor = Palette.ink
+        static let textSecondaryColor = Palette.inkSoft
+
+        /// Schedule card backgrounds per time of day.
+        static func slotBackground(_ slot: Slot) -> Color {
+            switch slot {
+            case .morning: Palette.mint
+            case .midday: Palette.peach
+            case .evening: Palette.lavender
+            case .night: Palette.lavenderLight
+            }
+        }
     }
 
     // MARK: - Fonts
 
     enum Fonts {
         /// "Hello! I'm Agatha." on the welcome card.
-        static let welcomeTitle = Font.title.bold()
+        static let welcomeTitle = Typeface.heading(30)
+        /// "How are you doing today?" under the mascot.
+        static let heroTitle = Typeface.heading(32)
+        /// "Hello Agatha!" above the hero title.
+        static let heroGreeting = Typeface.body(21)
+        /// "MEDICINE HELPER" chip.
+        static let chip = Typeface.heading(15)
         /// Message text in bubbles, the welcome text, the typing field, "Thinking…".
-        static let message = Font.title3
+        static let message = Typeface.body(21)
         /// "Listening…" / "Thinking…" while a call is on.
-        static let callStatus = Font.title3.weight(.bold)
+        static let callStatus = Typeface.heading(21)
         /// The small "Listening…" label above the live bubble.
-        static let liveIndicator = Font.callout.weight(.semibold)
+        static let liveIndicator = Typeface.body(16, weight: .bold)
         /// Status line under the bubbles when no call is on.
-        static let status = Font.title3.weight(.semibold)
+        static let status = Typeface.body(19, weight: .bold)
         /// Small hints such as "Tap Start to begin" and "AI can make mistakes".
-        static let hint = Font.callout
-        /// Short bold labels: toolbar "Call" and "Done", "Take" buttons, section headers.
-        static let headline = Font.headline
+        static let hint = Typeface.body(18)
+        /// Short bold labels: "Take" buttons, section headers.
+        static let headline = Typeface.body(18, weight: .bold)
         /// Label on the big coloured buttons ("Show me a photo", "End call", "Yes, right").
-        static let buttonLabel = Font.title2.weight(.bold)
+        static let buttonLabel = Typeface.heading(21)
 
         /// Card headings: "Morning", "Here is what I read".
-        static let cardTitle = Font.title2.bold()
+        static let cardTitle = Typeface.heading(24)
         /// One line item inside a card: medicine name, appointment title, "Saved".
-        static let itemTitle = Font.title3.bold()
+        static let itemTitle = Typeface.body(20, weight: .bold)
         /// Explanation under a medicine name.
-        static let cardBody = Font.body
+        static let cardBody = Typeface.body(17)
 
         /// Skill icons in the skills bar.
-        static let skillIcon = Font.title2
+        static let skillIcon = Font.system(size: 18, weight: .semibold)
         /// Skill names under the icons.
-        static let caption = Font.caption
+        static let caption = Typeface.body(13, weight: .bold)
         /// "New skill: …! 🎉"
-        static let celebration = Font.subheadline.weight(.semibold)
+        static let celebration = Typeface.body(16, weight: .bold)
 
         /// Settings gear in the top bar.
-        static let toolbarIcon = Font.title3
+        static let toolbarIcon = Font.system(size: 22, weight: .semibold)
         /// "Read it again" speaker icon next to Agatha's bubbles.
-        static let repeatIcon = Font.title2
+        static let repeatIcon = Font.system(size: 22, weight: .semibold)
         /// Round send arrow next to the typing field.
-        static let sendIcon = Font.system(size: 40)
+        static let sendIcon = Font.system(size: 44)
 
-        /// Microphone / phone icon inside the big round Talk and Start buttons.
+        /// Microphone / phone icon inside the big round Start button.
         static let talkIcon = Font.system(size: 54, weight: .bold)
-        /// "Tap to talk" text inside the Talk button.
-        static let talkLabel = Font.title2.weight(.bold)
+        /// "Tap to talk" / "I'm listening" label under the mascot.
+        static let talkLabel = Typeface.heading(22)
         /// "Start" text inside the Start button.
-        static let startLabel = Font.largeTitle.weight(.bold)
+        static let startLabel = Typeface.heading(34)
+        /// Labels under the bottom bar icons.
+        static let tabLabel = Typeface.body(15, weight: .bold)
+        /// Icons in the bottom bar.
+        static let tabIcon = Font.system(size: 24, weight: .semibold)
     }
 
     // MARK: - Sizes, corners and spacing
@@ -114,9 +139,9 @@ enum Theme {
     enum Metrics {
         // Corner radii
         /// Bubbles, cards, the welcome card and the big buttons.
-        static let cornerLarge: CGFloat = 18
+        static let cornerLarge: CGFloat = 22
         /// Typing field and photo thumbnails.
-        static let cornerMedium: CGFloat = 14
+        static let cornerMedium: CGFloat = 16
         /// The small "could not read everything" box.
         static let cornerSmall: CGFloat = 12
         /// Outline width around cards.
@@ -160,7 +185,7 @@ enum Theme {
 
         // Buttons and images
         /// Height of the big buttons in the bottom bar ("Show me a photo", "End call").
-        static let bigButtonHeight: CGFloat = 52
+        static let bigButtonHeight: CGFloat = 56
         /// Height of the "Yes, right" / "No" buttons on a card.
         static let confirmButtonHeight: CGFloat = 56
         /// Tallest a photo the user sent may be in the conversation.
@@ -180,6 +205,17 @@ enum Theme {
         static let pulseMinScale: CGFloat = 0.96
         /// Seconds for one grow (or shrink) of the ring.
         static let pulseDuration: Double = 1.1
+
+        // Talk screen hero and bottom bar
+        /// White circle the mascot sits in (full hero / small header while chatting).
+        static let mascotCircle: CGFloat = 220
+        static let mascotCircleSmall: CGFloat = 76
+        /// Height of the bottom bar's items and the raised Talk button.
+        static let tabItemHeight: CGFloat = 60
+        static let tabTalkSize: CGFloat = 68
+        static let tabBarCorner: CGFloat = 30
+        /// Smallest touch target anywhere.
+        static let minTouch: CGFloat = 48
 
         // Pressed / disabled looks
         /// Talk button while Agatha is busy.
