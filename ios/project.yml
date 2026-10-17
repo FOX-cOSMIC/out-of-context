@@ -20,13 +20,13 @@ targets:
     info:
       path: CareCompanion/Info.plist
       properties:
-        CFBundleDisplayName: Care Companion
+        CFBundleDisplayName: Agatha
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Care Companion listens when you tap Talk, so you can speak instead of typing.
-        NSCameraUsageDescription: Care Companion reads photos of your medication plan and letters.
-        NSPhotoLibraryUsageDescription: Care Companion reads photos of your medication plan and letters.
-        NSLocalNetworkUsageDescription: Care Companion talks to the helper computer on your wifi.
+        NSMicrophoneUsageDescription: Agatha listens when you tap Talk, so you can speak instead of typing.
+        NSCameraUsageDescription: Agatha reads photos of your medication plan and letters.
+        NSPhotoLibraryUsageDescription: Agatha reads photos of your medication plan and letters.
+        NSLocalNetworkUsageDescription: Agatha talks to the helper computer.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
           NSAllowsArbitraryLoads: true

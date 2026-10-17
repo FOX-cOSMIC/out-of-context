@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Care Companion</string>
+	<string>Agatha</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -28,13 +28,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Care Companion reads photos of your medication plan and letters.</string>
+	<string>Agatha reads photos of your medication plan and letters.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Care Companion talks to the helper computer on your wifi.</string>
+	<string>Agatha talks to the helper computer.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Care Companion listens when you tap Talk, so you can speak instead of typing.</string>
+	<string>Agatha listens when you tap Talk, so you can speak instead of typing.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Care Companion reads photos of your medication plan and letters.</string>
+	<string>Agatha reads photos of your medication plan and letters.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

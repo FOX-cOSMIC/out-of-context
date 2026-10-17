@@ -19,7 +19,7 @@ struct ChatView: View {
                 inputBar
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Care Companion")
+            .navigationTitle("Agatha")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
