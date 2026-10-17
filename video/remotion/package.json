@@ -1,0 +1,23 @@
+{
+  "name": "agatha-demo-video",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "studio": "npm run sync-assets && remotion studio",
+    "render": "npm run sync-assets && remotion render AgathaDemo out/agatha-demo.mp4 --codec=h264",
+    "render:draft": "npm run sync-assets && remotion render AgathaDemo out/agatha-demo-draft.mp4 --codec=h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.536",
+    "@remotion/google-fonts": "4.0.536",
+    "@remotion/transitions": "4.0.536",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.536"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
