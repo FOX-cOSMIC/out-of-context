@@ -13,6 +13,8 @@ final class Navigator: ObservableObject {
     @Published var homeTick = 0
     /// The typing field on the home screen (opened by the centre tab while on Home).
     @Published var showTyping = false
+    /// A sheet the Pills tab opens by itself (demo launch argument -demoSheet); PillsView clears it.
+    @Published var demoSheet: DemoSheet?
 
     /// Back to Agatha's home screen (does not start listening).
     func goHome() {

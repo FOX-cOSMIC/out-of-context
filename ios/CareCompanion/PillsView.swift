@@ -76,6 +76,13 @@ struct PillsView: View {
         }
         .sheet(isPresented: $showHistory) { HistoryView() }
         .sheet(isPresented: $showCalendar) { CalendarView() }
+        // Demo launch argument -demoSheet: open the week/month overview or the calendar by itself.
+        .task(id: navigator.demoSheet) {
+            guard let sheet = navigator.demoSheet else { return }
+            try? await Task.sleep(for: .milliseconds(400))
+            navigator.demoSheet = nil
+            if sheet == .history { showHistory = true } else { showCalendar = true }
+        }
     }
 
     private var emptyState: some View {

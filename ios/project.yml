@@ -8,7 +8,13 @@ targets:
   CareCompanion:
     type: application
     platform: iOS
-    sources: [CareCompanion]
+    sources:
+      - CareCompanion
+      # Sample photos for the -demoScan launch argument (DemoLaunch.swift).
+      - path: ../public/samples/medication-plan.png
+        buildPhase: resources
+      - path: ../public/samples/test/medicine-box-new-amlodipine.png
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.outofcontext.carecompanion

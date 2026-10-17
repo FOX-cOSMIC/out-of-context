@@ -19,6 +19,7 @@ struct CareCompanionApp: App {
                 .environmentObject(navigator)
                 .environmentObject(calls)
                 .task {
+                    DemoLaunch.run(model: model, navigator: navigator) // demo-video launch arguments
                     calls.attach(model: model)
                     // Pill reminder call answered: Agatha speaks first, then the call runs hands-free.
                     calls.onAccepted = { info in
