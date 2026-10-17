@@ -18,6 +18,18 @@ Five people work in this repo at the same time. Everyone should get each other's
 - Stage specific files (`git add <file>`), never `git add -A` blindly; never commit `.env`.
 - Stay in your own files where possible (see "Project layout" in README.md) to avoid conflicts.
 
+## Parallel build workflow (build with subagents, review every change)
+When a task has parts that touch different files, the main Claude session coordinates and does not
+write the code itself:
+1. Split the work by file ownership (see "Project layout" in README.md) so no two builders edit the same file.
+2. Dispatch one `builder` agent (`.claude/agents/builder.md`) per part, in parallel, each with its exact
+   files, the task, and how to verify it.
+3. When a builder finishes, dispatch a `reviewer` agent (`.claude/agents/reviewer.md`) on that change.
+   CHANGES NEEDED goes back to a builder; only APPROVE gets committed.
+4. The coordinator commits each approved change with a clear message and pushes right away
+   (pull often, push often).
+All agents run on Opus. Small single-file fixes can be done directly without this workflow.
+
 ## The challenge
 Theme: **AI education for everyone.** Build a working prototype that helps one real audience learn or use AI
 (for example older adults, small business owners, job seekers, parents, newcomers, people with disabilities,
