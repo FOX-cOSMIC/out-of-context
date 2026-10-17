@@ -82,6 +82,8 @@ Claude is the heart of the product, not just the tool that wrote it.
 
 ## How to run it
 
+New to the project? [SETUP.md](SETUP.md) is a step-by-step checklist for setting up a Mac (Xcode, tools, model, key).
+
 ### 1. The helper server (on a Mac)
 
 Needs Node.js 22 or newer.

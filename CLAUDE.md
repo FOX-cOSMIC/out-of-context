@@ -5,6 +5,18 @@ Hard submission deadline: **16:00**. **Shipping a working demo beats perfect cod
 
 Read this whole file at the start of every session and follow it. When the team is unsure about a rule, answer from this file.
 
+## Current state for teammates' Claude sessions (updated 14:00)
+- **Product:** "Agatha", a native SwiftUI iPhone app (`ios/`) plus a Node helper server (`server.js`). How it works: README.md; laptop setup: SETUP.md.
+- **Naming:** the assistant is called **Agatha**. The design's "Otto" is renamed Agatha; users are greeted by their own profile name.
+- **Design source:** `Medication Voice Assistant.html` in the repo root (bundled HTML). Screens: Talk, My pills today, Medicine reminder, Scan, Voice notes, SOS, Family view.
+- **Being built right now (avoid editing until pushed; always `git pull --rebase` first):**
+  - shell/Talk builder: `ChatView.swift`, `Cards.swift`, `TalkButton.swift`, `Theme.swift`, `RootView.swift`, `Mascot.swift`, `CareCompanionApp.swift`, `ios/project.yml`
+  - screens builder: `PillsView.swift`, `ScanView.swift`, `SOSView.swift`, `NotesView.swift`
+- **Scope decided:** Talk, Pills, Scan, SOS (+ a simple Notes). Medicine reminder and Family view are pitch mockups only.
+- **Server:** the API key, Whisper and Kokoro run on Lucas's Mac. A real phone reaches it over his private Tailscale network (teammates are not on it; the Simulator uses `localhost:3000`).
+- **New Swift files** require `cd ios && xcodegen generate` (commit the regenerated project).
+- **Agents:** use the `builder` and `reviewer` agents in `.claude/agents/` (see "Parallel build workflow").
+
 ## Team Out of Context: pull often, push often (team policy, always follow)
 Five people work in this repo at the same time. Everyone should get each other's work early.
 - **Before starting any task:** run `git pull --rebase`.
