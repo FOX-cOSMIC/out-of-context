@@ -66,6 +66,14 @@ struct SettingsView: View {
                     Text("Uses Whisper on the team's Mac (private, no speech company). Turn off to use the iPhone's own speech recognition.")
                 }
                 Section {
+                    CalendarConnectRow(source: .google)
+                    CalendarConnectRow(source: .apple)
+                } header: {
+                    Text("Calendars")
+                } footer: {
+                    Text("Demo: events come from Margaret's sample calendar.")
+                }
+                Section {
                     Button("Load Margaret's medication plan (demo)") {
                         model.loadDemoPlan()
                         dismiss()
@@ -88,5 +96,49 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+}
+
+/// One simulated calendar connection (demo only: nothing leaves the phone, the events are Margaret's sample calendar).
+private struct CalendarConnectRow: View {
+    let source: DemoHistory.CalendarSource
+    @AppStorage private var connected: Bool
+    @State private var connecting = false
+
+    init(source: DemoHistory.CalendarSource) {
+        self.source = source
+        _connected = AppStorage(wrappedValue: false, source.storageKey ?? "calendarApp")
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(source.label)
+                if connecting {
+                    Text("Connecting…").font(.footnote).foregroundStyle(.secondary)
+                } else if connected {
+                    Text("Connected · \(DemoHistory.shared.syncedCount(source)) events synced")
+                        .font(.footnote).foregroundStyle(.green)
+                }
+            }
+            Spacer()
+            if connecting {
+                ProgressView()
+            } else if connected {
+                Button("Disconnect", role: .destructive) { connected = false }
+                    .buttonStyle(.borderless)
+            } else {
+                Button("Connect") {
+                    connecting = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.5))
+                        connected = true
+                        connecting = false
+                    }
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .accessibilityElement(children: .contain)
     }
 }

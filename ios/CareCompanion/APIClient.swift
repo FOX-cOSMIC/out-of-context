@@ -34,6 +34,8 @@ struct APIClient {
         let skills: [String]
         let profile: Profile
         let notes: [NoteSummary]
+        /// Margaret's recent doses, moods and calendar in short text (DemoHistory.summaryForAgatha).
+        var history_summary: String? = nil
     }
 
     /// A saved note as Agatha sees it (text trimmed by the app).

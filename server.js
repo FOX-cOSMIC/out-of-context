@@ -15,7 +15,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
 // 127.0.0.1 = only this Mac. The real iPhone reaches it over Tailscale (see README); avoid HOST=0.0.0.0 on shared wifi.
 const HOST = process.env.HOST || "127.0.0.1";
-const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
+const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
 const MAX_BODY = 12 * 1024 * 1024; // photos arrive as base64 JSON
 
 const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
@@ -277,13 +277,19 @@ function notesAsText(notes) {
     .join("\n");
 }
 
-async function chat({ history, plan, taken = {}, today, skills = [], profile, notes = [] }) {
+// The app's short history and calendar text (at most ~900 characters; trimmed here too).
+function historySummaryAsText(summary) {
+  if (typeof summary !== "string" || !summary.trim()) return "none";
+  return summary.length > 1200 ? `${summary.slice(0, 1200)}…` : summary;
+}
+
+async function chat({ history, plan, taken = {}, today, skills = [], profile, notes = [], history_summary }) {
   if (!client) throw new Error("NO_API_KEY");
   const system = [
     { type: "text", text: await readPrompt("chat.md"), cache_control: { type: "ephemeral" } },
     {
       type: "text",
-      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}\n\nNotes saved on the phone (newest last):\n${notesAsText(notes)}`,
+      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}\n\nNotes saved on the phone (newest last):\n${notesAsText(notes)}\n\nRecent history and calendar:\n${historySummaryAsText(history_summary)}`,
     },
   ];
   // The app can only keep a photo the user really sent (only the newest one is kept).

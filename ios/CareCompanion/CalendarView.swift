@@ -5,16 +5,33 @@ import SwiftUI
 struct CalendarView: View {
     var history: DemoHistory = .shared
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("calendarGoogle") private var googleConnected = false
+    @AppStorage("calendarApple") private var appleConnected = false
 
     @State private var month: Date = DemoHistory.calendar.dateInterval(of: .month, for: Date())!.start
     @State private var selected: Date = DemoHistory.calendar.startOfDay(for: Date())
 
     private var cal: Calendar { DemoHistory.calendar }
 
+    /// The app's own appointments, plus the events of each connected calendar.
+    private var visible: [DemoHistory.CalendarEvent] {
+        history.visibleEvents(google: googleConnected, apple: appleConnected)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 SheetHeader(title: "My calendar", close: { dismiss() })
+
+                if !googleConnected && !appleConnected {
+                    Label("Connect your calendar in Settings to see all your events here.", systemImage: "calendar.badge.plus")
+                        .font(Theme.Typeface.body(19))
+                        .foregroundStyle(Theme.Palette.inkSoft)
+                        .padding(14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Theme.Palette.lavenderLight, in: RoundedRectangle(cornerRadius: 18))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 monthGrid
                     .padding(16)
@@ -26,7 +43,7 @@ struct CalendarView: View {
                     Text(dayTitle(selected))
                         .font(Theme.Typeface.heading(24))
                         .foregroundStyle(Theme.Palette.ink)
-                    let dayEvents = history.events(on: selected)
+                    let dayEvents = history.events(on: selected, in: visible)
                     if dayEvents.isEmpty {
                         Text("Nothing planned on this day.")
                             .font(Theme.Typeface.body(19))
@@ -41,7 +58,7 @@ struct CalendarView: View {
                     .font(Theme.Typeface.heading(26))
                     .foregroundStyle(Theme.Palette.ink)
                     .padding(.top, 6)
-                ForEach(history.upcoming(5)) { EventCard(event: $0, showDate: true) }
+                ForEach(history.upcoming(5, in: visible)) { EventCard(event: $0, showDate: true) }
             }
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
@@ -79,7 +96,7 @@ struct CalendarView: View {
                 ForEach(days, id: \.self) { day in
                     let isToday = day == today
                     let isSelected = day == selected
-                    let hasEvents = !history.events(on: day).isEmpty
+                    let hasEvents = !history.events(on: day, in: visible).isEmpty
                     Button { withAnimation(.snappy) { selected = day } } label: {
                         VStack(spacing: 3) {
                             Text("\(cal.component(.day, from: day))")
@@ -159,6 +176,15 @@ private struct EventCard: View {
                     .font(Theme.Typeface.body(19))
                     .foregroundStyle(Theme.Palette.inkSoft)
                     .fixedSize(horizontal: false, vertical: true)
+                if event.source != .app {
+                    // Only shown when that calendar is connected (otherwise the event is hidden).
+                    Label(event.source.label, systemImage: "calendar")
+                        .font(Theme.Typeface.body(15, weight: .bold))
+                        .foregroundStyle(Theme.Palette.inkMuted)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Theme.Palette.white.opacity(0.8), in: Capsule())
+                }
                 if let note = event.note {
                     Text(note)
                         .font(Theme.Typeface.body(19))

@@ -64,7 +64,40 @@ struct DemoHistory {
         let place: String
         let kind: EventKind
         var note: String? = nil
+        /// True for the appointments saved in the app's own plan (always shown).
+        var fromPlan: Bool = false
         var id: String { "\(date.timeIntervalSince1970)|\(title)" }
+
+        /// Where the event comes from (demo: a fixed rule, no real calendar is read).
+        var source: CalendarSource {
+            if fromPlan { return .app }
+            return kind == .doctor || kind == .pharmacy ? .apple : .google
+        }
+    }
+
+    /// The app's own plan, or one of the two (simulated) connected calendars.
+    enum CalendarSource: String, CaseIterable {
+        case app, google, apple
+
+        var label: String {
+            switch self {
+            case .app: "Agatha"
+            case .google: "Google Calendar"
+            case .apple: "Apple Calendar"
+            }
+        }
+        /// The @AppStorage key that says whether this calendar is "connected" (nil for the app's own).
+        var storageKey: String? {
+            switch self {
+            case .app: nil
+            case .google: "calendarGoogle"
+            case .apple: "calendarApple"
+            }
+        }
+        var isConnected: Bool {
+            guard let key = storageKey else { return true }
+            return UserDefaults.standard.bool(forKey: key)
+        }
     }
 
     /// How one day of doses went, for the coloured dots.
@@ -222,7 +255,7 @@ struct DemoHistory {
         for appt in DemoPerson.plan.appointments {
             guard let date = parse.date(from: "\(appt.date) \(appt.time)") else { continue }
             events.append(CalendarEvent(date: date, title: appt.title, place: appt.place, kind: .doctor,
-                                        note: "Bring: \(appt.bring). \(appt.preparation)"))
+                                        note: "Bring: \(appt.bring). \(appt.preparation)", fromPlan: true))
         }
         self.events = events.sorted { $0.date < $1.date }
     }
@@ -328,32 +361,74 @@ struct DemoHistory {
         return s
     }
 
+    // MARK: - Calendar
+
+    /// True when Google or Apple Calendar is "connected" in Settings (demo only, nothing is read).
+    static var anyCalendarConnected: Bool { CalendarSource.google.isConnected || CalendarSource.apple.isConnected }
+
+    /// The events whose source is shown: the app's own appointments always, the others when connected.
+    func visibleEvents(google: Bool, apple: Bool) -> [CalendarEvent] {
+        events.filter {
+            switch $0.source {
+            case .app: true
+            case .google: google
+            case .apple: apple
+            }
+        }
+    }
+
+    /// How many sample events a calendar "syncs" (its events, 30 days back to 30 days ahead).
+    func syncedCount(_ source: CalendarSource) -> Int {
+        events.filter { $0.source == source }.count
+    }
+
     /// The upcoming events, soonest first.
-    func upcoming(_ count: Int, from now: Date = Date()) -> [CalendarEvent] {
-        Array(events.filter { $0.date >= now }.prefix(count))
+    func upcoming(_ count: Int, from now: Date = Date(), in list: [CalendarEvent]? = nil) -> [CalendarEvent] {
+        Array((list ?? events).filter { $0.date >= now }.prefix(count))
     }
 
-    func events(on day: Date) -> [CalendarEvent] {
-        events.filter { Self.calendar.isDate($0.date, inSameDayAs: day) }
+    func events(on day: Date, in list: [CalendarEvent]? = nil) -> [CalendarEvent] {
+        (list ?? events).filter { Self.calendar.isDate($0.date, inSameDayAs: day) }
     }
 
-    /// Short facts for Agatha (the AI), at most 900 characters.
-    var summaryForAgatha: String {
+    /// Short facts for Agatha (the AI), at most 900 characters. Calendar events only when a calendar is connected.
+    var summaryForAgatha: String { summaryForAgatha(includeCalendar: Self.anyCalendarConnected) }
+
+    func summaryForAgatha(includeCalendar: Bool) -> String {
         let missed = missedThisWeek.map { "\(Self.weekdayName($0.day)) \($0.slot.rawValue) \($0.medName)" }
         let recentMoods = moods.prefix(3).map { "\(Self.shortDate($0.date)): \($0.mood.label.lowercased()), \"\($0.text)\"" }
-        let next = events.filter { $0.date >= today && $0.kind != .social }.prefix(4).map { "\(Self.shortDate($0.date)) \(Self.timeText($0.date)) \($0.title)" }
+        let list = includeCalendar ? events : events.filter(\.fromPlan)
+        let next = list.filter { $0.date >= today && $0.kind != .social }.prefix(4).enumerated().map { i, e in
+            // What to bring, for the next two medical appointments.
+            let bring = i < 2 ? e.note.flatMap(Self.bringText).map { " (bring \($0))" } ?? "" : ""
+            return "\(Self.shortDate(e.date)) \(Self.timeText(e.date)) \(e.title)\(bring)"
+        }
         var parts = [
             "Doses taken: \(adherence7)% last 7 days, \(adherence30)% last 30 days.",
             "Missed this week: \(missed.isEmpty ? "none" : missed.joined(separator: "; ")).",
             "Pattern: evening Metformin is the dose most often missed; mornings are reliable.",
             "Recent notes: \(recentMoods.joined(separator: " | "))",
-            "Coming up: \(next.joined(separator: "; ")). Weekly: choir Wednesdays 17:00, Anna visits Sundays.",
         ]
-        if let gp = events.last(where: { $0.kind == .doctor && $0.date < today }), let note = gp.note {
-            parts.insert("Last GP visit \(Self.shortDate(gp.date)): \(note)", at: 3)
+        if includeCalendar {
+            parts.append("Coming up: \(next.joined(separator: "; ")). Weekly: choir Wednesdays 17:00, Anna visits Sundays 15:00.")
+            if let gp = events.last(where: { $0.kind == .doctor && $0.date < today }), let note = gp.note {
+                parts.insert("Last GP visit \(Self.shortDate(gp.date)): \(note)", at: 3)
+            }
+        } else {
+            parts.append("Coming up (appointments saved in the app; no calendar connected): \(next.isEmpty ? "none" : next.joined(separator: "; ")).")
         }
         var text = parts.joined(separator: " ")
         if text.count > 900 { text = String(text.prefix(897)) + "..." }
         return text
+    }
+
+    /// "insurance card, glasses" from a note like "... Bring your blood pressure diary and insurance card." or "Bring: X. ..."
+    private static func bringText(_ note: String) -> String? {
+        for marker in ["Bring: ", "Bring "] {
+            guard let range = note.range(of: marker) else { continue }
+            let rest = note[range.upperBound...]
+            return String(rest.prefix { $0 != "." })
+        }
+        return nil
     }
 }

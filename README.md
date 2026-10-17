@@ -48,7 +48,7 @@ Agatha flips that: you just talk, or hold up the paper. And because every step i
 
 Claude is the heart of the product, not just the tool that wrote it.
 
-- **Model:** `claude-opus-5-5` via the Anthropic API, called from `server.js` with the official `@anthropic-ai/sdk`. The API key stays on the server; the phone never sees it.
+- **Model:** `claude-sonnet-5-5` (Claude Sonnet 5.5, fast for voice; override with `CLAUDE_MODEL` in `.env`) via the Anthropic API, called from `server.js` with the official `@anthropic-ai/sdk`. The API key stays on the server; the phone never sees it.
 - **One conversation, with tools.** The app sends everything to `POST /api/chat`. Claude answers in short spoken sentences and can call six tools:
 
   | Tool | What happens in the app |
@@ -74,7 +74,7 @@ Claude is the heart of the product, not just the tool that wrote it.
           │                                   ▲
           ▼        Tailscale (private)        │
  Node server on our Mac (server.js, 127.0.0.1:3000)
-   ├─ POST /api/chat        → Claude API (claude-opus-5-5, tools + vision)
+   ├─ POST /api/chat        → Claude API (claude-sonnet-5-5, tools + vision)
    ├─ POST /api/transcribe  → ffmpeg + Whisper (whisper.cpp, large-v3-turbo), local
    └─ POST /api/speak       → Kokoro TTS service (tts/server.py, 127.0.0.1:3002), local
                               falls back to the macOS `say` voice if it is not running

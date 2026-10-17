@@ -414,7 +414,8 @@ final class ChatModel: ObservableObject {
                 today: Date().formatted(date: .complete, time: .shortened),
                 skills: skills.map(\.rawValue),
                 profile: profile,
-                notes: notesForServer()
+                notes: notesForServer(),
+                history_summary: DemoHistory.shared.summaryForAgatha
             ))
         } catch {
             isBusy = false
