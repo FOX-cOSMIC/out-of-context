@@ -4,6 +4,8 @@
 
 > Medicines are why they start. AI skills are what they keep.
 
+**Our idea: to help older people use and learn AI, we simplify.** One face, one tap, plain words. No menus to learn, just talk. And the AI comes to them: Agatha calls when it's time for their pills.
+
 Built in one day at the Claude Impact Lab Berlin (theme: *AI education for everyone*). Agenda and rules: [event repo](https://github.com/Claude-Community-Berlin/claude-impact-lab-berlin-2026-10-17).
 
 **Demo video:** <link added at submission>
