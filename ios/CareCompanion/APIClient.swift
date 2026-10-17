@@ -33,6 +33,15 @@ struct APIClient {
         let today: String
         let skills: [String]
         let profile: Profile
+        let notes: [NoteSummary]
+    }
+
+    /// A saved note as Agatha sees it (text trimmed by the app).
+    struct NoteSummary: Encodable {
+        let date: String
+        let title: String
+        let text: String
+        let kind: String
     }
 
     func chat(_ request: ChatRequest) async throws -> ChatReply {

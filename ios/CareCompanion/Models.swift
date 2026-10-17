@@ -107,10 +107,48 @@ struct Card: Codable, Hashable {
 
 /// Something Claude asks the app to do, e.g. tick off medicines.
 struct ChatAction: Codable {
-    var type: String // mark_taken | save_profile
+    var type: String // mark_taken | save_profile | open_screen | save_note | save_document
     var slot: String?
     var names: [String]?
     var profile: Profile?
+    var screen: String? // open_screen: home | pills | scan | notes | sos
+    var title: String?  // save_note, save_document
+    var text: String?   // save_note
+    var kind: String?   // save_note: note | doctor_questions | feeling
+    var summary: String? // save_document
+}
+
+// MARK: - Notes and papers Agatha keeps (only on this phone)
+
+/// A note Agatha wrote down for the user, e.g. questions for the doctor.
+struct SavedNote: Codable, Identifiable, Hashable {
+    var id = UUID()
+    var date: Date
+    var title: String
+    var text: String
+    var kind: String // note | doctor_questions | feeling
+
+    /// "For Dr Hoffmann", "How I felt", "Note".
+    func kindLabel(doctor: String) -> String {
+        switch kind {
+        case "doctor_questions": doctor.isEmpty ? "For my doctor" : "For \(doctor)"
+        case "feeling": "How I felt"
+        default: "Note"
+        }
+    }
+}
+
+/// A photo of a letter or form the user asked Agatha to keep, saved as a JPEG in the app's Documents folder.
+struct SavedPaper: Codable, Identifiable, Hashable {
+    var id = UUID()
+    var date: Date
+    var title: String
+    var summary: String
+    var fileName: String
+
+    var fileURL: URL {
+        URL.documentsDirectory.appending(path: fileName)
+    }
 }
 
 struct ChatReply: Codable {

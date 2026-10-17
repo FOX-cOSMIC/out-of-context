@@ -39,6 +39,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("handsFree") private var handsFree = false
+    @AppStorage("speechOnMac") private var speechOnMac = true
     @State private var confirmDelete = false
 
     var body: some View {
@@ -58,6 +59,11 @@ struct SettingsView: View {
                     Toggle("Hands-free", isOn: $handsFree)
                 } footer: {
                     Text("Agatha listens again by herself after speaking. Best in a quiet room.")
+                }
+                Section {
+                    Toggle("Understand my voice on the helper computer", isOn: $speechOnMac)
+                } footer: {
+                    Text("Uses Whisper on the team's Mac (private, no speech company). Turn off to use the iPhone's own speech recognition.")
                 }
                 Section {
                     Button("Load Margaret's medication plan (demo)") {

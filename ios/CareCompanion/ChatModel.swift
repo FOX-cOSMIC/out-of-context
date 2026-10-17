@@ -20,10 +20,15 @@ final class ChatModel: ObservableObject {
     @Published private(set) var isCallMode = false
     /// The words heard so far while the user is talking (live transcription); nil when not listening live.
     @Published private(set) var liveText: String?
+    /// Notes Agatha wrote down (oldest first) and papers she kept, saved on this phone.
+    @Published private(set) var notes: [SavedNote] = []
+    @Published private(set) var papers: [SavedPaper] = []
+    /// A screen Agatha opened (open_screen); RootView switches the tab and clears it.
+    @Published var pendingTab: AppTab?
 
     private let api = APIClient()
     private let recorder = VoiceRecorder()
-    private let live = LiveTranscriber()
+    private let live = SpeechTranscriber() // Mac (Whisper) or iPhone speech, per Settings
     /// The current recording is written down live on the phone (false: the Whisper recorder is used).
     private var isLive = false
     /// Live transcription broke down on this phone: use Whisper until the app restarts.
@@ -127,7 +132,7 @@ final class ChatModel: ObservableObject {
     /// Microphone first, then speech recognition (only needed for live transcription).
     private func requestVoicePermissions() async -> (microphone: Bool, speech: Bool) {
         guard await recorder.requestPermission() else { return (false, false) }
-        return (true, await LiveTranscriber.requestPermission())
+        return (true, await SpeechTranscriber.requestPermission())
     }
 
     /// Waiting for permissions before the microphone starts: a second tap must not start it twice.
@@ -381,6 +386,9 @@ final class ChatModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "onboarded")
         takenToday = [:]
         skills = []
+        for paper in papers { try? FileManager.default.removeItem(at: paper.fileURL) }
+        notes = []
+        papers = []
         save()
         messages = []
         showWelcome = false
@@ -405,7 +413,8 @@ final class ChatModel: ObservableObject {
                 taken: takenToday,
                 today: Date().formatted(date: .complete, time: .shortened),
                 skills: skills.map(\.rawValue),
-                profile: profile
+                profile: profile,
+                notes: notesForServer()
             ))
         } catch {
             isBusy = false
@@ -479,6 +488,20 @@ final class ChatModel: ObservableObject {
                         ?? plan.medications.first { $0.name.lowercased().contains(spoken) || spoken.contains($0.name.lowercased()) }
                     takenToday[takenKey(med?.name ?? name, Slot(rawValue: slot) ?? .morning)] = true
                 }
+            case "open_screen":
+                switch action.screen {
+                case "home": pendingTab = .talk
+                case "pills": pendingTab = .pills
+                case "scan": pendingTab = .scan
+                case "notes": pendingTab = .notes
+                case "sos": pendingTab = .sos
+                default: continue
+                }
+            case "save_note":
+                guard let text = action.text, !text.isEmpty else { continue }
+                notes.append(SavedNote(date: Date(), title: action.title ?? "Note", text: text, kind: action.kind ?? "note"))
+            case "save_document":
+                keepLastPhoto(title: action.title ?? "A letter", summary: action.summary ?? "")
             case "save_profile":
                 guard let newProfile = action.profile else { continue }
                 profile = newProfile
@@ -490,6 +513,41 @@ final class ChatModel: ObservableObject {
             }
         }
         save()
+    }
+
+    // MARK: - Notes and papers
+
+    func deleteNote(_ note: SavedNote) {
+        notes.removeAll { $0.id == note.id }
+        save()
+    }
+
+    func deletePaper(_ paper: SavedPaper) {
+        try? FileManager.default.removeItem(at: paper.fileURL)
+        papers.removeAll { $0.id == paper.id }
+        save()
+    }
+
+    /// Saves the newest photo the user sent as a JPEG in Documents and lists it under "My papers".
+    private func keepLastPhoto(title: String, summary: String) {
+        guard let photo = messages.last(where: { $0.role == .user && $0.image != nil })?.image else { return }
+        let paper = SavedPaper(date: Date(), title: title, summary: summary, fileName: "paper-\(UUID().uuidString).jpg")
+        do {
+            try Self.resizedJPEG(photo, maxSide: 2400).write(to: paper.fileURL, options: .atomic)
+            papers.append(paper)
+        } catch {
+            status = "I could not keep that photo. Please try again."
+        }
+    }
+
+    /// The newest 10 notes, long texts trimmed, so Agatha knows what is already written down.
+    private func notesForServer() -> [APIClient.NoteSummary] {
+        notes.suffix(10).map { note in
+            .init(date: note.date.formatted(date: .abbreviated, time: .omitted),
+                  title: note.title,
+                  text: note.text.count > 200 ? String(note.text.prefix(200)) + "…" : note.text,
+                  kind: note.kind)
+        }
     }
 
     private func learn(_ skill: Skill) {
@@ -513,6 +571,8 @@ final class ChatModel: ObservableObject {
         defaults.set(try? JSONEncoder().encode(profile), forKey: "profile")
         defaults.set(try? JSONEncoder().encode(takenToday), forKey: "taken-\(todayKey)")
         defaults.set(try? JSONEncoder().encode(Array(skills)), forKey: "skills")
+        defaults.set(try? JSONEncoder().encode(notes), forKey: "notes")
+        defaults.set(try? JSONEncoder().encode(papers), forKey: "papers")
     }
 
     private func load() {
@@ -530,19 +590,29 @@ final class ChatModel: ObservableObject {
         if let data = defaults.data(forKey: "skills"), let saved = try? JSONDecoder().decode([Skill].self, from: data) {
             skills = Set(saved)
         }
+        if let data = defaults.data(forKey: "notes"), let saved = try? JSONDecoder().decode([SavedNote].self, from: data) {
+            notes = saved
+        }
+        if let data = defaults.data(forKey: "papers"), let saved = try? JSONDecoder().decode([SavedPaper].self, from: data) {
+            papers = saved
+        }
     }
 
     /// Shrinks a photo to max 1600 px and encodes it as a JPEG data URL.
     static func dataURL(for image: UIImage) -> String {
+        "data:image/jpeg;base64,\(resizedJPEG(image, maxSide: 1600).base64EncodedString())"
+    }
+
+    /// Shrinks a photo so its longest side is at most `maxSide` pixels and encodes it as JPEG.
+    static func resizedJPEG(_ image: UIImage, maxSide: CGFloat) -> Data {
         let longest = max(image.size.width, image.size.height)
-        let scale = min(1, 1600 / max(longest, 1))
+        let scale = min(1, maxSide / max(longest, 1))
         let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1 // real pixels, not 3x screen points
         let resized = UIGraphicsImageRenderer(size: size, format: format).image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }
-        let jpeg = resized.jpegData(compressionQuality: 0.85) ?? Data()
-        return "data:image/jpeg;base64,\(jpeg.base64EncodedString())"
+        return resized.jpegData(compressionQuality: 0.85) ?? Data()
     }
 }

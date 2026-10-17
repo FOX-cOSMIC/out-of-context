@@ -180,9 +180,46 @@ const CHAT_TOOLS = [
       "Save what you learned about the user in the getting-to-know-you call. Only call this after you read the summary back and they agreed. Send all fields; use an empty string for anything unknown or skipped.",
     input_schema: PROFILE_SCHEMA,
   },
+  {
+    name: "open_screen",
+    description:
+      "Open a screen of the app for the user. Use when they ask to see it: \"show me my pills\" -> pills, \"I want to scan a letter\" -> scan, \"I need help\" or an emergency -> sos, \"my notes\" or \"my papers\" -> notes, \"back to Agatha\" -> home. Then say which screen you opened.",
+    input_schema: {
+      type: "object",
+      properties: { screen: { type: "string", enum: ["home", "pills", "scan", "notes", "sos"] } },
+      required: ["screen"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "save_note",
+    description:
+      "Write a note into the user's Notes on the phone. Use when they ask you to note or write something down, or agree to your offer to note it for the doctor. kind: doctor_questions for questions to ask the doctor, feeling for how they feel or a symptom, note for anything else. title is a few plain words; text is their words, short and clear. Then say what you saved.",
+    input_schema: {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        text: { type: "string" },
+        kind: { type: "string", enum: ["note", "doctor_questions", "feeling"] },
+      },
+      required: ["title", "text", "kind"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "save_document",
+    description:
+      "Keep the photo the user showed most recently (a letter, bill or form) in \"My papers\" on the phone, with a short title and a one or two sentence plain summary. Only call this after the user said yes to keeping it. Then say it is kept in Notes, under My papers.",
+    input_schema: {
+      type: "object",
+      properties: { title: { type: "string" }, summary: { type: "string" } },
+      required: ["title", "summary"],
+      additionalProperties: false,
+    },
+  },
 ].map((t) => ({ ...t, strict: true }));
 
-function runChatTool(name, input, cards, actions) {
+function runChatTool(name, input, cards, actions, hasPhoto = false) {
   switch (name) {
     case "show_schedule":
       cards.push({ type: "schedule", slot: input.slot });
@@ -202,6 +239,16 @@ function runChatTool(name, input, cards, actions) {
     case "save_profile":
       actions.push({ type: "save_profile", profile: input });
       return "Profile saved on the phone.";
+    case "open_screen":
+      actions.push({ type: "open_screen", screen: input.screen });
+      return `The ${input.screen} screen is now open on the phone. Tell the user what they see there.`;
+    case "save_note":
+      actions.push({ type: "save_note", title: input.title, text: input.text, kind: input.kind });
+      return `Saved in the user's Notes: "${input.title}". Tell them what you wrote down.`;
+    case "save_document":
+      if (!hasPhoto) return "There is no photo in this conversation to keep. Nothing was saved; ask the user to show the paper first.";
+      actions.push({ type: "save_document", title: input.title, summary: input.summary });
+      return `The photo is kept in Notes, under My papers, as "${input.title}".`;
     default:
       return `Unknown tool ${name}`;
   }
@@ -220,15 +267,27 @@ function historyToMessages(history) {
   });
 }
 
-async function chat({ history, plan, taken = {}, today, skills = [], profile }) {
+// The notes saved on the phone, as short text (newest 10, long texts trimmed).
+function notesAsText(notes) {
+  if (!Array.isArray(notes) || !notes.length) return "none yet";
+  const trim = (s, n) => (typeof s === "string" && s.length > n ? `${s.slice(0, n)}…` : s || "");
+  return notes
+    .slice(-10)
+    .map((n) => `- [${trim(n.kind, 30)}] ${trim(n.date, 40)} "${trim(n.title, 100)}": ${trim(n.text, 200)}`)
+    .join("\n");
+}
+
+async function chat({ history, plan, taken = {}, today, skills = [], profile, notes = [] }) {
   if (!client) throw new Error("NO_API_KEY");
   const system = [
     { type: "text", text: await readPrompt("chat.md"), cache_control: { type: "ephemeral" } },
     {
       type: "text",
-      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}`,
+      text: `Today: ${today || new Date().toDateString()}\n\nUser profile:\n${profileAsText(profile)}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}\n\nNotes saved on the phone (newest last):\n${notesAsText(notes)}`,
     },
   ];
+  // The app can only keep a photo the user really sent (only the newest one is kept).
+  const hasPhoto = history.some((m) => typeof m.image === "string" && m.image.length > 0);
   const messages = historyToMessages(history);
   const cards = [];
   const actions = [];
@@ -259,7 +318,7 @@ async function chat({ history, plan, taken = {}, today, skills = [], profile }) 
       content: toolUses.map((t) => ({
         type: "tool_result",
         tool_use_id: t.id,
-        content: runChatTool(t.name, t.input, cards, actions),
+        content: runChatTool(t.name, t.input, cards, actions, hasPhoto),
       })),
     });
   }

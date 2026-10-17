@@ -24,6 +24,12 @@ struct RootView: View {
             }
         }
         .background(Theme.Colors.background.ignoresSafeArea())
+        // Agatha opened a screen (open_screen tool).
+        .onChange(of: model.pendingTab) { _, tab in
+            guard let tab else { return }
+            if tab == .talk { navigator.goHome() } else { navigator.tab = tab }
+            model.pendingTab = nil
+        }
     }
 }
 

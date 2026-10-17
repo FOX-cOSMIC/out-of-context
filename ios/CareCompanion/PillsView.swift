@@ -4,6 +4,8 @@ import SwiftUI
 struct PillsView: View {
     @EnvironmentObject var model: ChatModel
     @EnvironmentObject var navigator: Navigator
+    @State private var showHistory = false
+    @State private var showCalendar = false
 
     /// One dose: a medication at one time of day.
     private struct Dose: Identifiable {
@@ -43,6 +45,13 @@ struct PillsView: View {
                 }
             }
 
+            HStack(spacing: 12) {
+                OverviewButton(title: "My week & month", icon: "chart.bar.fill",
+                               color: Theme.Palette.green, background: Theme.Palette.mint) { showHistory = true }
+                OverviewButton(title: "My calendar", icon: "calendar",
+                               color: Theme.Palette.purple, background: Theme.Palette.lavender) { showCalendar = true }
+            }
+
             if doses.isEmpty {
                 emptyState
             } else {
@@ -65,6 +74,8 @@ struct PillsView: View {
                 }
             }
         }
+        .sheet(isPresented: $showHistory) { HistoryView() }
+        .sheet(isPresented: $showCalendar) { CalendarView() }
     }
 
     private var emptyState: some View {
@@ -106,6 +117,36 @@ struct PillsView: View {
         f.locale = Locale(identifier: "en_GB")
         f.dateFormat = "EEEE, d MMMM"
         return f.string(from: Date())
+    }
+}
+
+// MARK: - Big buttons to the week/month overview and the calendar
+
+private struct OverviewButton: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let background: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(Theme.Typeface.heading(20))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 10)
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(background, in: RoundedRectangle(cornerRadius: 22))
+        }
+        .buttonStyle(PressableCardStyle())
     }
 }
 
