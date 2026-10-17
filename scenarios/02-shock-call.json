@@ -1,0 +1,9 @@
+{
+  "id": "shock-call",
+  "title": "The shock call",
+  "description": "Your \"daughter\" is crying on the phone: she had an accident and needs money right now.",
+  "opening": "Mum? Mum, it's me... I've had a terrible accident. I'm handing you over to the lawyer, please help me.",
+  "caller_goal": "Get the person to pay 'bail' today, handed to a courier.",
+  "tactics": ["emotional shock", "crying relative, then a 'lawyer' takes over", "urgency: 'today or she goes to jail'", "no time to call anyone"],
+  "red_flags": ["A relative supposedly in trouble", "Bail or money needed immediately", "Handing money to a courier"]
+}

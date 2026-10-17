@@ -1,9 +1,0 @@
-{
-  "id": "hallo-mama",
-  "title": "\"Hallo Mama\", neue Nummer",
-  "description": "Ihr \"Sohn\" schreibt von einer neuen Nummer und braucht dringend eine Überweisung.",
-  "opening": "Hallo Mama, das ist meine neue Nummer, mein Handy ist kaputt. Kannst du die alte löschen? Ich hab ein kleines Problem...",
-  "caller_goal": "Get the person to transfer money for an 'urgent bill' because the son's banking app doesn't work on the new phone.",
-  "tactics": ["new number", "familiar tone", "small favour that grows", "can't talk on the phone right now"],
-  "red_flags": ["Neue unbekannte Nummer", "Dringende Überweisung", "Will nicht telefonieren"]
-}

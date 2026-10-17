@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,50 +80,50 @@
   <!-- HOME -->
   <section id="home" class="view active">
     <h1>Scam Shield</h1>
-    <p class="lead">Ihr Helfer gegen Betrug am Telefon und per Nachricht.</p>
+    <p class="lead">Your helper against phone and message scams.</p>
     <button class="big-btn primary" data-go="check">
-      Anruf oder Nachricht prüfen
-      <small>Erzählen Sie, was passiert ist. Ich sage Ihnen, ob es Betrug ist.</small>
+      Check a call or message
+      <small>Tell me what happened. I will tell you if it is a scam.</small>
     </button>
     <button class="big-btn" data-go="practice">
-      Üben
-      <small>Üben Sie in Ruhe, wie Sie Betrüger erkennen und auflegen.</small>
+      Practise
+      <small>Practise spotting scammers and hanging up, at your own pace.</small>
     </button>
   </section>
 
   <!-- CHECK -->
   <section id="check" class="view">
-    <button class="back" data-go="home">← Zurück</button>
-    <h2>Was ist passiert?</h2>
-    <p class="lead">Erzählen Sie vom Anruf oder fügen Sie die Nachricht ein.</p>
-    <textarea id="check-text" placeholder="Zum Beispiel: Ein Polizist hat angerufen. Er sagt, Einbrecher sind in meiner Straße, und will meinen Schmuck abholen."></textarea>
+    <button class="back" data-go="home">← Back</button>
+    <h2>What happened?</h2>
+    <p class="lead">Tell me about the call, or paste the message.</p>
+    <textarea id="check-text" placeholder="For example: A police officer called. He says burglars are in my street and wants to collect my jewellery."></textarea>
     <div class="row">
-      <button class="big-btn mic-btn" data-target="check-text">🎤 Sprechen</button>
-      <button class="big-btn primary" id="check-btn">Prüfen</button>
+      <button class="big-btn mic-btn" data-target="check-text">🎤 Speak</button>
+      <button class="big-btn primary" id="check-btn">Check</button>
     </div>
     <div id="check-result"></div>
   </section>
 
   <!-- PRACTICE: pick a scenario -->
   <section id="practice" class="view">
-    <button class="back" data-go="home">← Zurück</button>
-    <h2>Üben</h2>
-    <p class="lead">Wählen Sie eine Übung. Der Anrufer ist eine KI, nichts kann passieren.</p>
+    <button class="back" data-go="home">← Back</button>
+    <h2>Practise</h2>
+    <p class="lead">Pick an exercise. The caller is an AI, so nothing can go wrong.</p>
     <div id="scenario-list"></div>
   </section>
 
   <!-- PRACTICE: the call -->
   <section id="call" class="view">
-    <button class="back" data-go="practice">← Andere Übung</button>
+    <button class="back" data-go="practice">← Other exercise</button>
     <h2 id="call-title"></h2>
     <div class="chat" id="chat"></div>
     <div id="call-controls">
-      <textarea id="reply-text" placeholder="Was antworten Sie?"></textarea>
+      <textarea id="reply-text" placeholder="What do you say?"></textarea>
       <div class="row">
-        <button class="big-btn mic-btn" data-target="reply-text">🎤 Sprechen</button>
-        <button class="big-btn primary" id="reply-btn">Antworten</button>
+        <button class="big-btn mic-btn" data-target="reply-text">🎤 Speak</button>
+        <button class="big-btn primary" id="reply-btn">Reply</button>
       </div>
-      <button class="big-btn danger" id="hangup-btn">Auflegen 📞</button>
+      <button class="big-btn danger" id="hangup-btn">Hang up 📞</button>
     </div>
     <div id="feedback"></div>
   </section>
@@ -148,19 +148,19 @@
       ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
       : undefined);
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || data.error) throw new Error(data.error || "Das hat gerade nicht geklappt.");
+    if (!res.ok || data.error) throw new Error(data.error || "That did not work just now.");
     return data;
   }
 
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  // Read text aloud in German (built into the browser).
+  // Read text aloud in English (built into the browser).
   function speak(text) {
     if (!window.speechSynthesis) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "de-DE";
+    u.lang = "en-GB";
     u.rate = 0.9;
     speechSynthesis.speak(u);
   }
@@ -171,34 +171,34 @@
     if (!Recognition) return btn.classList.add("hidden");
     btn.addEventListener("click", () => {
       const rec = new Recognition();
-      rec.lang = "de-DE";
+      rec.lang = "en-GB";
       rec.interimResults = false;
-      btn.textContent = "🎤 Ich höre zu…";
+      btn.textContent = "🎤 Listening…";
       rec.onresult = (e) => {
         const box = $(btn.dataset.target);
         box.value = (box.value + " " + e.results[0][0].transcript).trim();
       };
-      rec.onend = () => { btn.textContent = "🎤 Sprechen"; };
+      rec.onend = () => { btn.textContent = "🎤 Speak"; };
       rec.start();
     });
   });
 
   // ---------- check ----------
-  const VERDICT_LABEL = { scam: "Betrug", suspicious: "Verdächtig", safe: "Wahrscheinlich sicher" };
+  const VERDICT_LABEL = { scam: "Scam", suspicious: "Suspicious", safe: "Probably safe" };
 
   $("check-btn").addEventListener("click", async () => {
     const out = $("check-result");
-    out.innerHTML = "<p>Einen Moment, ich prüfe das…</p>";
+    out.innerHTML = "<p>One moment, I am checking…</p>";
     try {
       const r = await api("/api/check", { text: $("check-text").value });
       out.innerHTML = `
         <div class="card ${r.verdict}">
           <p class="headline">${escapeHtml(r.headline)}</p>
           <p>${escapeHtml(r.why)}</p>
-          <p><span class="label">Was Sie jetzt tun:</span> ${escapeHtml(r.next_step)}</p>
-          <p><span class="label">Merken Sie sich:</span> ${escapeHtml(r.learn_tip)}</p>
+          <p><span class="label">What to do now:</span> ${escapeHtml(r.next_step)}</p>
+          <p><span class="label">Remember:</span> ${escapeHtml(r.learn_tip)}</p>
         </div>
-        <button class="big-btn" id="read-again">🔊 Noch einmal vorlesen</button>`;
+        <button class="big-btn" id="read-again">🔊 Read it again</button>`;
       const spoken = `${r.headline} ${r.why} ${r.next_step}`;
       speak(spoken);
       $("read-again").onclick = () => speak(spoken);
@@ -213,7 +213,7 @@
 
   async function loadScenarios() {
     const list = $("scenario-list");
-    list.innerHTML = "<p>Lade Übungen…</p>";
+    list.innerHTML = "<p>Loading exercises…</p>";
     try {
       const scenarios = await api("/api/scenarios");
       list.innerHTML = "";
@@ -262,23 +262,23 @@
     }
   });
 
-  const SCORE_LABEL = { great: "Sehr gut gemacht!", okay: "Gut, mit einem Tipp", risky: "Vorsicht" };
+  const SCORE_LABEL = { great: "Well done!", okay: "Good, with one tip", risky: "Careful" };
 
   $("hangup-btn").addEventListener("click", async () => {
     speechSynthesis?.cancel();
     $("call-controls").classList.add("hidden");
     const out = $("feedback");
-    out.innerHTML = "<p>Aufgelegt. Ich schaue mir das Gespräch an…</p>";
+    out.innerHTML = "<p>Hung up. Let me look at the conversation…</p>";
     try {
       const f = await api("/api/feedback", { scenarioId: scenario.id, history });
       out.innerHTML = `
         <div class="card ${f.score}">
           <p class="headline">${SCORE_LABEL[f.score] || ""}</p>
           <p>${escapeHtml(f.praise)}</p>
-          <p><span class="label">Tipp:</span> ${escapeHtml(f.tip)}</p>
-          <p><span class="label">Warnzeichen:</span> ${f.red_flags.map(escapeHtml).join(" · ")}</p>
+          <p><span class="label">Tip:</span> ${escapeHtml(f.tip)}</p>
+          <p><span class="label">Warning signs:</span> ${f.red_flags.map(escapeHtml).join(" · ")}</p>
         </div>
-        <button class="big-btn" data-go="practice" onclick="show('practice')">Nächste Übung</button>`;
+        <button class="big-btn" data-go="practice" onclick="show('practice')">Next exercise</button>`;
       speak(`${SCORE_LABEL[f.score] || ""} ${f.praise} ${f.tip}`);
     } catch (e) {
       out.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;

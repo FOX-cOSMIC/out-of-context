@@ -1,0 +1,9 @@
+{
+  "id": "hi-mum",
+  "title": "\"Hi Mum\", new number",
+  "description": "Your \"son\" texts from a new number and urgently needs a bank transfer.",
+  "opening": "Hi Mum, this is my new number, my phone broke. Can you delete the old one? I've got a small problem...",
+  "caller_goal": "Get the person to transfer money for an 'urgent bill' because the son's banking app doesn't work on the new phone.",
+  "tactics": ["new number", "familiar tone", "small favour that grows", "can't talk on the phone right now"],
+  "red_flags": ["New unknown number", "Urgent bank transfer", "Won't talk on the phone"]
+}

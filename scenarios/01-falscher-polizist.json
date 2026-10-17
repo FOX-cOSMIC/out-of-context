@@ -1,9 +1,0 @@
-{
-  "id": "falscher-polizist",
-  "title": "Der falsche Polizist",
-  "description": "Ein \"Kommissar\" warnt vor Einbrechern und will Ihre Wertsachen abholen lassen.",
-  "opening": "Guten Tag, hier spricht Kommissar Weber von der Kriminalpolizei. Erschrecken Sie nicht, aber in Ihrer Straße wurden heute Nacht Einbrecher festgenommen.",
-  "caller_goal": "Get the person to hand cash and jewellery to a 'colleague' who comes by for safekeeping.",
-  "tactics": ["authority (police)", "fear of burglars", "secrecy: 'tell no one, the bank is involved'", "time pressure"],
-  "red_flags": ["Polizei will Geld oder Wertsachen abholen", "Geheimhaltung verlangt", "Zeitdruck"]
-}

@@ -82,7 +82,7 @@ async function askClaude({ system, messages, schema, effort = "low", maxTokens =
 // Turn the practice transcript into Claude messages: the scammer is "assistant".
 // The conversation must start with a user turn, so the user "picks up" first.
 const toClaudeMessages = (history) => [
-  { role: "user", content: "(Das Telefon klingelt. Ich nehme ab.) Hallo?" },
+  { role: "user", content: "(The phone rings. I pick up.) Hello?" },
   ...history.map((m) => ({
     role: m.from === "caller" ? "assistant" : "user",
     content: m.text,
@@ -128,22 +128,22 @@ async function serveStatic(req, res) {
   }
 }
 
-// Friendly German messages for the screen; details go to the terminal.
+// Friendly messages for the screen; details go to the terminal.
 function friendlyError(res, err) {
   if (err.message === "NO_API_KEY") {
     console.error("No ANTHROPIC_API_KEY. Put it in .env and restart (npm start).");
     return sendJson(res, 503, {
-      error: "Der Assistent ist noch nicht eingerichtet (API-Schlüssel fehlt).",
+      error: "The assistant is not set up yet (API key missing).",
     });
   }
   if (err instanceof RefusalError) {
     return sendJson(res, 200, {
-      error: "Dazu kann ich leider nichts sagen. Im Zweifel: auflegen und 110 anrufen.",
+      error: "Sorry, I cannot help with that one. If in doubt: hang up and call the police yourself.",
     });
   }
   console.error(err);
   return sendJson(res, 502, {
-    error: "Das hat gerade nicht geklappt. Bitte noch einmal versuchen.",
+    error: "That did not work just now. Please try again.",
   });
 }
 
@@ -151,7 +151,7 @@ const routes = {
   // Check a described call or a pasted message.
   "POST /api/check": async (req, res) => {
     const { text } = await readJson(req);
-    if (!text || !text.trim()) return sendJson(res, 400, { error: "Bitte erst etwas eingeben." });
+    if (!text || !text.trim()) return sendJson(res, 400, { error: "Please type or say something first." });
     const result = await askClaude({
       system: await readPrompt("check.md"),
       messages: [{ role: "user", content: text.trim() }],
@@ -172,7 +172,7 @@ const routes = {
   "POST /api/practice": async (req, res) => {
     const { scenarioId, history = [] } = await readJson(req);
     const scenario = (await loadScenarios()).find((s) => s.id === scenarioId);
-    if (!scenario) return sendJson(res, 404, { error: "Übung nicht gefunden." });
+    if (!scenario) return sendJson(res, 404, { error: "Exercise not found." });
     const system = (await readPrompt("practice-caller.md")).replace(
       "{{SCENARIO}}",
       JSON.stringify(scenario, null, 2),
@@ -185,16 +185,16 @@ const routes = {
   "POST /api/feedback": async (req, res) => {
     const { scenarioId, history = [] } = await readJson(req);
     const scenario = (await loadScenarios()).find((s) => s.id === scenarioId);
-    if (!scenario) return sendJson(res, 404, { error: "Übung nicht gefunden." });
+    if (!scenario) return sendJson(res, 404, { error: "Exercise not found." });
     const transcript = history
-      .map((m) => `${m.from === "caller" ? "Anrufer" : "Nutzer"}: ${m.text}`)
+      .map((m) => `${m.from === "caller" ? "Caller" : "User"}: ${m.text}`)
       .join("\n");
     const result = await askClaude({
       system: await readPrompt("practice-feedback.md"),
       messages: [
         {
           role: "user",
-          content: `Szenario: ${scenario.title}\nTypische Warnzeichen: ${scenario.red_flags.join("; ")}\n\nGespräch:\n${transcript}`,
+          content: `Scenario: ${scenario.title}\nTypical warning signs: ${scenario.red_flags.join("; ")}\n\nConversation:\n${transcript}`,
         },
       ],
       schema: FEEDBACK_SCHEMA,
