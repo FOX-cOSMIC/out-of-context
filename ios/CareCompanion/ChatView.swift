@@ -83,27 +83,21 @@ struct ChatView: View {
                     .foregroundStyle(model.isRecording ? .red : .secondary)
                     .multilineTextAlignment(.center)
             }
-            HStack(spacing: 12) {
-                Button(action: model.toggleRecording) {
-                    Label(model.isRecording ? "Done" : "Talk",
-                          systemImage: model.isRecording ? "stop.circle.fill" : "mic.fill")
-                        .frame(maxWidth: .infinity, minHeight: 64)
+            TalkButton()
+            Text("Tap the button or shake your phone to talk")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Menu {
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    Button { showCamera = true } label: { Label("Take a photo", systemImage: "camera") }
                 }
-                .buttonStyle(BigButtonStyle(color: model.isRecording ? .red : .accentColor))
-                .disabled(model.isBusy)
-
-                Menu {
-                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                        Button { showCamera = true } label: { Label("Take a photo", systemImage: "camera") }
-                    }
-                    Button { showPhotoLibrary = true } label: { Label("Choose a photo", systemImage: "photo") }
-                } label: {
-                    Label("Photo", systemImage: "camera.fill")
-                        .frame(maxWidth: .infinity, minHeight: 64)
-                }
-                .buttonStyle(BigButtonStyle(color: .indigo))
-                .disabled(model.isBusy || model.isRecording)
+                Button { showPhotoLibrary = true } label: { Label("Choose a photo", systemImage: "photo") }
+            } label: {
+                Label("Show me a photo", systemImage: "camera.fill")
+                    .frame(maxWidth: .infinity, minHeight: 56)
             }
+            .buttonStyle(BigButtonStyle(color: .indigo))
+            .disabled(model.isBusy || model.isRecording)
             HStack {
                 TextField("Or type here", text: $typed, axis: .vertical)
                     .font(.title3)

@@ -11,6 +11,8 @@ import { transcribe, speak, voiceSettings } from "./voice.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
+// 127.0.0.1 = only this Mac (Simulator). HOST=0.0.0.0 lets a real phone on the same wifi connect.
+const HOST = process.env.HOST || "127.0.0.1";
 const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const MAX_BODY = 12 * 1024 * 1024; // photos arrive as base64 JSON
 
@@ -412,7 +414,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Care Companion running: http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Care Companion running: http://${HOST === "0.0.0.0" ? "<this Mac's IP>" : "localhost"}:${PORT}`);
   if (!client) console.log("Warning: no ANTHROPIC_API_KEY yet. The screen works, Claude calls will fail.");
 });
