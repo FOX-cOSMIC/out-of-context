@@ -44,6 +44,17 @@ npm install
 npm start               # then open http://localhost:3000
 ```
 
+#### Better voice (optional)
+Read-aloud uses the built-in macOS voice. For a warm, natural voice, run the local
+[Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) model (Apple Silicon Mac, needs [`uv`](https://docs.astral.sh/uv/)) in a second terminal:
+
+```bash
+npm run tts             # first start downloads the model (~350 MB) into ~/.cache/huggingface
+```
+
+It listens only on `127.0.0.1:3002`; the app uses it automatically and falls back to the macOS voice when it is not running.
+Change the voice with `KOKORO_VOICE` (default `bf_emma`, British; try `af_heart` for American).
+
 `npm run dev` restarts the server automatically when you change a file. Voice input works best in Chrome. No document at hand? Use *Try a sample plan* or *Try a sample letter* on the photo screen.
 
 ### Project layout (who owns what)

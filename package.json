@@ -6,7 +6,8 @@
   "description": "Care Companion: helps older adults understand their medicines and appointments with Claude.",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "dev": "node --watch --env-file-if-exists=.env server.js"
+    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "tts": "uv run tts/server.py"
   },
   "engines": { "node": ">=22" },
   "dependencies": {
