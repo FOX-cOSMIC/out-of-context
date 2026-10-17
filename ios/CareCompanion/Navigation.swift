@@ -11,6 +11,8 @@ final class Navigator: ObservableObject {
     @Published var tab: AppTab = .talk
     /// Bumped by the Home button: the Talk tab then shows its big home screen again.
     @Published var homeTick = 0
+    /// The typing field on the home screen (opened by the centre tab while on Home).
+    @Published var showTyping = false
 
     /// Back to Agatha's home screen (does not start listening).
     func goHome() {

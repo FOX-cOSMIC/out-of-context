@@ -73,7 +73,6 @@ struct ChatView: View {
 
     // MARK: - Hero (home of the Talk tab)
 
-    @State private var showTyping = false
 
     /// Minimal home: date, small Agatha, the big question or the current turn, and a talk/type pill.
     private var homeScreen: some View {
@@ -95,76 +94,30 @@ struct ChatView: View {
             }
             .padding(.horizontal, Theme.Metrics.screenPadding)
 
-            ScrollView {
-                VStack(spacing: Theme.Metrics.spacingLarge) {
-                    TalkButton(circle: 120, showLabel: false)
-                        .padding(.top, Theme.Metrics.spacingMedium)
-                    currentTurn
-                        .padding(.horizontal, Theme.Metrics.screenPadding)
+            GeometryReader { geo in
+                ScrollView {
+                    VStack(spacing: Theme.Metrics.spacingLarge) {
+                        Spacer(minLength: 0)
+                        TalkButton(circle: 230, showLabel: false)
+                        currentTurn
+                            .padding(.horizontal, Theme.Metrics.screenPadding)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(minHeight: geo.size.height)
+                    .padding(.bottom, Theme.Metrics.screenPadding)
                 }
-                .padding(.bottom, Theme.Metrics.screenPadding)
+                .scrollDismissesKeyboard(.interactively)
             }
-            .scrollDismissesKeyboard(.interactively)
 
-            if showTyping {
+            if navigator.showTyping {
                 typeField
                     .padding(.horizontal, Theme.Metrics.screenPadding)
                     .padding(.bottom, Theme.Metrics.spacingMedium)
             }
-            talkTypePill
-                .padding(.bottom, Theme.Metrics.spacingMedium)
         }
+        .onChange(of: navigator.showTyping) { _, open in typing = open }
+        .onChange(of: typing) { _, focused in if !focused && typed.isEmpty { navigator.showTyping = false } }
         .background(Theme.Palette.page.ignoresSafeArea())
-    }
-
-    /// The bottom controls: a big labelled talk button (words, not just an icon) and a smaller "Type".
-    private var talkTypePill: some View {
-        let listening = model.isRecording || model.isStartingMic
-        return HStack(spacing: Theme.Metrics.spacingMedium) {
-            Button {
-                showTyping.toggle()
-                typing = showTyping
-            } label: {
-                VStack(spacing: 2) {
-                    Image(systemName: "keyboard").font(.system(size: 24, weight: .semibold))
-                    Text("Type").font(Theme.Typeface.body(16, weight: .bold))
-                }
-                .foregroundStyle(Theme.Palette.purpleDeep)
-                .frame(width: 84, height: 76)
-                .background(Theme.Palette.lavender, in: RoundedRectangle(cornerRadius: 24))
-            }
-            .buttonStyle(.plain)
-            .disabled(listening || model.isBusy)
-            .accessibilityLabel("Type instead of talking")
-
-            Button {
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                showTyping = false
-                model.toggleRecording()
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: listening ? "stop.fill" : "mic.fill")
-                        .font(.system(size: 30, weight: .bold))
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(listening ? "Done" : "Tap to talk")
-                            .font(Theme.Typeface.heading(26))
-                        Text(listening ? "tap when finished" : "then speak to Agatha")
-                            .font(Theme.Typeface.body(16, weight: .bold))
-                            .opacity(0.9)
-                    }
-                }
-                .foregroundStyle(Theme.Colors.onColor)
-                .frame(maxWidth: .infinity, minHeight: 76)
-                .background(listening ? Theme.Colors.danger : Theme.Palette.purple,
-                            in: RoundedRectangle(cornerRadius: 24))
-                .shadow(color: (listening ? Theme.Colors.danger : Theme.Palette.purple).opacity(0.3), radius: 10, y: 4)
-            }
-            .buttonStyle(.plain)
-            .disabled(model.isBusy)
-            .opacity(model.isBusy ? 0.5 : 1)
-            .accessibilityLabel(listening ? "Done talking" : "Tap to talk to Agatha")
-        }
-        .padding(.horizontal, Theme.Metrics.screenPadding)
     }
 
     // MARK: - One screen only: what is happening right now, under Agatha (no chat history)
@@ -179,6 +132,9 @@ struct ChatView: View {
                 Text(TalkButtonLabel.text(model))
                     .font(Theme.Fonts.heroTitle)
                     .foregroundStyle(Theme.Colors.danger)
+                Text("Tap Agatha again when you're done")
+                    .font(Theme.Fonts.hint)
+                    .foregroundStyle(Theme.Colors.textSecondary)
                 if let words = model.liveText, !words.isEmpty {
                     Text(words)
                         .font(Theme.Typeface.heading(26, weight: .semibold))
@@ -195,11 +151,16 @@ struct ChatView: View {
             } else if let answer = lastAgatha, hasEarlierConversation || model.isCallMode || answer.isError {
                 if let said = lastUser?.text, !said.isEmpty { youSaid(said) }
                 MessageRow(message: answer)
+                Text("Tap Agatha to talk again")
+                    .font(Theme.Typeface.body(20, weight: .bold))
+                    .foregroundStyle(Theme.Palette.purpleDeep)
             } else {
                 Text(userName.isEmpty ? "What's on your mind?" : "What's on your mind, \(userName)?")
                     .font(Theme.Typeface.heading(34))
                     .foregroundStyle(Theme.Colors.textPrimary)
-                    .padding(.top, Theme.Metrics.spacingLarge)
+                Text("Tap Agatha to talk")
+                    .font(Theme.Typeface.body(22, weight: .bold))
+                    .foregroundStyle(Theme.Palette.purpleDeep)
             }
             if !model.status.isEmpty && !model.isBusy && !talking {
                 Text(model.status).font(Theme.Fonts.status).foregroundStyle(Theme.Colors.textSecondary)

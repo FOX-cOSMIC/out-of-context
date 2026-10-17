@@ -23,7 +23,21 @@ enum DemoPerson {
     }()
 
     /// Starts empty: the demo shows scanning her medication plan.
-    static let plan = Plan()
+    /// What Margaret starts with: her five medicines and two upcoming appointments (demo data).
+    static var plan: Plan {
+        var p = samplePlan
+        p.appointments = [
+            Appointment(title: "Heart ultrasound (echocardiogram)", date: "Thursday, 29 October 2026", time: "09:30",
+                        place: "Example Heart Clinic, Building B, Room 214",
+                        bring: "insurance card, medication plan, referral from Dr Hoffmann",
+                        preparation: "Eat and drink as normal; take your usual morning medicines."),
+            Appointment(title: "Eye check-up", date: "Tuesday, 3 November 2026", time: "10:15",
+                        place: "Example Eye Clinic, 2nd floor",
+                        bring: "glasses and insurance card",
+                        preparation: "Eye drops are used: do not drive afterwards."),
+        ]
+        return p
+    }
 
     /// The five medicines on the sample plan image (Settings: load it if scanning fails).
     static let samplePlan = Plan(medications: [

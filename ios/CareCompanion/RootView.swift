@@ -71,11 +71,12 @@ struct BottomBar: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
-    /// Home: back to Agatha's main screen. Talking starts there, by tapping Agatha.
+    /// Centre tab: "Type" while on Home (opens the typing field), "Home" on every other tab.
     private var talkButton: some View {
-        Button {
+        let onHome = navigator.tab == .talk
+        return Button {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            navigator.goHome()
+            if onHome { navigator.showTyping.toggle() } else { navigator.goHome() }
         } label: {
             VStack(spacing: 2) {
                 ZStack {
@@ -83,18 +84,19 @@ struct BottomBar: View {
                     Circle().fill(Theme.Palette.purple)
                         .frame(width: Theme.Metrics.tabTalkSize, height: Theme.Metrics.tabTalkSize)
                         .shadow(color: Theme.Palette.purple.opacity(0.35), radius: 8, y: 4)
-                    Image(systemName: "house.fill")
-                        .font(.system(size: 28, weight: .bold))
+                    Image(systemName: onHome ? "keyboard" : "house.fill")
+                        .font(.system(size: 26, weight: .bold))
                         .foregroundStyle(Theme.Colors.onColor)
                 }
                 .offset(y: -14)
                 .padding(.bottom, -14)
-                Text("Home").font(Theme.Fonts.tabLabel).foregroundStyle(Theme.Palette.ink)
+                Text(onHome ? "Type" : "Home").font(Theme.Fonts.tabLabel).foregroundStyle(Theme.Palette.ink)
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Home: back to Agatha")
+        .disabled(onHome && (model.isRecording || model.isBusy))
+        .accessibilityLabel(onHome ? "Type a message to Agatha" : "Home: back to Agatha")
     }
 }

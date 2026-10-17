@@ -55,6 +55,7 @@ final class ChatModel: ObservableObject {
         // Demo: no "getting to know you" call; start as the predefined person.
         if profile.name.isEmpty {
             profile = DemoPerson.profile
+            if plan.medications.isEmpty { plan = DemoPerson.plan }
             save()
         }
         showWelcome = false
