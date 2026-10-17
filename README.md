@@ -8,7 +8,7 @@
 
 Built in one day at the Claude Impact Lab Berlin (theme: *AI education for everyone*). Agenda and rules: [event repo](https://github.com/Claude-Community-Berlin/claude-impact-lab-berlin-2026-10-17).
 
-**Demo video:** <link added at submission>
+**Demo video:** [video/agatha-demo-final.mp4](https://github.com/FOX-cOSMIC/out-of-context/blob/main/video/agatha-demo-final.mp4) (1:36, plays in the browser)
 
 ---
 
