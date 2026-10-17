@@ -1,7 +1,7 @@
 // Local voice, no paid service: this Mac does speech-to-text and text-to-speech.
 // - Speech to text: whisper-cli (whisper.cpp) + ffmpeg   (brew install whisper-cpp ffmpeg)
 // - Text to speech: Kokoro-82M via the local service in tts/ (`npm run tts`), natural voice;
-//   if that service is not running, macOS `say` (built in). Both end as AAC .m4a via `afconvert`.
+//   if that service is not running, macOS `say` (built in). Both end as loudness-normalised AAC .m4a via ffmpeg.
 // Settings (optional, in .env): WHISPER_MODEL, WHISPER_LANG, SAY_VOICE, SAY_RATE, KOKORO_URL
 
 import { execFile } from "node:child_process";
@@ -64,7 +64,9 @@ export async function speak(text, rate) {
   return withTempDir(async (dir) => {
     const m4a = path.join(dir, "speech.m4a");
     const source = (await kokoroToFile(text, rate, dir)) || (await sayToFile(text, rate, dir));
-    await run("afconvert", ["-f", "m4af", "-d", "aac", source, m4a]);
+    // Normalise loudness (Kokoro comes out quiet, around -24 dB) so phones play it clearly.
+    await run("ffmpeg", ["-y", "-loglevel", "error", "-i", source,
+      "-af", "loudnorm=I=-14:TP=-1.0:LRA=11", "-ar", "24000", "-c:a", "aac", "-b:a", "96k", m4a]);
     return fs.readFile(m4a);
   });
 }

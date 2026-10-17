@@ -5,8 +5,10 @@ import AVFoundation
 enum AudioSessionSetup {
     static func activate() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothA2DP])
         try session.setActive(true)
+        // Always the loud bottom speaker, never the quiet earpiece used for phone calls.
+        try? session.overrideOutputAudioPort(.speaker)
     }
 }
 
