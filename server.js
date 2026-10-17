@@ -185,7 +185,7 @@ const CHAT_TOOLS = [
   },
   {
     name: "mark_taken",
-    description: "Tick off medicines the user says they have taken.",
+    description: "Tick off medicines the user says they have taken. Use the names exactly as written in the saved plan.",
     input_schema: {
       type: "object",
       properties: { slot: SLOT, names: { type: "array", items: { type: "string" } } },
@@ -219,7 +219,7 @@ function runChatTool(name, input, cards, actions) {
 
 // history: [{ role: "user" | "assistant", text, image? }]; only the newest image is sent.
 function historyToMessages(history) {
-  const lastImage = history.findLastIndex((m) => m.image);
+  const lastImage = history.findLastIndex((m) => m.image?.startsWith("data:"));
   return history.map((m, i) => {
     if (m.role === "assistant") return { role: "assistant", content: m.text || "…" };
     const content = [];

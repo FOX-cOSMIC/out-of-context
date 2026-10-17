@@ -160,7 +160,13 @@ final class ChatModel: ObservableObject {
     private func apply(_ actions: [ChatAction]) {
         for action in actions where action.type == "mark_taken" {
             guard let slot = action.slot, let names = action.names else { continue }
-            for name in names { takenToday[takenKey(name, Slot(rawValue: slot) ?? .morning)] = true }
+            for name in names {
+                // Claude may say "Ramipril" for "Ramipril (Ramipril-ratio)": match loosely.
+                let spoken = name.lowercased()
+                let med = plan.medications.first { $0.name.lowercased() == spoken }
+                    ?? plan.medications.first { $0.name.lowercased().contains(spoken) || spoken.contains($0.name.lowercased()) }
+                takenToday[takenKey(med?.name ?? name, Slot(rawValue: slot) ?? .morning)] = true
+            }
         }
         save()
     }
