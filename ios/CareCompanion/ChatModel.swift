@@ -128,7 +128,8 @@ final class ChatModel: ObservableObject {
     }
 
     /// Waiting for permissions before the microphone starts: a second tap must not start it twice.
-    private var isStartingMic = false
+    /// True from the tap until the microphone is really on, so the button reacts at once.
+    @Published private(set) var isStartingMic = false
 
     private func startRecording() {
         guard canSend, !isStartingMic else { return }

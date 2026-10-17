@@ -12,21 +12,24 @@ struct TalkButton: View {
         model.isCallMode && !handsFree ? "Tap to answer" : "Tap to talk"
     }
 
+    /// Red as soon as the user taps, not only once the microphone is running.
+    private var active: Bool { model.isRecording || model.isStartingMic }
+
     var body: some View {
         Button(action: talk) {
             ZStack {
                 // Soft pulsing ring so it is impossible to miss.
                 Circle()
-                    .fill((model.isRecording ? Theme.Colors.danger : Theme.Colors.accent).opacity(Theme.Metrics.talkRingOpacity))
+                    .fill((active ? Theme.Colors.danger : Theme.Colors.accent).opacity(Theme.Metrics.talkRingOpacity))
                     .scaleEffect(pulse ? Theme.Metrics.pulseMaxScale : Theme.Metrics.pulseMinScale)
                 Circle()
-                    .fill(model.isRecording ? Theme.Colors.danger : Theme.Colors.accent)
+                    .fill(active ? Theme.Colors.danger : Theme.Colors.accent)
                     .padding(Theme.Metrics.talkRingInset)
                     .shadow(radius: Theme.Metrics.talkShadowRadius, y: Theme.Metrics.talkShadowY)
                 VStack(spacing: Theme.Metrics.spacingSmall) {
-                    Image(systemName: model.isRecording ? "stop.fill" : "mic.fill")
+                    Image(systemName: active ? "stop.fill" : "mic.fill")
                         .font(Theme.Fonts.talkIcon)
-                    Text(model.isRecording ? "I'm listening.\nTap when done" : idleLabel)
+                    Text(model.isRecording ? "I'm listening.\nTap when done" : model.isStartingMic ? "Getting ready…" : idleLabel)
                         .font(Theme.Fonts.talkLabel)
                         .multilineTextAlignment(.center)
                 }
