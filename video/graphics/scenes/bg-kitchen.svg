@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <!-- Agatha demo: calm morning kitchen / living room. Low contrast on purpose:
+       characters, phone frame and cards sit on top. Centre (x 820-1300) kept quiet. -->
+  <defs>
+    <linearGradient id="k-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FAF9F5"/>
+      <stop offset="1" stop-color="#F7F0E8"/>
+    </linearGradient>
+    <radialGradient id="k-glow" cx="540" cy="380" r="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE9D3" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="#FFF1E3" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFF1E3" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="k-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F3EAFF"/>
+      <stop offset="0.55" stop-color="#FFEBD8"/>
+      <stop offset="1" stop-color="#FFE2C4"/>
+    </linearGradient>
+    <linearGradient id="k-beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF1E3" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FFF1E3" stop-opacity="0.15"/>
+    </linearGradient>
+    <linearGradient id="k-floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2E8DD"/>
+      <stop offset="1" stop-color="#EDE2D6"/>
+    </linearGradient>
+    <clipPath id="k-win-clip">
+      <path d="M300,690 V330 A240,240 0 0 1 780,330 V690 Z"/>
+    </clipPath>
+  </defs>
+
+  <g id="wall">
+    <rect width="1920" height="1080" fill="url(#k-wall)"/>
+    <rect width="1920" height="1080" fill="url(#k-glow)"/>
+  </g>
+
+  <g id="floor">
+    <rect y="900" width="1920" height="180" fill="url(#k-floor)"/>
+    <rect y="892" width="1920" height="12" fill="#EDE3D8"/>
+    <ellipse id="rug" cx="1000" cy="1010" rx="560" ry="46" fill="#EFE6FF" opacity="0.7"/>
+  </g>
+
+  <g id="light-beams">
+    <path d="M300,700 L780,700 L1180,1080 L560,1080 Z" fill="url(#k-beam)" opacity="0.7"/>
+  </g>
+
+  <g id="window">
+    <path d="M280,700 V330 A260,260 0 0 1 800,330 V700 Z" fill="#EFE6FF"/>
+    <path d="M300,690 V330 A240,240 0 0 1 780,330 V690 Z" fill="url(#k-sky)"/>
+    <g clip-path="url(#k-win-clip)">
+      <g id="window-sun">
+        <circle cx="655" cy="300" r="120" fill="#FFF1E3" opacity="0.7"/>
+        <circle cx="655" cy="300" r="62" fill="#FFDDB5"/>
+      </g>
+      <g id="window-clouds" fill="#FAF9F5" opacity="0.85">
+        <rect x="350" y="230" width="150" height="34" rx="17"/>
+        <rect x="390" y="208" width="80" height="40" rx="20"/>
+        <rect x="560" y="420" width="130" height="28" rx="14"/>
+      </g>
+      <g id="window-hills">
+        <path d="M300,600 C380,540 470,560 540,590 C620,530 720,520 780,560 V690 H300 Z" fill="#DCF0E8"/>
+        <path d="M300,640 C400,600 520,640 600,620 C680,600 740,620 780,630 V690 H300 Z" fill="#CBE8DC"/>
+        <g id="window-tree">
+          <rect x="682" y="560" width="10" height="60" rx="5" fill="#B9DCCD"/>
+          <ellipse cx="687" cy="548" rx="34" ry="44" fill="#BFE3D4"/>
+        </g>
+      </g>
+    </g>
+    <g id="window-mullions" fill="#EFE6FF">
+      <rect x="533" y="80" width="14" height="615"/>
+      <rect x="300" y="420" width="480" height="14"/>
+    </g>
+    <rect id="window-sill" x="258" y="688" width="564" height="26" rx="10" fill="#E8DCF7"/>
+    <rect x="276" y="714" width="528" height="10" rx="5" fill="#E2D6F2" opacity="0.6"/>
+  </g>
+
+  <g id="curtains">
+    <rect id="curtain-rod" x="180" y="54" width="720" height="10" rx="5" fill="#E2D6F5"/>
+    <g id="curtain-left">
+      <path d="M196,62 H300 C288,250 320,460 292,770 C262,780 226,778 192,770 C210,520 184,280 196,62 Z" fill="#F1E8FF"/>
+      <path d="M232,90 C238,300 222,520 236,760" stroke="#E6DAFA" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M266,90 C270,300 262,520 270,760" stroke="#E6DAFA" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="curtain-right">
+      <path d="M884,62 H780 C792,250 760,460 788,770 C818,780 854,778 888,770 C870,520 896,280 884,62 Z" fill="#F1E8FF"/>
+      <path d="M848,90 C842,300 858,520 844,760" stroke="#E6DAFA" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M814,90 C810,300 818,520 810,760" stroke="#E6DAFA" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g id="plant-sill">
+    <g id="plant-leaves">
+      <ellipse cx="380" cy="560" rx="22" ry="62" fill="#A9D8C6" transform="rotate(-28 380 560)"/>
+      <ellipse cx="420" cy="540" rx="22" ry="72" fill="#94CDB7"/>
+      <ellipse cx="458" cy="566" rx="22" ry="60" fill="#B7E0D0" transform="rotate(30 458 566)"/>
+      <ellipse cx="400" cy="600" rx="16" ry="40" fill="#C6E8DA" transform="rotate(-55 400 600)"/>
+      <ellipse cx="444" cy="604" rx="16" ry="40" fill="#A9D8C6" transform="rotate(55 444 604)"/>
+    </g>
+    <path id="plant-pot" d="M376,626 H466 L456,690 H386 Z" fill="#FFDCC5"/>
+    <rect x="370" y="620" width="102" height="16" rx="8" fill="#FFD0B2"/>
+    <g id="sill-cup">
+      <rect x="664" y="640" width="54" height="50" rx="12" fill="#FAF9F5"/>
+      <path d="M718,652 C742,652 742,680 718,680" stroke="#FAF9F5" stroke-width="8" fill="none"/>
+      <rect x="672" y="652" width="38" height="6" rx="3" fill="#EFE6FF"/>
+    </g>
+  </g>
+
+  <g id="pendant-lamp">
+    <rect x="1157" y="0" width="5" height="150" fill="#E5D9F5"/>
+    <ellipse cx="1160" cy="236" rx="90" ry="26" fill="#FFF1E3" opacity="0.8"/>
+    <path d="M1100,222 C1100,170 1125,148 1160,148 C1195,148 1220,170 1220,222 Z" fill="#EADFFA"/>
+    <rect x="1094" y="216" width="132" height="12" rx="6" fill="#E2D5F7"/>
+  </g>
+
+  <g id="wall-art">
+    <rect x="1010" y="300" width="170" height="210" rx="14" fill="#EFE6FF"/>
+    <rect x="1024" y="314" width="142" height="182" rx="8" fill="#FAF9F5"/>
+    <circle cx="1120" cy="372" r="24" fill="#FFE2C4"/>
+    <path d="M1024,456 C1060,420 1090,430 1110,446 C1130,428 1150,428 1166,440 V496 H1024 Z" fill="#DCF0E8"/>
+  </g>
+
+  <g id="shelf">
+    <g id="shelf-top">
+      <rect x="1400" y="380" width="380" height="18" rx="9" fill="#E6D9F6"/>
+      <rect x="1440" y="398" width="12" height="28" rx="4" fill="#E9DFF7"/>
+      <rect x="1728" y="398" width="12" height="28" rx="4" fill="#E9DFF7"/>
+      <g id="jars">
+        <rect x="1424" y="300" width="64" height="80" rx="16" fill="#E8DDFB"/>
+        <rect x="1428" y="290" width="56" height="16" rx="8" fill="#DDCFF7"/>
+        <rect x="1500" y="318" width="56" height="62" rx="14" fill="#D9F0E8"/>
+        <rect x="1504" y="308" width="48" height="14" rx="7" fill="#CBE9DE"/>
+        <rect x="1568" y="326" width="48" height="54" rx="12" fill="#FFE8D6"/>
+        <rect x="1572" y="317" width="40" height="13" rx="6" fill="#FFDCC4"/>
+      </g>
+      <g id="books">
+        <rect x="1640" y="262" width="30" height="118" rx="6" fill="#DDCFF7"/>
+        <rect x="1674" y="276" width="26" height="104" rx="6" fill="#F5DCCC"/>
+        <rect x="1704" y="268" width="28" height="112" rx="6" fill="#D2EBE1"/>
+        <rect x="1738" y="290" width="26" height="96" rx="6" fill="#E6DAFA" transform="rotate(14 1751 380)"/>
+      </g>
+    </g>
+    <g id="shelf-bottom">
+      <rect x="1400" y="570" width="380" height="18" rx="9" fill="#E6D9F6"/>
+      <rect x="1440" y="588" width="12" height="28" rx="4" fill="#E9DFF7"/>
+      <rect x="1728" y="588" width="12" height="28" rx="4" fill="#E9DFF7"/>
+      <g id="trailing-plant">
+        <path d="M1432,520 H1500 L1492,570 H1440 Z" fill="#FFDCC5"/>
+        <path d="M1446,522 C1430,560 1424,620 1432,690" stroke="#B7E0D0" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M1484,522 C1500,580 1494,640 1500,660" stroke="#B7E0D0" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="1428" cy="610" rx="10" ry="16" fill="#A9D8C6" transform="rotate(-30 1428 610)"/>
+        <ellipse cx="1436" cy="660" rx="10" ry="16" fill="#C6E8DA" transform="rotate(25 1436 660)"/>
+        <ellipse cx="1500" cy="600" rx="10" ry="16" fill="#A9D8C6" transform="rotate(30 1500 600)"/>
+        <ellipse cx="1494" cy="640" rx="10" ry="16" fill="#C6E8DA" transform="rotate(-25 1494 640)"/>
+        <ellipse cx="1452" cy="512" rx="16" ry="24" fill="#A9D8C6" transform="rotate(-30 1452 512)"/>
+        <ellipse cx="1480" cy="508" rx="16" ry="26" fill="#94CDB7" transform="rotate(25 1480 508)"/>
+      </g>
+      <g id="photo-frame">
+        <rect x="1560" y="482" width="92" height="88" rx="10" fill="#EFE6FF"/>
+        <rect x="1570" y="492" width="72" height="68" rx="6" fill="#FFF1E3"/>
+        <circle cx="1594" cy="522" r="10" fill="#FFD9C2"/>
+        <circle cx="1620" cy="526" r="8" fill="#F4D3DC"/>
+        <path d="M1576,560 C1580,540 1608,538 1612,560 Z M1604,560 C1608,544 1632,544 1636,560 Z" fill="#E4D8F8"/>
+      </g>
+      <g id="bowl">
+        <path d="M1676,540 H1764 C1760,560 1744,570 1720,570 C1696,570 1680,560 1676,540 Z" fill="#DCF0E8"/>
+        <circle cx="1704" cy="534" r="14" fill="#FFDCB8"/>
+        <circle cx="1730" cy="530" r="15" fill="#FFE7B8"/>
+      </g>
+    </g>
+  </g>
+
+  <g id="sideboard">
+    <rect x="1300" y="742" width="560" height="22" rx="10" fill="#E6D9F6"/>
+    <rect x="1316" y="764" width="528" height="128" rx="12" fill="#EFE6FF"/>
+    <rect x="1336" y="782" width="236" height="92" rx="10" fill="#F3ECFF"/>
+    <rect x="1588" y="782" width="236" height="92" rx="10" fill="#F3ECFF"/>
+    <rect x="1430" y="822" width="48" height="10" rx="5" fill="#E2D6F5"/>
+    <rect x="1682" y="822" width="48" height="10" rx="5" fill="#E2D6F5"/>
+    <rect x="1336" y="890" width="14" height="14" rx="4" fill="#E2D6F5"/>
+    <rect x="1810" y="890" width="14" height="14" rx="4" fill="#E2D6F5"/>
+    <g id="kettle">
+      <path d="M1380,742 C1380,690 1400,672 1430,672 C1460,672 1480,690 1480,742 Z" fill="#FAF9F5"/>
+      <path d="M1480,700 L1506,686" stroke="#FAF9F5" stroke-width="10" stroke-linecap="round"/>
+      <path d="M1404,676 C1404,650 1456,650 1456,676" stroke="#E6DAFA" stroke-width="8" fill="none"/>
+    </g>
+    <g id="fruit-bowl">
+      <circle cx="1700" cy="720" r="18" fill="#FFDCB8"/>
+      <circle cx="1730" cy="716" r="20" fill="#FFE7B8"/>
+      <circle cx="1758" cy="722" r="16" fill="#F8D6DE"/>
+      <path d="M1670,722 H1790 C1786,738 1766,746 1730,746 C1694,746 1674,738 1670,722 Z" fill="#E3D7F8"/>
+    </g>
+  </g>
+
+  <g id="chair-left">
+    <rect x="70" y="740" width="200" height="120" rx="40" fill="#EFE6FF"/>
+    <rect x="40" y="800" width="260" height="70" rx="30" fill="#E8DCF7"/>
+    <rect x="70" y="868" width="14" height="36" rx="5" fill="#E2D6F2"/>
+    <rect x="256" y="868" width="14" height="36" rx="5" fill="#E2D6F2"/>
+  </g>
+</svg>

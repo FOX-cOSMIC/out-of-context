@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <!-- Agatha demo: wall clock at 9:00. Pivot for every hand is (300,300).
+       Hands are drawn pointing at 12; the group transform sets the time:
+       clock-hand-hour rotate(270) = 9, clock-hand-minute rotate(0) = :00, clock-hand-second rotate(0).
+       In Remotion, replace the rotate angle (keep "300 300" as the centre).
+       alarm-rings (ring-left, ring-right) are the ringing marks: shake/fade them. -->
+  <defs>
+    <rect id="ck-tick-major" x="294" y="114" width="12" height="34" rx="6"/>
+    <rect id="ck-tick-minor" x="296" y="118" width="8" height="20" rx="4"/>
+  </defs>
+
+  <g id="alarm-rings" stroke="#FF7A3D" stroke-width="14" stroke-linecap="round" fill="none">
+    <g id="ring-left">
+      <path d="M74,170 A256,256 0 0 1 132,96"/>
+      <path d="M40,150 A292,292 0 0 1 104,66"/>
+      <path d="M64,236 L30,226"/>
+    </g>
+    <g id="ring-right">
+      <path d="M526,170 A256,256 0 0 0 468,96"/>
+      <path d="M560,150 A292,292 0 0 0 496,66"/>
+      <path d="M536,236 L570,226"/>
+    </g>
+  </g>
+
+  <g id="clock-body">
+    <circle cx="308" cy="314" r="222" fill="#1E1B2E" opacity="0.12"/>
+    <circle id="clock-rim" cx="300" cy="300" r="222" fill="#6B3FE0"/>
+    <circle cx="300" cy="300" r="196" fill="#3E1F99"/>
+    <circle id="clock-face" cx="300" cy="300" r="186" fill="#FAF9F5"/>
+    <circle cx="300" cy="300" r="166" fill="none" stroke="#EFE6FF" stroke-width="4"/>  </g>
+
+  <g id="clock-ticks">
+    <g fill="#1E1B2E">
+      <use href="#ck-tick-major"/>
+      <use href="#ck-tick-major" transform="rotate(90 300 300)"/>
+      <use href="#ck-tick-major" transform="rotate(180 300 300)"/>
+      <use href="#ck-tick-major" transform="rotate(270 300 300)"/>
+    </g>
+    <g fill="#B8AFD0">
+      <use href="#ck-tick-minor" transform="rotate(30 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(60 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(120 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(150 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(210 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(240 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(300 300 300)"/>
+      <use href="#ck-tick-minor" transform="rotate(330 300 300)"/>
+    </g>
+  </g>
+
+  <g id="clock-hand-hour" transform="rotate(270 300 300)">
+    <rect x="289" y="186" width="22" height="134" rx="11" fill="#1E1B2E"/>
+  </g>
+  <g id="clock-hand-minute" transform="rotate(0 300 300)">
+    <rect x="293" y="138" width="14" height="182" rx="7" fill="#1E1B2E"/>
+  </g>
+  <g id="clock-hand-second" transform="rotate(0 300 300)">
+    <rect x="297" y="130" width="6" height="210" rx="3" fill="#FF7A3D"/>
+  </g>
+  <g id="clock-cap">
+    <circle cx="300" cy="300" r="18" fill="#FF7A3D"/>
+    <circle cx="300" cy="300" r="7" fill="#FAF9F5"/>
+  </g>
+</svg>

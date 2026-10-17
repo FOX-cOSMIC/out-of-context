@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <!-- Agatha demo: abstract lavender background for title cards. Blobs are separate
+       groups (blob-1..5 blurred, shape-1..3 crisp) so they can drift slowly. -->
+  <defs>
+    <linearGradient id="sg-base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F3ECFF"/>
+      <stop offset="0.55" stop-color="#EFE6FF"/>
+      <stop offset="1" stop-color="#FAF5F0"/>
+    </linearGradient>
+    <filter id="sg-blur" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880">
+      <feGaussianBlur stdDeviation="90"/>
+    </filter>
+  </defs>
+  <rect id="base" width="1920" height="1080" fill="url(#sg-base)"/>
+  <g id="blobs" filter="url(#sg-blur)">
+    <circle id="blob-1" cx="260" cy="220" r="330" fill="#6B3FE0" opacity="0.22"/>
+    <circle id="blob-2" cx="1700" cy="170" r="300" fill="#FF9FB2" opacity="0.35"/>
+    <circle id="blob-3" cx="1560" cy="930" r="380" fill="#FFB547" opacity="0.22"/>
+    <circle id="blob-4" cx="220" cy="980" r="340" fill="#BDE8DC" opacity="0.8"/>
+    <ellipse id="blob-5" cx="960" cy="560" rx="560" ry="320" fill="#FAF9F5" opacity="0.75"/>
+  </g>
+  <g id="shapes" fill="#FFFFFF">
+    <path id="shape-1" d="M1460,640 C1520,560 1660,570 1700,650 C1740,730 1660,820 1570,800 C1480,780 1410,710 1460,640 Z" opacity="0.28"/>
+    <path id="shape-2" d="M180,420 C230,360 330,370 350,440 C370,510 300,560 240,545 C170,528 140,470 180,420 Z" opacity="0.3"/>
+    <circle id="shape-3" cx="1320" cy="190" r="46" opacity="0.35"/>
+  </g>
+</svg>

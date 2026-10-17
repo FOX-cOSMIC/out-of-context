@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" width="1200" height="1000">
+  <!-- Agatha demo hook: "a drawer full of paperwork". Animate: drawer-front + drawer-contents
+       slide down/out together; papers (paper-*, letter-*), pill boxes and glasses can pop/jiggle.
+       Contents sit between drawer-interior and drawer-front, so they look tucked in. -->
+  <defs>
+    <g id="dp-lines">
+      <rect x="0" y="0" width="150" height="10" rx="5"/>
+      <rect x="0" y="28" width="190" height="10" rx="5"/>
+      <rect x="0" y="56" width="170" height="10" rx="5"/>
+      <rect x="0" y="84" width="120" height="10" rx="5"/>
+    </g>
+  </defs>
+
+  <ellipse id="floor-shadow" cx="600" cy="958" rx="480" ry="28" fill="#1E1B2E" opacity="0.12"/>
+
+  <g id="cabinet">
+    <rect x="270" y="900" width="18" height="52" rx="6" fill="#1E1B2E"/>
+    <rect x="912" y="900" width="18" height="52" rx="6" fill="#1E1B2E"/>
+    <rect id="cabinet-body" x="230" y="360" width="740" height="560" rx="28" fill="#3E1F99"/>
+    <rect id="cabinet-top" x="205" y="330" width="790" height="48" rx="16" fill="#6B3FE0"/>
+    <g id="cabinet-lower-drawer">
+      <rect x="270" y="796" width="660" height="98" rx="18" fill="#6B3FE0" opacity="0.55"/>
+      <rect x="540" y="836" width="120" height="18" rx="9" fill="#EFE6FF" opacity="0.85"/>
+    </g>
+    <rect id="drawer-hole" x="268" y="408" width="664" height="132" rx="12" fill="#1E1B2E"/>
+  </g>
+
+  <g id="drawer-interior">
+    <path d="M290,424 H910 L1000,612 H200 Z" fill="#2A1670"/>
+    <path d="M268,410 H292 L206,612 H176 Z" fill="#6B3FE0"/>
+    <path d="M932,410 H908 L994,612 H1024 Z" fill="#6B3FE0"/>
+  </g>
+
+  <g id="drawer-contents">
+    <g id="paper-1" transform="translate(300 250) rotate(-13)">
+      <rect width="300" height="380" rx="12" fill="#FAF9F5"/>
+      <use href="#dp-lines" x="40" y="60" fill="#DCD6E8"/>
+      <use href="#dp-lines" x="40" y="200" fill="#DCD6E8"/>
+    </g>
+    <g id="paper-2" transform="translate(620 190) rotate(10)">
+      <rect width="290" height="370" rx="12" fill="#FAF9F5"/>
+      <rect x="36" y="40" width="80" height="80" rx="40" fill="#EFE6FF"/>
+      <use href="#dp-lines" x="40" y="160" fill="#DCD6E8"/>
+    </g>
+    <g id="letter-1" transform="translate(690 330) rotate(-7)">
+      <rect width="300" height="190" rx="14" fill="#FFF1E3"/>
+      <path d="M8,10 L150,110 L292,10" stroke="#F2D5BB" stroke-width="10" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="236" y="22" width="44" height="52" rx="6" fill="#FF7A3D"/>
+      <rect x="40" y="132" width="110" height="10" rx="5" fill="#F2D5BB"/>
+    </g>
+    <g id="letter-2" transform="translate(230 360) rotate(12)">
+      <rect width="290" height="180" rx="14" fill="#EFE6FF"/>
+      <path d="M8,10 L145,104 L282,10" stroke="#DCCBFA" stroke-width="10" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="226" y="20" width="42" height="50" rx="6" fill="#FF9FB2"/>
+    </g>
+    <g id="med-plan-crumpled" transform="translate(410 260) rotate(-4)">
+      <path d="M10,20 L84,4 L152,20 L232,0 L314,24 L302,110 L320,204 L298,292 L314,392 L222,378 L142,400 L62,382 L4,396 L18,300 L0,204 L16,112 Z" fill="#FAF9F5"/>
+      <path d="M84,4 L152,20 L128,208 L60,190 Z" fill="#EEEAF5"/>
+      <path d="M232,0 L314,24 L302,110 L232,128 Z" fill="#F1EDF7"/>
+      <path d="M18,300 L128,208 L142,400 L62,382 Z" fill="#EFEBF6"/>
+      <path d="M232,128 L320,204 L298,292 L210,270 Z" fill="#EEEAF5"/>
+      <rect x="40" y="52" width="240" height="38" rx="8" fill="#E8DDFD"/>
+      <g stroke="#D6CFE4" stroke-width="5" stroke-linecap="round">
+        <path d="M40,130 L284,126"/>
+        <path d="M38,176 L286,180"/>
+        <path d="M40,224 L282,220"/>
+        <path d="M42,272 L284,276"/>
+        <path d="M44,320 L280,316"/>
+        <path d="M130,100 L128,340"/>
+        <path d="M206,100 L210,338"/>
+      </g>
+      <g id="med-plan-marks">
+        <circle cx="166" cy="152" r="9" fill="#6B3FE0"/>
+        <circle cx="246" cy="152" r="9" fill="#6B3FE0"/>
+        <circle cx="166" cy="200" r="9" fill="#FF7A3D"/>
+        <circle cx="246" cy="248" r="9" fill="#17694B"/>
+        <circle cx="166" cy="296" r="9" fill="#6B3FE0"/>
+        <rect x="56" y="146" width="56" height="10" rx="5" fill="#CFC7DF"/>
+        <rect x="56" y="194" width="48" height="10" rx="5" fill="#CFC7DF"/>
+        <rect x="56" y="242" width="60" height="10" rx="5" fill="#CFC7DF"/>
+        <rect x="56" y="290" width="44" height="10" rx="5" fill="#CFC7DF"/>
+      </g>
+    </g>
+    <g id="pillbox-1" transform="translate(760 420) rotate(9)">
+      <path d="M0,40 L36,8 H216 L180,40 Z" fill="#EFEAF7"/>
+      <path d="M180,40 L216,8 V140 L180,172 Z" fill="#DCD3EC"/>
+      <rect y="40" width="180" height="132" rx="6" fill="#FAF9F5"/>
+      <rect y="66" width="180" height="40" fill="#6B3FE0"/>
+      <path d="M180,66 L216,34 V74 L180,106 Z" fill="#3E1F99"/>
+      <rect x="20" y="124" width="90" height="10" rx="5" fill="#DCD6E8"/>
+      <rect x="20" y="144" width="60" height="10" rx="5" fill="#DCD6E8"/>
+    </g>
+    <g id="pillbox-2" transform="translate(286 470) rotate(-11)">
+      <path d="M0,34 L30,6 H190 L160,34 Z" fill="#FFF6EC"/>
+      <path d="M160,34 L190,6 V112 L160,140 Z" fill="#F4DCC6"/>
+      <rect y="34" width="160" height="106" rx="6" fill="#FAF9F5"/>
+      <rect y="54" width="160" height="30" fill="#FF7A3D"/>
+      <path d="M160,54 L190,26 V56 L160,84 Z" fill="#D9612B"/>
+      <rect x="18" y="100" width="80" height="10" rx="5" fill="#DCD6E8"/>
+    </g>
+    <g id="blister-1" transform="translate(560 470) rotate(-3)">
+      <rect width="190" height="130" rx="14" fill="#E3DEEC"/>
+      <g fill="#FAF9F5">
+        <ellipse cx="40" cy="38" rx="20" ry="16"/><ellipse cx="96" cy="38" rx="20" ry="16"/><ellipse cx="152" cy="38" rx="20" ry="16"/>
+        <ellipse cx="40" cy="90" rx="20" ry="16"/><ellipse cx="96" cy="90" rx="20" ry="16" fill="#EFEAF5"/><ellipse cx="152" cy="90" rx="20" ry="16"/>
+      </g>
+    </g>
+    <g id="glasses" transform="translate(470 250) rotate(-8)">
+      <path d="M-30,30 L-8,40" stroke="#1E1B2E" stroke-width="9" stroke-linecap="round"/>
+      <path d="M262,30 L240,40" stroke="#1E1B2E" stroke-width="9" stroke-linecap="round"/>
+      <rect x="0" y="20" width="100" height="74" rx="30" fill="#E3F6F1" fill-opacity="0.65" stroke="#1E1B2E" stroke-width="10"/>
+      <rect x="132" y="20" width="100" height="74" rx="30" fill="#E3F6F1" fill-opacity="0.65" stroke="#1E1B2E" stroke-width="10"/>
+      <path d="M100,48 C108,34 124,34 132,48" stroke="#1E1B2E" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M22,40 L44,30" stroke="#FAF9F5" stroke-width="7" stroke-linecap="round"/>
+      <path d="M154,40 L176,30" stroke="#FAF9F5" stroke-width="7" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g id="drawer-front">
+    <rect x="168" y="600" width="864" height="176" rx="24" fill="#6B3FE0"/>
+    <rect x="168" y="600" width="864" height="18" rx="9" fill="#FAF9F5" opacity="0.18"/>
+    <rect x="520" y="680" width="160" height="28" rx="14" fill="#3E1F99" opacity="0.45"/>
+    <rect id="drawer-handle" x="520" y="672" width="160" height="28" rx="14" fill="#FAF9F5"/>
+  </g>
+
+  <g id="paper-hang" transform="translate(840 560) rotate(8)">
+    <rect width="150" height="190" rx="10" fill="#FAF9F5"/>
+    <rect x="22" y="34" width="90" height="9" rx="4.5" fill="#DCD6E8"/>
+    <rect x="22" y="58" width="106" height="9" rx="4.5" fill="#DCD6E8"/>
+    <rect x="22" y="82" width="70" height="9" rx="4.5" fill="#DCD6E8"/>
+    <rect y="0" width="150" height="40" rx="10" fill="#1E1B2E" opacity="0.06"/>
+  </g>
+</svg>

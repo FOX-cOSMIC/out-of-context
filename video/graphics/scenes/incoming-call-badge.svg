@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <!-- Agatha demo: "Agatha is calling" badge. Centre (300,300).
+       pulse-ring-1..3: scale out from the centre and fade (stagger them). handset: wiggle
+       (rotate around 300,300). ring-waves: blink. -->
+  <g id="pulse-rings">
+    <circle id="pulse-ring-3" cx="300" cy="300" r="280" fill="#6B3FE0" opacity="0.08"/>
+    <circle id="pulse-ring-2" cx="300" cy="300" r="226" fill="#6B3FE0" opacity="0.14"/>
+    <circle id="pulse-ring-1" cx="300" cy="300" r="174" fill="#17694B" opacity="0.2"/>
+  </g>
+  <g id="call-core">
+    <circle cx="300" cy="310" r="126" fill="#0F4D36" opacity="0.35"/>
+    <circle cx="300" cy="300" r="126" fill="#17694B"/>
+    <path d="M206,250 A110,110 0 0 1 300,190" stroke="#FAF9F5" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.25"/>
+  </g>
+  <g id="handset" transform="translate(4 4)">
+    <path d="M236,218 C222,218 210,230 210,246 C214,326 278,390 356,394 C372,394 384,382 384,368 L384,340 C384,330 377,322 367,320 L336,314 C328,312 320,315 315,321 L302,338 C282,328 266,312 256,292 L273,279 C279,274 282,266 280,258 L274,227 C272,217 264,210 254,210 Z" fill="#FAF9F5" stroke="#FAF9F5" stroke-width="10" stroke-linejoin="round"/>
+  </g>
+  <g id="ring-waves" stroke="#6B3FE0" stroke-width="14" fill="none" stroke-linecap="round">
+    <path d="M420,160 A60,60 0 0 1 456,220"/>
+    <path d="M436,118 A110,110 0 0 1 500,214"/>
+    <path d="M180,440 A60,60 0 0 1 144,380"/>
+    <path d="M164,482 A110,110 0 0 1 100,386"/>
+  </g>
+</svg>

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1840 220" width="1840" height="220">
+  <!-- Agatha demo icon sheet. Each icon is a <g id="icon-*"> in a 180x180 cell, translated
+       into place (cell i starts at x = 20 + 200*i, y = 20). Inside each: an <g class="icon-tile">
+       (lavender disc, hide it to use the glyph alone) and the glyph. Order: mic, scan, check,
+       shield, lock, laptop, soundwave, heart, pill. To use one alone, set the viewBox to its cell,
+       e.g. icon-lock: viewBox="820 20 180 180". -->
+  <g id="icon-mic" transform="translate(20 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <rect x="66" y="34" width="48" height="76" rx="24" fill="#6B3FE0"/>
+    <g fill="none" stroke="#6B3FE0" stroke-width="12" stroke-linecap="round">
+      <path d="M46,88 A44,44 0 0 0 134,88"/>
+      <path d="M90,132 V148"/>
+      <path d="M68,150 H112"/>
+    </g>
+  </g>
+
+  <g id="icon-scan" transform="translate(220 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <g fill="none" stroke="#6B3FE0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M40,64 V48 A8,8 0 0 1 48,40 H64"/>
+      <path d="M116,40 H132 A8,8 0 0 1 140,48 V64"/>
+      <path d="M140,116 V132 A8,8 0 0 1 132,140 H116"/>
+      <path d="M64,140 H48 A8,8 0 0 1 40,132 V116"/>
+    </g>
+    <rect x="76" y="64" width="28" height="14" rx="5" fill="#3E1F99"/>
+    <rect x="58" y="72" width="64" height="46" rx="12" fill="#3E1F99"/>
+    <circle cx="90" cy="95" r="14" fill="#EFE6FF"/>
+    <circle cx="90" cy="95" r="7" fill="#FF7A3D"/>
+  </g>
+
+  <g id="icon-check" transform="translate(420 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#E3F6F1"/></g>
+    <circle cx="90" cy="90" r="54" fill="#17694B"/>
+    <path d="M66,92 L84,110 L116,74" fill="none" stroke="#FAF9F5" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="icon-shield" transform="translate(620 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <path d="M90,32 L140,50 V90 C140,120 118,142 90,152 C62,142 40,120 40,90 V50 Z" fill="#6B3FE0" stroke="#6B3FE0" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M90,40 L132,55 V90 C132,114 114,134 90,143 Z" fill="#3E1F99" opacity="0.5"/>
+    <path d="M70,92 L85,107 L112,78" fill="none" stroke="#FAF9F5" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="icon-lock" transform="translate(820 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <path d="M62,86 V68 A28,28 0 0 1 118,68 V86" fill="none" stroke="#6B3FE0" stroke-width="13" stroke-linecap="round"/>
+    <rect x="46" y="80" width="88" height="70" rx="16" fill="#3E1F99"/>
+    <circle cx="90" cy="108" r="10" fill="#FFB547"/>
+    <rect x="85" y="110" width="10" height="22" rx="5" fill="#FFB547"/>
+  </g>
+
+  <g id="icon-laptop" transform="translate(1020 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <rect x="40" y="46" width="100" height="70" rx="10" fill="#3E1F99"/>
+    <rect x="50" y="56" width="80" height="50" rx="5" fill="#EFE6FF"/>
+    <circle cx="90" cy="81" r="12" fill="#17694B"/>
+    <path d="M84,81 L88,85 L96,76" fill="none" stroke="#FAF9F5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M26,122 H154 L146,136 C145,138 143,140 140,140 H40 C37,140 35,138 34,136 Z" fill="#6B3FE0"/>
+  </g>
+
+  <g id="icon-soundwave" transform="translate(1220 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#EFE6FF"/></g>
+    <g stroke-width="12" stroke-linecap="round">
+      <path d="M42,80 V100" stroke="#6B3FE0"/>
+      <path d="M66,62 V118" stroke="#6B3FE0"/>
+      <path d="M90,42 V138" stroke="#FF7A3D"/>
+      <path d="M114,62 V118" stroke="#6B3FE0"/>
+      <path d="M138,80 V100" stroke="#6B3FE0"/>
+    </g>
+  </g>
+
+  <g id="icon-heart" transform="translate(1420 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#FFF1E3"/></g>
+    <path d="M90,146 C40,114 30,86 40,64 C52,40 82,40 90,64 C98,40 128,40 140,64 C150,86 140,114 90,146 Z" fill="#FF9FB2"/>
+    <path d="M56,70 C60,60 68,56 76,58" stroke="#FAF9F5" stroke-width="8" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g id="icon-pill" transform="translate(1620 20)">
+    <g class="icon-tile"><circle cx="90" cy="90" r="90" fill="#FFF1E3"/></g>
+    <g transform="rotate(-45 90 90)">
+      <path d="M90,64 H66 A26,26 0 0 0 66,116 H90 Z" fill="#FF7A3D"/>
+      <path d="M90,64 H114 A26,26 0 0 1 114,116 H90 Z" fill="#6B3FE0"/>
+      <rect x="54" y="74" width="28" height="8" rx="4" fill="#FAF9F5" opacity="0.6"/>
+    </g>
+  </g>
+</svg>

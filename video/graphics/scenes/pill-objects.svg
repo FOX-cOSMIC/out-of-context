@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 640" width="2000" height="640">
+  <!-- Agatha demo: medication objects, one group each (pill-box, blister-pack, pill-organiser,
+       tablets with tablet-* / capsule-* children, glass-of-water). Each group is translated into
+       place; to use one alone, crop to its box: pill-box 40..470, blister-pack 500..860,
+       pill-organiser 880..1440, tablets 1460..1710, glass-of-water 1730..1960 (x, viewBox units). -->
+  <defs>
+    <linearGradient id="po-foil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ECE8F3"/>
+      <stop offset="1" stop-color="#D9D3E6"/>
+    </linearGradient>
+  </defs>
+
+  <g id="shadows" fill="#1E1B2E" opacity="0.1">
+    <ellipse cx="250" cy="580" rx="210" ry="22"/>
+    <ellipse cx="680" cy="580" rx="160" ry="18"/>
+    <ellipse cx="1160" cy="580" rx="280" ry="22"/>
+    <ellipse cx="1585" cy="580" rx="120" ry="16"/>
+    <ellipse cx="1845" cy="580" rx="100" ry="18"/>
+  </g>
+
+  <g id="pill-box" transform="translate(80 120)">
+    <path d="M0,90 L70,30 H380 L310,90 Z" fill="#EFEAF7"/>
+    <path d="M310,90 L380,30 V400 L310,460 Z" fill="#DCD3EC"/>
+    <rect y="90" width="310" height="370" rx="8" fill="#FAF9F5"/>
+    <rect y="150" width="310" height="80" fill="#6B3FE0"/>
+    <path d="M310,150 L380,90 V170 L310,230 Z" fill="#3E1F99"/>
+    <circle cx="260" cy="190" r="22" fill="#FAF9F5" opacity="0.9"/>
+    <rect x="34" y="176" width="150" height="16" rx="8" fill="#FAF9F5" opacity="0.85"/>
+    <rect x="34" y="202" width="96" height="10" rx="5" fill="#FAF9F5" opacity="0.5"/>
+    <rect x="34" y="270" width="200" height="14" rx="7" fill="#DCD6E8"/>
+    <rect x="34" y="300" width="150" height="14" rx="7" fill="#DCD6E8"/>
+    <rect x="34" y="330" width="176" height="14" rx="7" fill="#DCD6E8"/>
+    <rect x="34" y="400" width="80" height="26" rx="13" fill="#E3F6F1"/>
+    <rect x="200" y="404" width="80" height="18" rx="4" fill="#1E1B2E" opacity="0.18"/>
+  </g>
+
+  <g id="blister-pack" transform="translate(540 130) rotate(-6 140 210)">
+    <rect width="280" height="420" rx="26" fill="url(#po-foil)"/>
+    <path d="M140,20 V400 M20,145 H260 M20,275 H260" stroke="#C9C2D8" stroke-width="4" stroke-dasharray="4 12" stroke-linecap="round"/>
+    <g id="blister-bubbles">
+      <ellipse cx="78" cy="82" rx="40" ry="34" fill="#FAF9F5"/><ellipse cx="202" cy="82" rx="40" ry="34" fill="#FAF9F5"/>
+      <ellipse cx="78" cy="210" rx="40" ry="34" fill="#FAF9F5"/><ellipse cx="202" cy="210" rx="40" ry="34" fill="#FAF9F5"/>
+      <ellipse cx="78" cy="338" rx="40" ry="34" fill="#FAF9F5"/>
+      <ellipse id="blister-empty" cx="202" cy="338" rx="40" ry="34" fill="none" stroke="#C9C2D8" stroke-width="6" stroke-dasharray="10 8"/>
+      <g fill="#FFB547">
+        <ellipse cx="78" cy="82" rx="24" ry="18"/><ellipse cx="202" cy="82" rx="24" ry="18"/>
+        <ellipse cx="78" cy="210" rx="24" ry="18"/><ellipse cx="202" cy="210" rx="24" ry="18"/>
+        <ellipse cx="78" cy="338" rx="24" ry="18"/>
+      </g>
+      <g fill="#FAF9F5" opacity="0.8">
+        <ellipse cx="68" cy="74" rx="8" ry="5"/><ellipse cx="192" cy="74" rx="8" ry="5"/>
+        <ellipse cx="68" cy="202" rx="8" ry="5"/><ellipse cx="192" cy="202" rx="8" ry="5"/>
+        <ellipse cx="68" cy="330" rx="8" ry="5"/>
+      </g>
+    </g>
+  </g>
+
+  <g id="pill-organiser" transform="translate(900 300)">
+    <rect y="40" width="520" height="230" rx="30" fill="#3E1F99"/>
+    <rect y="30" width="520" height="220" rx="30" fill="#6B3FE0"/>
+    <g id="organiser-compartments" fill="#3E1F99">
+      <rect x="20" y="52" width="58" height="176" rx="16"/>
+      <rect x="91" y="52" width="58" height="176" rx="16"/>
+      <rect x="162" y="52" width="58" height="176" rx="16"/>
+      <rect x="233" y="52" width="58" height="176" rx="16"/>
+      <rect x="304" y="52" width="58" height="176" rx="16"/>
+      <rect x="375" y="52" width="58" height="176" rx="16"/>
+      <rect x="446" y="52" width="58" height="176" rx="16"/>
+    </g>
+    <g id="organiser-pills">
+      <circle cx="194" cy="180" r="14" fill="#FAF9F5"/>
+      <rect x="170" y="140" width="48" height="22" rx="11" fill="#FF9FB2" transform="rotate(-25 194 151)"/>
+      <ellipse cx="200" cy="208" rx="13" ry="9" fill="#FFB547"/>
+    </g>
+    <g id="organiser-lids">
+      <rect id="organiser-lid-1" x="20" y="52" width="58" height="176" rx="16" fill="#EFE6FF"/>
+      <rect id="organiser-lid-2" x="91" y="52" width="58" height="176" rx="16" fill="#FFF1E3"/>
+      <rect id="organiser-lid-4" x="233" y="52" width="58" height="176" rx="16" fill="#E3F6F1"/>
+      <rect id="organiser-lid-5" x="304" y="52" width="58" height="176" rx="16" fill="#EFE6FF"/>
+      <rect id="organiser-lid-6" x="375" y="52" width="58" height="176" rx="16" fill="#FFF1E3"/>
+      <rect id="organiser-lid-7" x="446" y="52" width="58" height="176" rx="16" fill="#E3F6F1"/>
+      <g id="organiser-lid-3-open">
+        <rect x="162" y="-136" width="58" height="176" rx="16" fill="#FFE1EA"/>
+        <rect x="172" y="-120" width="38" height="12" rx="6" fill="#FF9FB2"/>
+      </g>
+      <g fill="#FFFFFF" opacity="0.7">
+        <rect x="35" y="70" width="28" height="10" rx="5"/>
+        <rect x="106" y="70" width="28" height="10" rx="5"/>
+        <rect x="248" y="70" width="28" height="10" rx="5"/>
+        <rect x="319" y="70" width="28" height="10" rx="5"/>
+        <rect x="390" y="70" width="28" height="10" rx="5"/>
+        <rect x="461" y="70" width="28" height="10" rx="5"/>
+      </g>
+    </g>
+  </g>
+
+  <g id="tablets" transform="translate(1470 200)">
+    <g id="tablet-round">
+      <circle cx="60" cy="70" r="48" fill="#E9E4F1"/>
+      <circle cx="60" cy="64" r="48" fill="#FAF9F5"/>
+      <rect x="22" y="60" width="76" height="8" rx="4" fill="#E2DCEC"/>
+    </g>
+    <g id="capsule-orange" transform="rotate(-35 170 80)">
+      <rect x="110" y="56" width="120" height="50" rx="25" fill="#FFF1E3"/>
+      <path d="M170,56 H135 A25,25 0 0 0 135,106 H170 Z" fill="#FF7A3D"/>
+      <rect x="128" y="64" width="34" height="8" rx="4" fill="#FAF9F5" opacity="0.6"/>
+    </g>
+    <g id="capsule-purple" transform="rotate(20 120 220)">
+      <rect x="60" y="196" width="120" height="50" rx="25" fill="#EFE6FF"/>
+      <path d="M120,196 H85 A25,25 0 0 0 85,246 H120 Z" fill="#6B3FE0"/>
+      <rect x="78" y="204" width="34" height="8" rx="4" fill="#FAF9F5" opacity="0.5"/>
+    </g>
+    <g id="tablet-oval">
+      <ellipse cx="100" cy="338" rx="58" ry="34" fill="#E89A1F" opacity="0.5"/>
+      <ellipse cx="100" cy="332" rx="58" ry="34" fill="#FFB547"/>
+      <ellipse cx="84" cy="322" rx="16" ry="7" fill="#FAF9F5" opacity="0.6"/>
+    </g>
+    <g id="tablet-small">
+      <circle cx="210" cy="300" r="26" fill="#FF9FB2"/>
+      <circle cx="202" cy="292" r="7" fill="#FAF9F5" opacity="0.6"/>
+    </g>
+  </g>
+
+  <g id="glass-of-water" transform="translate(1750 140)">
+    <path d="M0,0 H190 L168,430 C167,442 158,450 146,450 H44 C32,450 23,442 22,430 Z" fill="#E3F6F1" fill-opacity="0.55" stroke="#BFE3D8" stroke-width="6" stroke-linejoin="round"/>
+    <path id="water" d="M10,150 C50,138 80,162 120,150 C150,140 168,146 181,150 L168,430 C167,442 158,450 146,450 H44 C32,450 23,442 22,430 Z" fill="#A9DCCB" fill-opacity="0.75"/>
+    <path d="M10,150 C50,138 80,162 120,150 C150,140 168,146 181,150" stroke="#E3F6F1" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <rect x="34" y="40" width="14" height="340" rx="7" fill="#FFFFFF" opacity="0.7"/>
+    <rect x="58" y="60" width="7" height="120" rx="3.5" fill="#FFFFFF" opacity="0.5"/>
+    <g id="bubbles" fill="#FFFFFF" opacity="0.8">
+      <circle cx="120" cy="240" r="8"/><circle cx="96" cy="320" r="6"/><circle cx="140" cy="370" r="10"/><circle cx="110" cy="200" r="4"/>
+    </g>
+  </g>
+</svg>

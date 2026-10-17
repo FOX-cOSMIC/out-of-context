@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha scene graphics</title>
+<style>
+  :root { --ink:#1E1B2E; --paper:#FAF9F5; --purple:#6B3FE0; --lav:#EFE6FF; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px 32px; background: #ECEAF1; color: var(--ink);
+         font: 15px/1.4 -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  h1 { margin: 0 0 4px; font-size: 24px; }
+  p.sub { margin: 0 0 20px; color: #5A5470; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .card { background: #fff; border-radius: 16px; padding: 12px; box-shadow: 0 1px 3px rgba(30,27,46,.08); }
+  .card.wide { grid-column: 1 / -1; }
+  .name { font: 600 14px/1 ui-monospace, Menlo, monospace; margin: 2px 4px 10px; display: flex; justify-content: space-between; }
+  .name span { font-weight: 400; color: #8A84A0; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .panel { border-radius: 10px; height: 230px; display: flex; align-items: center; justify-content: center; padding: 12px; }
+  .wide .panel { height: 150px; }
+  .tall .panel { height: 330px; }
+  .light { background: var(--paper); border: 1px solid #E6E1EE; }
+  .dark { background: var(--ink); }
+  .panel img { max-width: 100%; max-height: 100%; display: block; }
+</style>
+</head>
+<body>
+<h1>Agatha demo: scene graphics</h1>
+<p class="sub">video/graphics/scenes/ · each file on light (#FAF9F5) and dark (#1E1B2E)</p>
+<div class="grid" id="grid"></div>
+<script>
+  const files = [
+    ["bg-kitchen.svg", "1920x1080", ""],
+    ["bg-soft-gradient.svg", "1920x1080", ""],
+    ["drawer-paperwork.svg", "1200x1000", ""],
+    ["clock-9am.svg", "600x600", ""],
+    ["pill-objects.svg", "2000x640", "wide"],
+    ["medicine-box-amlodipine.svg", "900x800", "tall"],
+    ["medicine-box-detailed.svg", "900x800", "tall"],
+    ["package-leaflet-sheet.svg", "900x1000", "tall"],
+    ["phone-frame.svg", "1606x3020, screen 1206x2622 @ 200,160", "tall"],
+    ["calendar-icon.svg", "600x600", ""],
+    ["incoming-call-badge.svg", "600x600", ""],
+    ["calendar-week.svg", "1400x360", "wide"],
+    ["family-alert.svg", "900x600", ""],
+    ["icons.svg", "1840x220", ""],
+  ];
+  const grid = document.getElementById("grid");
+  for (const [f, size, cls] of files) {
+    const card = document.createElement("div");
+    card.className = "card " + cls;
+    card.innerHTML = `<div class="name">${f}<span>${size}</span></div>
+      <div class="pair"><div class="panel light"><img src="${f}" alt="${f}"></div>
+      <div class="panel dark"><img src="${f}" alt="${f}"></div></div>`;
+    grid.appendChild(card);
+  }
+</script>
+</body>
+</html>

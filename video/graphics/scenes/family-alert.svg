@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <!-- Agatha demo: family alert ("Anna is told"). house = Margaret's home, phone = Anna's phone.
+       Animate: connection-dots draw from house to phone (stroke-dashoffset), heart floats up,
+       notification slides in on the phone screen, alert-badge pops. -->
+  <ellipse id="ground" cx="450" cy="530" rx="400" ry="40" fill="#E3F6F1"/>
+
+  <g id="house">
+    <rect x="300" y="196" width="36" height="80" rx="8" fill="#3E1F99"/>
+    <rect x="120" y="286" width="270" height="226" rx="20" fill="#EFE6FF"/>
+    <path d="M96,304 L255,168 L414,304" fill="#6B3FE0" stroke="#6B3FE0" stroke-width="30" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="120" y="296" width="270" height="22" fill="#DCCBFA"/>
+    <g id="house-window">
+      <rect x="152" y="346" width="96" height="86" rx="14" fill="#FFB547"/>
+      <rect x="196" y="346" width="8" height="86" fill="#FFF1E3"/>
+      <rect x="152" y="386" width="96" height="8" fill="#FFF1E3"/>
+    </g>
+    <g id="house-door">
+      <rect x="276" y="382" width="80" height="130" rx="40" fill="#3E1F99"/>
+      <circle cx="338" cy="452" r="7" fill="#FFB547"/>
+    </g>
+    <g id="house-bush">
+      <circle cx="104" cy="494" r="34" fill="#17694B"/>
+      <circle cx="140" cy="504" r="26" fill="#2D8A66"/>
+    </g>
+  </g>
+
+  <g id="heart" transform="translate(255 40)">
+    <path d="M0,104 C-58,66 -70,38 -60,18 C-48,-6 -12,-6 0,20 C12,-6 48,-6 60,18 C70,38 58,66 0,104 Z" fill="#FF9FB2"/>
+    <path d="M-40,22 C-34,12 -24,10 -16,14" stroke="#FAF9F5" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <path id="connection-dots" d="M410,250 C480,120 600,110 650,180" stroke="#FF7A3D" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="1 26"/>
+
+  <g id="phone" transform="translate(600 170) rotate(8)">
+    <rect x="6" y="12" width="180" height="340" rx="34" fill="#1E1B2E" opacity="0.15"/>
+    <rect width="180" height="340" rx="34" fill="#1E1B2E"/>
+    <rect x="12" y="12" width="156" height="316" rx="24" fill="#FAF9F5"/>
+    <rect x="62" y="22" width="56" height="16" rx="8" fill="#1E1B2E"/>
+    <g id="notification">
+      <rect x="22" y="60" width="136" height="96" rx="18" fill="#EFE6FF"/>
+      <circle cx="50" cy="90" r="16" fill="#6B3FE0"/>
+      <rect x="74" y="80" width="68" height="9" rx="4.5" fill="#B9A6F0"/>
+      <rect x="74" y="96" width="50" height="9" rx="4.5" fill="#D3C6F7"/>
+      <rect x="36" y="122" width="108" height="9" rx="4.5" fill="#D3C6F7"/>
+      <rect x="36" y="138" width="76" height="9" rx="4.5" fill="#D3C6F7"/>
+    </g>
+    <rect x="22" y="170" width="136" height="40" rx="14" fill="#E3F6F1"/>
+    <rect x="22" y="220" width="136" height="40" rx="14" fill="#F3F1F7"/>
+    <rect x="60" y="306" width="60" height="6" rx="3" fill="#1E1B2E" opacity="0.4"/>
+  </g>
+
+  <g id="alert-badge" transform="translate(770 160)">
+    <circle r="36" fill="#FF7A3D"/>
+    <circle r="36" fill="none" stroke="#FAF9F5" stroke-width="7"/>
+    <path d="M-15,8 C-15,-18 15,-18 15,8 L19,13 H-19 Z" fill="#FAF9F5"/>
+    <circle cy="19" r="6" fill="#FAF9F5"/>
+  </g>
+</svg>

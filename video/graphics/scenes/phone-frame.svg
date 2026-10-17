@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1606 3020" width="1606" height="3020">
+  <!-- Agatha demo: modern iPhone frame (iPhone 16 Pro proportions) with a TRANSPARENT screen.
+
+       SCREEN RECT (viewBox units = 1:1 with a 1206x2622 screen recording):
+         x=200  y=160  width=1206  height=2622  corner radius rx=186
+       Place the recording at exactly that rect under this SVG (or clip it with #phone-screen-clip).
+       Whole frame body: x=146 y=106 w=1314 h=2730 rx=240. Extra margin around it holds the shadow.
+       In Remotion: <div style={{position:'relative', width:1606, height:3020}}> with the video at
+       left 200/1606, top 160/3020, width 1206/1606, height 2622/3020, border-radius 186px (scaled),
+       then this SVG on top. The shadow is masked out of the screen, so it never darkens the video.
+
+       Groups: phone-shadow, side-buttons, phone-body (titanium band + black bezel),
+       dynamic-island (hide it if the recording already shows its own), screen-area (empty marker). -->
+  <defs>
+    <linearGradient id="pf-band" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A4560"/>
+      <stop offset="0.5" stop-color="#2A2638"/>
+      <stop offset="1" stop-color="#3A3550"/>
+    </linearGradient>
+    <filter id="pf-blur" filterUnits="userSpaceOnUse" x="0" y="0" width="1606" height="3020">
+      <feGaussianBlur stdDeviation="38"/>
+    </filter>
+    <mask id="pf-no-screen" maskUnits="userSpaceOnUse" x="0" y="0" width="1606" height="3020">
+      <rect width="1606" height="3020" fill="#FFFFFF"/>
+      <path d="M386,160 H1220 A186,186 0 0 1 1406,346 V2596 A186,186 0 0 1 1220,2782 H386 A186,186 0 0 1 200,2596 V346 A186,186 0 0 1 386,160 Z" fill="#000000"/>
+    </mask>
+    <clipPath id="phone-screen-clip">
+      <path d="M386,160 H1220 A186,186 0 0 1 1406,346 V2596 A186,186 0 0 1 1220,2782 H386 A186,186 0 0 1 200,2596 V346 A186,186 0 0 1 386,160 Z"/>
+    </clipPath>
+  </defs>
+
+  <g id="phone-shadow" mask="url(#pf-no-screen)">
+    <path d="M386,166 H1220 A240,240 0 0 1 1460,406 V2636 A240,240 0 0 1 1220,2876 H386 A240,240 0 0 1 146,2636 V406 A240,240 0 0 1 386,166 Z" fill="#1E1B2E" opacity="0.32" filter="url(#pf-blur)"/>
+  </g>
+
+  <g id="side-buttons" fill="#2A2638">
+    <rect x="134" y="520" width="20" height="110" rx="8"/>
+    <rect x="134" y="700" width="20" height="180" rx="8"/>
+    <rect x="134" y="920" width="20" height="180" rx="8"/>
+    <rect x="1452" y="820" width="20" height="280" rx="8"/>
+    <rect x="1452" y="1500" width="16" height="150" rx="7"/>
+  </g>
+
+  <g id="phone-body">
+    <path id="titanium-band" fill-rule="evenodd" fill="url(#pf-band)" d="M386,106 H1220 A240,240 0 0 1 1460,346 V2596 A240,240 0 0 1 1220,2836 H386 A240,240 0 0 1 146,2596 V346 A240,240 0 0 1 386,106 Z M386,160 H1220 A186,186 0 0 1 1406,346 V2596 A186,186 0 0 1 1220,2782 H386 A186,186 0 0 1 200,2596 V346 A186,186 0 0 1 386,160 Z"/>
+    <path id="bezel" fill-rule="evenodd" fill="#07060C" d="M386,122 H1220 A224,224 0 0 1 1444,346 V2596 A224,224 0 0 1 1220,2820 H386 A224,224 0 0 1 162,2596 V346 A224,224 0 0 1 386,122 Z M386,160 H1220 A186,186 0 0 1 1406,346 V2596 A186,186 0 0 1 1220,2782 H386 A186,186 0 0 1 200,2596 V346 A186,186 0 0 1 386,160 Z"/>
+    <path id="band-highlight" fill="none" stroke="#8C86A3" stroke-width="3" opacity="0.6" d="M386,108 H1220 A238,238 0 0 1 1458,346 V2596 A238,238 0 0 1 1220,2834 H386 A238,238 0 0 1 148,2596 V346 A238,238 0 0 1 386,108 Z"/>
+  </g>
+
+  <g id="dynamic-island">
+    <rect x="615.5" y="193" width="375" height="111" rx="55.5" fill="#000000"/>
+    <circle cx="926" cy="248.5" r="20" fill="#14121F"/>
+    <circle cx="926" cy="248.5" r="9" fill="#1F1C33"/>
+  </g>
+
+  <rect id="screen-area" x="200" y="160" width="1206" height="2622" rx="186" fill="none"/>
+</svg>

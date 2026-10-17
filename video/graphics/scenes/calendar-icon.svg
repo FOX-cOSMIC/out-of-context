@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <!-- Agatha demo: calendar with the heart-ultrasound appointment highlighted.
+       appointment-day = the orange day (pulse/scale it); appointment-badge = floating heart tag.
+       Mint days with dots = days already passed. No numbers by design (text is added in Remotion). -->
+  <ellipse cx="300" cy="560" rx="210" ry="18" fill="#1E1B2E" opacity="0.1"/>
+  <g id="calendar-page">
+    <rect x="80" y="118" width="440" height="420" rx="40" fill="#E4D9F7"/>
+    <rect x="80" y="104" width="440" height="420" rx="40" fill="#FAF9F5"/>
+  </g>
+  <g id="calendar-header">
+    <path d="M120,104 H480 A40,40 0 0 1 520,144 V214 H80 V144 A40,40 0 0 1 120,104 Z" fill="#6B3FE0"/>
+    <rect x="220" y="150" width="160" height="20" rx="10" fill="#FAF9F5" opacity="0.55"/>
+    <circle cx="190" cy="132" r="10" fill="#3E1F99"/>
+    <circle cx="410" cy="132" r="10" fill="#3E1F99"/>
+  </g>
+  <g id="calendar-rings" fill="#3E1F99">
+    <rect x="178" y="72" width="24" height="66" rx="12"/>
+    <rect x="398" y="72" width="24" height="66" rx="12"/>
+  </g>
+  <g id="calendar-grid">
+      <rect x="120" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="137" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="174" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="191" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="229" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="246" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="283" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="300" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="337" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="354" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="392" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="409" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="446" y="255" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="463" cy="272" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="120" y="315" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="137" cy="332" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="174" y="315" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="191" cy="332" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="229" y="315" width="34" height="34" rx="10" fill="#E3F6F1"/>
+      <circle cx="246" cy="332" r="6" fill="#17694B" opacity="0.55"/>
+      <rect x="283" y="315" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="392" y="315" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="446" y="315" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="120" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="174" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="229" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="283" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="337" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="392" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="446" y="375" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="120" y="435" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="174" y="435" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="229" y="435" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="283" y="435" width="34" height="34" rx="10" fill="#EFE6FF"/>
+      <rect x="337" y="435" width="34" height="34" rx="10" fill="#EFE6FF"/>
+  </g>
+  <g id="appointment-day">
+    <circle cx="354" cy="332" r="34" fill="#FF7A3D"/>
+    <path d="M354,350 C334,337 330,327 333,320 C337,311 349,311 354,319 C359,311 371,311 375,320 C378,327 374,337 354,350 Z" fill="#FAF9F5"/>
+  </g>
+  <g id="appointment-badge" transform="translate(450 410)">
+    <circle cx="50" cy="50" r="58" fill="#FF9FB2"/>
+    <circle cx="50" cy="50" r="58" fill="none" stroke="#FAF9F5" stroke-width="8"/>
+    <path d="M50,84 C16,62 10,46 15,34 C21,20 42,20 50,34 C58,20 79,20 85,34 C90,46 84,62 50,84 Z" fill="#FAF9F5"/>
+    <path d="M18,52 H36 L42,40 L52,66 L60,48 H82" stroke="#FF7A3D" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
