@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha Demo Plan</title>
+<meta name="description" content="Current 2-minute demo video plan for Agatha, team Out of Context, Claude Impact Lab Berlin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#6B3FE0; --purple-ink:#5530C4; --lavender:#EFE6FF; --paper:#FAF9F5; --ink:#1E1B2E;
+  --orange:#FF7A3D; --mint:#E3F6F1;
+  --bg:var(--paper); --surface:#FFFFFF; --surface-2:var(--lavender); --text:var(--ink);
+  --muted:#5D5873; --line:#E4DFEE; --accent:var(--purple); --accent-text:var(--purple-ink);
+  --chip-ready-bg:#DDF3EA; --chip-ready-fg:#1D6B4F;
+  --chip-build-bg:#FFE7DA; --chip-build-fg:#A2420F;
+  --chip-todo-bg:#ECEAF2; --chip-todo-fg:#55506A;
+  --mint-bg:var(--mint); --shadow:0 1px 2px rgba(30,27,46,.06),0 6px 20px rgba(30,27,46,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15131F; --surface:#1F1C2C; --surface-2:#2A2340; --text:#F1EEF8; --muted:#B4AECB;
+    --line:#342F47; --accent:#9C7BFF; --accent-text:#B9A2FF;
+    --chip-ready-bg:#173B30; --chip-ready-fg:#8FE0BF;
+    --chip-build-bg:#47261A; --chip-build-fg:#FFB48D;
+    --chip-todo-bg:#2C293A; --chip-todo-fg:#C3BED6;
+    --mint-bg:#163530; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15131F; --surface:#1F1C2C; --surface-2:#2A2340; --text:#F1EEF8; --muted:#B4AECB;
+  --line:#342F47; --accent:#9C7BFF; --accent-text:#B9A2FF;
+  --chip-ready-bg:#173B30; --chip-ready-fg:#8FE0BF;
+  --chip-build-bg:#47261A; --chip-build-fg:#FFB48D;
+  --chip-todo-bg:#2C293A; --chip-todo-fg:#C3BED6;
+  --mint-bg:#163530; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3{font-family:Quicksand,system-ui,sans-serif;line-height:1.2;margin:0}
+h2{font-size:1.6rem;margin-bottom:.35rem}
+h3{font-size:1.1rem}
+p{margin:.4rem 0}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+section{padding:40px 0 8px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+
+/* nav */
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none}
+nav a{flex:none;color:var(--muted);text-decoration:none;font-size:.88rem;padding:4px 10px;border-radius:99px;font-weight:700}
+nav a:hover{background:var(--surface-2);color:var(--accent-text)}
+
+/* hero */
+.hero{padding:44px 0 20px}
+.eyebrow{display:inline-block;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent-text);background:var(--surface-2);padding:4px 12px;border-radius:99px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.6rem);margin:14px 0 8px}
+.hero h1 span{color:var(--accent)}
+.pitch{font-family:Quicksand,sans-serif;font-weight:700;font-size:clamp(1.2rem,3vw,1.6rem);margin:0 0 14px}
+.pitch em{font-style:normal;color:var(--orange)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.fact b{display:block;font-family:Quicksand,sans-serif;font-size:1.35rem;color:var(--accent-text)}
+.fact span{font-size:.88rem;color:var(--muted)}
+.scores{display:flex;height:30px;border-radius:10px;overflow:hidden;margin-top:12px;font-size:.8rem;font-weight:700}
+.scores .short{display:none}
+.scores div{display:flex;align-items:center;justify-content:center;color:#fff;white-space:nowrap;overflow:hidden}
+
+/* timeline bar */
+.bar{display:flex;gap:3px;margin:6px 0 22px}
+.bar div{height:34px;border-radius:8px;background:var(--surface-2);color:var(--accent-text);font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;padding:0 4px}
+.bar div.hot{background:var(--accent);color:#fff}
+.bar div.fam{background:var(--orange);color:#fff}
+
+/* timeline */
+.tl{position:relative;margin:0;padding:0;list-style:none}
+.tl::before{content:"";position:absolute;left:46px;top:6px;bottom:6px;width:3px;background:var(--line);border-radius:3px}
+.beat{position:relative;display:grid;grid-template-columns:96px 1fr;gap:14px;margin-bottom:16px}
+.time{position:relative;z-index:1;align-self:start;text-align:center;background:var(--accent);color:#fff;font-family:Quicksand,sans-serif;font-weight:700;border-radius:12px;padding:6px 4px;font-size:.92rem;line-height:1.2}
+.time small{display:block;font-size:.72rem;opacity:.85;font-weight:600}
+.beat.fam .time{background:var(--orange)}
+.beat .card{padding:16px 18px}
+.beat h3{margin-bottom:10px}
+.beat h3 .tag{font-family:"Atkinson Hyperlegible",sans-serif;font-size:.72rem;vertical-align:middle;margin-left:6px}
+.fields{display:grid;grid-template-columns:1fr 1.25fr;gap:10px 18px}
+.field .k{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.line{margin:4px 0}
+.who{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:99px;margin-right:6px;vertical-align:1px}
+.who.n{background:#E6E3EF;color:#3D3852}
+.who.m{background:#FFE7DA;color:#8E3A0E}
+.who.a{background:var(--lavender);color:#4B2BB0}
+.who.an{background:#DDF3EA;color:#1D6B4F}
+.overlay{grid-column:1/-1;background:var(--mint-bg);border-radius:12px;padding:8px 12px;font-family:Quicksand,sans-serif;font-weight:700}
+.overlay .k{font-family:"Atkinson Hyperlegible",sans-serif}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--surface-2)}
+.tbl tr:last-child td{border-bottom:0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--surface-2);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+
+/* pipeline */
+.pipe{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap}
+.step{flex:1 1 0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);min-width:0}
+.step .n{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;margin-bottom:6px}
+.step h3{margin-bottom:4px}
+.step p{font-size:.88rem;color:var(--muted);margin:0}
+.step.out{background:var(--purple);border-color:var(--purple)}
+.step.out h3,.step.out p{color:#fff}
+.step.out .n{background:#fff;color:var(--purple)}
+.arrow{flex:none;width:26px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700;font-size:1.3rem}
+
+/* chips */
+.chip{display:inline-block;font-size:.76rem;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.chip.ready{background:var(--chip-ready-bg);color:var(--chip-ready-fg)}
+.chip.building{background:var(--chip-build-bg);color:var(--chip-build-fg)}
+.chip.todo{background:var(--chip-todo-bg);color:var(--chip-todo-fg)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.concept h3{margin:6px 0}
+.concept ul,.card ul{margin:.4rem 0 0;padding-left:1.1rem}
+.concept li,.card li{margin:.2rem 0}
+.rec{border:2px solid var(--accent)}
+
+/* call flow */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.88rem}
+.flow i{font-style:normal;color:var(--accent);font-weight:700}
+.flow span.alert{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700;font-family:Quicksand,sans-serif;font-size:1.05rem}
+details p{margin:.6rem 0 .2rem;color:var(--text)}
+
+.check{list-style:none;padding:0;margin:0}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.check li:last-child{border-bottom:0}
+.box{flex:none;width:22px;height:22px;border:2px solid var(--accent);border-radius:6px;margin-top:2px}
+
+footer{padding:36px 0 48px;color:var(--muted);font-size:.88rem}
+
+@media (max-width:860px){
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .grid3{grid-template-columns:1fr}
+  .pipe{flex-direction:column}
+  .arrow{width:auto;height:24px;transform:rotate(90deg)}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .grid2{grid-template-columns:1fr}
+  .fields{grid-template-columns:1fr}
+  .tl::before{left:15px}
+  .beat{grid-template-columns:1fr;gap:6px;padding-left:36px}
+  .time{justify-self:start;padding:4px 12px;display:flex;gap:8px;align-items:baseline}
+  .time small{display:inline}
+  .beat::before{content:"";position:absolute;left:9px;top:9px;width:15px;height:15px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+  .beat.fam::before{background:var(--orange)}
+  .scores{font-size:.68rem}
+  .scores div{padding:0 2px}
+  .scores .long{display:none}.scores .short{display:inline}
+  .bar div{font-size:0}
+  .bar div::after{content:attr(data-s);font-size:.68rem}
+  .tbl.stack thead{display:none}
+  .tbl.stack,.tbl.stack tbody,.tbl.stack tr,.tbl.stack td{display:block;width:100%}
+  .tbl.stack tr{border-bottom:1px solid var(--line);padding:8px 0}
+  .tbl.stack tr:last-child{border-bottom:0}
+  .tbl.stack td{border:0;padding:3px 14px}
+  .tbl.stack td[data-l]::before{content:attr(data-l) ": ";font-weight:700;color:var(--muted);font-size:.82rem}
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="Sections"><div class="wrap">
+  <a href="#timeline">Timeline</a><a href="#cast">Voices</a><a href="#pipeline">Pipeline</a><a href="#shots">Shot list</a><a href="#concepts">Other concepts</a><a href="#finals">Finals</a><a href="#qa">Judge Q&amp;A</a><a href="#risks">Risks</a><a href="#decisions">Open decisions</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Team Out of Context · Claude Impact Lab Berlin · 17 Oct 2026</span>
+  <h1><span>Agatha</span> demo video plan</h1>
+  <p class="pitch">Medicines are why they start. <em>AI skills are what they keep.</em></p>
+  <p class="lead">Agatha is an iPhone voice companion for older adults. Margaret Weber, 78, taps the big Agatha, talks in her own words, shows a photo, checks the answer. Agatha keeps her pills, papers and notes, and calls <em>her</em> when it's time. Concept: <b>"A day with Margaret"</b>.</p>
+  <div class="facts">
+    <div class="fact"><b>2:00</b><span>hard cap for the video</span></div>
+    <div class="fact"><b>Video → README</b><span>judges watch first, then read</span></div>
+    <div class="fact"><b>6 + 4 min</b><span>finals: live demo + Q&amp;A</span></div>
+    <div class="fact"><b>Sonnet 5.5</b><span>speech + voice on our own Mac</span></div>
+  </div>
+  <div class="scores" role="img" aria-label="Judging: Impact 40, Demo 20, Tech 20, Creativity 20">
+    <div style="flex:40;background:#6B3FE0">Impact 40</div>
+    <div style="flex:20;background:#8A68EA">Demo 20</div>
+    <div style="flex:20;background:#FF7A3D">Tech 20</div>
+    <div style="flex:20;background:#2E9A78"><span class="long">Creativity 20</span><span class="short">Creative 20</span></div>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<section id="timeline">
+  <h2>Timeline · 0:00 to 2:00</h2>
+  <p class="lead">One believable day. Each beat: what's on screen, who speaks, and the animated text that explains the idea. Lines are short; leave half a second after each tap.</p>
+  <div class="bar" aria-hidden="true">
+    <div style="flex:10" data-s="Hook">Hook</div>
+    <div class="hot" style="flex:22" data-s="Call">09:00 call</div>
+    <div class="hot" style="flex:23" data-s="Scan">Scan</div>
+    <div style="flex:15" data-s="Safe">Safety</div>
+    <div style="flex:15" data-s="Week">Memory</div>
+    <div class="fam" style="flex:17" data-s="Anna">Family</div>
+    <div style="flex:18" data-s="Close">Close</div>
+  </div>
+  <ol class="tl">
+    <li class="beat"><div class="time">0:00<small>–0:10</small></div><div class="card">
+      <h3>Hook: Margaret's kitchen table</h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Pill boxes, a paper medication plan, a drawer of letters. Slow push-in.</div>
+        <div class="field"><div class="k">Voice</div><p class="line"><span class="who n">Narrator</span>"Margaret is 78. Five medicines, a drawer of paperwork, and she has never used AI."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>Margaret, 78 · 5 medicines · never used AI</div>
+      </div></div></li>
+
+    <li class="beat"><div class="time">0:10<small>–0:32</small></div><div class="card">
+      <h3>09:00 · Agatha calls <span class="chip building tag">building</span></h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Notification with alarm sound → "Agatha is calling" call screen → home → pill sheet → <b>Slide to confirm</b>. The Pills ring fills.</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who a">Agatha</span>"Hello Margaret, it's time for your morning pills. Please confirm you have taken them."</p>
+          <p class="line"><span class="who m">Margaret</span>"I took them." <span class="muted small">(slides)</span></p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>AI calls her. She doesn't have to open an app.</div>
+      </div></div></li>
+
+    <li class="beat"><div class="time">0:32<small>–0:55</small></div><div class="card">
+      <h3>A new box from the pharmacy</h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Scan tab → photo of the Amlodipine box → "Here is what I read" card → compared with her plan → Margaret taps <b>Yes</b>.</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who a">Agatha</span>"Amlodipine is new. Everything else matches your plan. Please check the card."</p>
+          <p class="line"><span class="who n">Narrator</span>"She checks what AI read. That's her first AI lesson."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>AI skill: show a photo · AI skill: check the answer</div>
+      </div></div></li>
+
+    <li class="beat"><div class="time">0:55<small>–1:10</small></div><div class="card">
+      <h3>Safety: stays on topic, no medical advice</h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Tap Agatha, live words, "You said", a short spoken answer, then the note card in Notes.</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who m">Margaret</span>"Can I skip my Metformin today?"</p>
+          <p class="line"><span class="who a">Agatha</span>"Please don't change anything on your own. Ask Dr Hoffmann or your pharmacist. Shall I note the question?"</p>
+          <p class="line"><span class="who m">Margaret</span>"Yes, please."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>Never medical advice. Questions go to her doctor.</div>
+      </div></div></li>
+
+    <li class="beat"><div class="time">1:10<small>–1:25</small></div><div class="card">
+      <h3>Evening: "How did I do this week?"</h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Spoken answer, then cut to Pills → history (week) and the calendar.</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who m">Margaret</span>"How did I do this week?"</p>
+          <p class="line"><span class="who a">Agatha</span>"You took 95% of your pills this week. Your mornings were perfect."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>Answers from her own history and calendar</div>
+      </div></div></li>
+
+    <li class="beat fam"><div class="time">1:25<small>–1:42</small></div><div class="card">
+      <h3>When she doesn't confirm <span class="chip building tag">building</span></h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Quick cuts: the 09:00 call, retries at +10 and +20 min, then at +30 min "Agatha let Anna know". Anna's message (labelled <i>simulated</i>).</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who n">Narrator</span>"Only 'already taken' counts. 'Later' isn't accepted, so Agatha tries again."</p>
+          <p class="line"><span class="who an">Anna</span>"Thanks, Agatha. I'll call Mum."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>+10 min · +20 min · +30 min → Anna is told</div>
+      </div></div></li>
+
+    <li class="beat"><div class="time">1:42<small>–2:00</small></div><div class="card">
+      <h3>Close</h3>
+      <div class="fields">
+        <div class="field"><div class="k">On screen</div>Margaret's home screen, big Agatha. End card: Agatha logo, team name, tagline.</div>
+        <div class="field"><div class="k">Voice</div>
+          <p class="line"><span class="who n">Narrator</span>"Talk in your own words. Show a photo. Check the answer. Medicines are why they start. AI skills are what they keep."</p></div>
+        <div class="overlay"><span class="k small muted">Text overlay · </span>Claude Sonnet 5.5 · speech and voice on our own Mac</div>
+      </div></div></li>
+  </ol>
+  <p class="small muted">Spare beat, cut first if long: the eye clinic letter (scan → Tuesday 3 Nov, 10:15, bring glasses, don't drive → saved). Borrow from Concept B if there's room: the 5-second "too blurry, please take it again" shot.</p>
+</section>
+
+<section id="cast">
+  <h2>Cast and voices</h2>
+  <p class="lead">All voices generated locally with Kokoro on this Mac. Final picks still open.</p>
+  <table class="tbl stack">
+    <thead><tr><th>Role</th><th>Who</th><th>Kokoro voice</th><th>Speaks in</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Role"><span class="who n">Narrator</span></td><td data-l="Who">Explains the idea, links the beats</td><td data-l="Voice">British male, e.g. "George"</td><td data-l="Beats">Hook, scan lesson, family, close</td></tr>
+      <tr><td data-l="Role"><span class="who m">Margaret</span></td><td data-l="Who">Margaret Weber, 78, five medicines</td><td data-l="Voice">Older female (to pick)</td><td data-l="Beats">Call, safety, memory</td></tr>
+      <tr><td data-l="Role"><span class="who an">Anna</span></td><td data-l="Who">Her daughter, lives far away</td><td data-l="Voice">Younger female (to pick)</td><td data-l="Beats">Family alert</td></tr>
+      <tr><td data-l="Role"><span class="who a">Agatha</span></td><td data-l="Who">The companion; short, warm answers</td><td data-l="Voice">"Emma" (the app's local natural voice)</td><td data-l="Beats">Every app beat</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Off-screen names used in lines: Dr Hoffmann (her doctor), her pharmacist.</p>
+</section>
+
+<section id="pipeline">
+  <h2>Production pipeline</h2>
+  <p class="lead">Everything is made on this Mac. No cloud video tools.</p>
+  <div class="pipe">
+    <div class="step"><span class="n">1</span><h3>Script</h3><p>The timeline above: lines per role, overlay text, timings.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="step"><span class="n">2</span><h3>Voices</h3><p>Kokoro renders each role's lines as audio clips.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="step"><span class="n">3</span><h3>App footage</h3><p>iOS Simulator <code>xcrun simctl io recordVideo</code>, or the real iPhone via QuickTime.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="step"><span class="n">4</span><h3>Remotion</h3><p>React scenes: footage + voice + animated text overlays.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="step out"><span class="n">5</span><h3>MP4</h3><p>1080p render, under 2:00, linked in the README.</p></div>
+  </div>
+</section>
+
+<section id="shots">
+  <h2>Shot list</h2>
+  <div class="legend"><span class="chip ready">ready</span><span class="chip building">building</span><span class="chip todo">todo</span></div>
+  <table class="tbl stack">
+    <thead><tr><th>Shot</th><th>Beat</th><th>Source</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Shot">Kitchen table, pill boxes, paper plan</td><td data-l="Beat">Hook</td><td data-l="Source">Photo/still + Remotion motion</td><td><span class="chip todo">todo</span></td></tr>
+      <tr><td data-l="Shot">Notification + alarm → "Agatha is calling" → home → Slide to confirm</td><td data-l="Beat">09:00 call</td><td data-l="Source">Simulator / iPhone</td><td><span class="chip building">building</span></td></tr>
+      <tr><td data-l="Shot">Scan Amlodipine box → "Here is what I read" → "Amlodipine is new" → Yes</td><td data-l="Beat">Scan</td><td data-l="Source">iPhone (camera) or Simulator (Photos)</td><td><span class="chip ready">ready</span></td></tr>
+      <tr><td data-l="Shot">Tap Agatha, live words, "You said", Metformin question → note saved</td><td data-l="Beat">Safety</td><td data-l="Source">Simulator / iPhone</td><td><span class="chip ready">ready</span></td></tr>
+      <tr><td data-l="Shot">"How did I do this week?" → "95% this week" + Pills history week/month, calendar</td><td data-l="Beat">Memory</td><td data-l="Source">Simulator / iPhone</td><td><span class="chip ready">ready</span></td></tr>
+      <tr><td data-l="Shot">Retries +10 / +20 min, +30 min Anna notified (simulated)</td><td data-l="Beat">Family</td><td data-l="Source">Simulator, test trigger</td><td><span class="chip building">building</span></td></tr>
+      <tr><td data-l="Shot">Eye clinic letter scan → appointment saved (spare)</td><td data-l="Beat">Spare</td><td data-l="Source">Simulator / iPhone</td><td><span class="chip ready">ready</span></td></tr>
+      <tr><td data-l="Shot">Voice tracks: Narrator, Margaret, Anna, Agatha</td><td data-l="Beat">All</td><td data-l="Source">Kokoro on the Mac</td><td><span class="chip todo">todo</span></td></tr>
+      <tr><td data-l="Shot">Animated text overlays + end card</td><td data-l="Beat">All</td><td data-l="Source">Remotion</td><td><span class="chip todo">todo</span></td></tr>
+      <tr><td data-l="Shot">Final render, MP4 1080p, link in README</td><td data-l="Beat">Output</td><td data-l="Source">Remotion</td><td><span class="chip todo">todo</span></td></tr>
+    </tbody>
+  </table>
+  <div class="card" style="margin-top:14px">
+    <h3>The reminder flow being built</h3>
+    <div class="flow">
+      <span>09:00 fixed time</span><i>→</i><span>Notification + alarm</span><i>→</i><span>"Agatha is calling"</span><i>→</i><span>Home: "Please confirm…"</span><i>→</i><span>Slide to confirm</span>
+    </div>
+    <div class="flow">
+      <span>Not confirmed ("later" doesn't count)</span><i>→</i><span>Retry +10 min</span><i>→</i><span>Retry +20 min</span><i>→</i><span class="alert">+30 min: Anna notified (simulated)</span>
+    </div>
+  </div>
+</section>
+
+<section id="concepts">
+  <h2>The other two concepts</h2>
+  <p class="lead">Kept as backups. We borrow one shot from each.</p>
+  <div class="grid3">
+    <div class="card concept rec"><span class="chip ready">chosen</span><h3>A · A day with Margaret</h3><p class="small">"Margaret is 78 and has never used AI. Today, AI calls <i>her</i>." Covers all four judging lines in one day; every beat has a fallback.</p></div>
+    <div class="card concept"><span class="chip todo">backup</span><h3>B · The drawer of paperwork</h3><p class="small">Before/after: a messy drawer, four scans (plan change, bank letter, Anna's note, a blurry plan), then a tidy drawer.</p><ul class="small"><li><b>Wow:</b> plan change in one sentence; honest "too blurry".</li><li><b>Weak:</b> scan-heavy, looks like OCR, little voice.</li><li><b>Borrow:</b> the 5 s "too blurry" shot.</li></ul></div>
+    <div class="card concept"><span class="chip todo">backup</span><h3>C · Anna's phone</h3><p class="small">The daughter, 300 km away, used to call every evening about pills. Margaret's day, then missed calls reach Anna.</p><ul class="small"><li><b>Wow:</b> the missed calls reaching Anna.</li><li><b>Weak:</b> leans on the newest feature, needs two actors, least AI skill.</li><li><b>Borrow:</b> Anna's message as the family beat.</li></ul></div>
+  </div>
+</section>
+
+<section id="finals">
+  <h2>Finals · 6-minute live demo</h2>
+  <p class="lead">Phone mirrored (QuickTime / AirPlay). Mac server, speech and voice warmed up 2 min before; demo plan and history pre-loaded; call armed with a test trigger; backup video cued. One person drives, one narrates.</p>
+  <table class="tbl stack">
+    <thead><tr><th>Time</th><th>Beat</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Time"><b>0:00–0:45</b></td><td data-l="Beat">Story</td><td>Margaret, 78: five medicines, paper plans, a worried daughter, never used AI. "We built the AI she would actually use."</td></tr>
+      <tr><td data-l="Time"><b>0:45–1:45</b></td><td data-l="Beat">Agatha calls</td><td>Trigger the test call, phone rings, Slide to confirm. "She didn't open an app."</td></tr>
+      <tr><td data-l="Time"><b>1:45–2:45</b></td><td data-l="Beat">Show, check</td><td>Scan the Amlodipine box live → "Amlodipine is new" → Yes. "First AI lesson: check what AI read."</td></tr>
+      <tr><td data-l="Time"><b>2:45–3:30</b></td><td data-l="Beat">Safety</td><td>"Can I skip my Metformin?" → doctor or pharmacist, offers to note it → Notes.</td></tr>
+      <tr><td data-l="Time"><b>3:30–4:15</b></td><td data-l="Beat">Memory</td><td>"How did I do this week?" → 95% + Pills history. "When is my next appointment?" → calendar answer.</td></tr>
+      <tr><td data-l="Time"><b>4:15–4:45</b></td><td data-l="Beat">Family</td><td>Missed-call retries and Anna's alert (say it's simulated). Show SOS, tap only "Call Anna", never 112.</td></tr>
+      <tr><td data-l="Time"><b>4:45–5:30</b></td><td data-l="Beat">Under the hood</td><td>Sonnet 5.5 with tools and vision, speech + voice on our Mac, data stays on the phone, scan test results.</td></tr>
+      <tr><td data-l="Time"><b>5:30–6:00</b></td><td data-l="Beat">Close</td><td>"Medicines are why they start. AI skills are what they keep." Next steps in one line.</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">If a reply takes over 8 s, the narrator talks through what Claude is doing. If the network dies, switch to the backup video at the same beat. Then 4 min Q&amp;A.</p>
+</section>
+
+<section id="qa">
+  <h2>Judge Q&amp;A</h2>
+  <details><summary>Isn't this medical advice? What if it misreads a dose?</summary><p>Agatha explains and organises; she never says keep, skip, stop or combine. Those questions go to the doctor or pharmacist, and she offers to note them. Nothing from a photo is saved until the user taps Yes; a blurry photo gets "please take it again", not a guess. In our 7 scan tests nothing was invented. Emergencies go to 112.</p></details>
+  <details><summary>Where does Margaret's data go?</summary><p>Plan, notes and papers stay on the iPhone, with a "Delete all my data" button. Speech recognition and the voice run on our own Mac, not a speech company. The server listens only on localhost, reached over a private Tailscale network. Claude sees the conversation, the newest photo and the plan. Production would need a hosted backend with a data agreement (EU region, no training).</p></details>
+  <details><summary>Why would a 78-year-old use this when she won't use ChatGPT?</summary><p>She doesn't learn an app: Agatha calls her, she just talks or holds up the paper. It starts with a job she already has every day, her pills, not "try AI". Big type, a word on every button, a patient voice that uses her name. Family is the way in: Anna installs it, Margaret keeps using it.</p></details>
+  <details><summary>What's real and what's simulated?</summary><p><b>Real:</b> Claude with vision and tools, scanning and plan comparison, schedule and ticks, notes and papers, history and calendar answers (from demo data), local speech and voice, on a real iPhone. <b>Simulated:</b> the "call" is an in-app call screen with local notifications; the calendar connection is demo data; the family alert is a simulated message. Re-check this list against the build before the finals.</p></details>
+  <details><summary>Business model / what next?</summary><p>Families pay a monthly subscription (bought by Anna); pharmacies and care services white-label it. Germany's Medikationsplan has a barcode, so we could read it exactly. Next: real alarms, family sharing with consent, German first, a pilot with a pharmacy or senior centre.</p></details>
+</section>
+
+<section id="risks">
+  <h2>Risks and plan B</h2>
+  <div class="grid2">
+    <div class="card"><h3>Call flow isn't stable by recording time</h3><p class="small muted">Plan B: record from the Simulator with the test trigger; or drop the call beat and open on the Pills tab.</p></div>
+    <div class="card"><h3>Scan answer skips "Amlodipine is new"</h3><p class="small muted">Plan B: record 2–3 takes, keep the one that says "new".</p></div>
+    <div class="card"><h3>Run goes over 2:00</h3><p class="small muted">Plan B: eye letter is already out; trim the memory beat next, then shorten the hook.</p></div>
+    <div class="card"><h3>Network chain fails (phone → Tailscale → Mac → Claude)</h3><p class="small muted">Plan B: pre-record footage in quiet conditions; Simulator talks to the Mac on loopback. Live finals: backup video at the same beat.</p></div>
+    <div class="card"><h3>Remotion not approved or too slow to learn</h3><p class="small muted">Plan B: cut with ffmpeg (concat + drawtext overlays) or QuickTime/iMovie; keep the same timeline.</p></div>
+    <div class="card"><h3>Kokoro voices sound robotic for Margaret</h3><p class="small muted">Plan B: a teammate records Margaret's few lines; keep Kokoro for the narrator and Agatha.</p></div>
+    <div class="card"><h3>A judge thinks the family alert is real</h3><p class="small muted">Plan B: label it "simulated" on screen and say so in the README.</p></div>
+    <div class="card"><h3>SOS on camera</h3><p class="small muted">Call 112 dials for real. Never tap it; only ever "Call Anna".</p></div>
+  </div>
+</section>
+
+<section id="decisions">
+  <h2>Open decisions</h2>
+  <div class="card">
+    <ul class="check">
+      <li><span class="box"></span><div><b>Approve Remotion</b> for assembly and render <span class="muted small">(otherwise ffmpeg / iMovie)</span></div></li>
+      <li><span class="box"></span><div><b>16:9 or 9:16?</b> <span class="muted small">16:9 suits judges' screens and text overlays; 9:16 fills a phone and shows the app full-size.</span></div></li>
+      <li><span class="box"></span><div><b>Final voices:</b> narrator (George?), Margaret, Anna, Agatha (Emma?)</div></li>
+      <li><span class="box"></span><div><b>Footage source:</b> Simulator recording or real iPhone via QuickTime (per shot)</div></li>
+      <li><span class="box"></span><div><b>Spare beat:</b> eye clinic letter or the "too blurry" shot, if time allows</div></li>
+    </ul>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap">Agatha · Team Out of Context · Claude Impact Lab Berlin, 17 Oct 2026 · Plan as of today; the call flow is still being built.</div></footer>
+</body>
+</html>
