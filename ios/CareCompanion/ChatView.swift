@@ -107,13 +107,7 @@ struct ChatView: View {
                     .buttonStyle(BigButtonStyle(color: Theme.Palette.purple))
                     .padding(.horizontal, Theme.Metrics.screenPadding)
                 }
-                SkillsBar().padding(.horizontal, Theme.Metrics.screenPadding)
-                HStack(spacing: Theme.Metrics.spacingMedium) {
-                    photoButton
-                    typeField
-                }
-                .padding(.horizontal, Theme.Metrics.screenPadding)
-                .padding(.bottom, Theme.Metrics.screenPadding)
+                Spacer(minLength: Theme.Metrics.screenPadding)
             }
         }
         .scrollDismissesKeyboard(.interactively)
