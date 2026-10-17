@@ -117,38 +117,54 @@ struct ChatView: View {
         .background(Theme.Palette.page.ignoresSafeArea())
     }
 
-    /// The pill at the bottom: talk (tap again when done) and type.
+    /// The bottom controls: a big labelled talk button (words, not just an icon) and a smaller "Type".
     private var talkTypePill: some View {
         let listening = model.isRecording || model.isStartingMic
-        return HStack(spacing: 0) {
+        return HStack(spacing: Theme.Metrics.spacingMedium) {
             Button {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                 showTyping = false
                 model.toggleRecording()
             } label: {
-                Image(systemName: listening ? "stop.fill" : "waveform")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(listening ? Theme.Colors.onColor : Theme.Palette.purpleDeep)
-                    .frame(width: 96, height: 64)
-                    .background(listening ? Theme.Colors.danger : Color.clear, in: Capsule())
+                HStack(spacing: 12) {
+                    Image(systemName: listening ? "stop.fill" : "mic.fill")
+                        .font(.system(size: 30, weight: .bold))
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(listening ? "Done" : "Tap to talk")
+                            .font(Theme.Typeface.heading(26))
+                        Text(listening ? "tap when finished" : "then speak to Agatha")
+                            .font(Theme.Typeface.body(16, weight: .bold))
+                            .opacity(0.9)
+                    }
+                }
+                .foregroundStyle(Theme.Colors.onColor)
+                .frame(maxWidth: .infinity, minHeight: 76)
+                .background(listening ? Theme.Colors.danger : Theme.Palette.purple,
+                            in: RoundedRectangle(cornerRadius: 24))
+                .shadow(color: (listening ? Theme.Colors.danger : Theme.Palette.purple).opacity(0.3), radius: 10, y: 4)
             }
+            .buttonStyle(.plain)
             .disabled(model.isBusy)
-            .accessibilityLabel(listening ? "Done talking" : "Talk to Agatha")
+            .opacity(model.isBusy ? 0.5 : 1)
+            .accessibilityLabel(listening ? "Done talking" : "Tap to talk to Agatha")
+
             Button {
                 showTyping.toggle()
                 typing = showTyping
             } label: {
-                Image(systemName: "keyboard")
-                    .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.purpleDeep)
-                    .frame(width: 96, height: 64)
+                VStack(spacing: 2) {
+                    Image(systemName: "keyboard").font(.system(size: 24, weight: .semibold))
+                    Text("Type").font(Theme.Typeface.body(16, weight: .bold))
+                }
+                .foregroundStyle(Theme.Palette.purpleDeep)
+                .frame(width: 84, height: 76)
+                .background(Theme.Palette.lavender, in: RoundedRectangle(cornerRadius: 24))
             }
+            .buttonStyle(.plain)
             .disabled(listening || model.isBusy)
-            .accessibilityLabel("Type instead")
+            .accessibilityLabel("Type instead of talking")
         }
-        .padding(6)
-        .background(Theme.Palette.lavender, in: Capsule())
-        .shadow(color: Theme.Palette.purple.opacity(0.15), radius: 10, y: 4)
+        .padding(.horizontal, Theme.Metrics.screenPadding)
     }
 
     // MARK: - One screen only: what is happening right now, under Agatha (no chat history)
