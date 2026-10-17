@@ -18,14 +18,14 @@ struct ChatView: View {
                 conversation
                 inputBar
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.Colors.background)
             .navigationTitle("Agatha")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if !model.showWelcome && !model.isCallMode {
                         Button { model.startCall() } label: {
-                            Label("Call", systemImage: "phone.fill").labelStyle(.titleAndIcon).font(.headline)
+                            Label("Call", systemImage: "phone.fill").labelStyle(.titleAndIcon).font(Theme.Fonts.headline)
                         }
                         .disabled(!model.canSend)
                         .accessibilityLabel("Start a call: talk hands-free")
@@ -33,7 +33,7 @@ struct ChatView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: {
-                        Image(systemName: "gearshape").font(.title3)
+                        Image(systemName: "gearshape").font(Theme.Fonts.toolbarIcon)
                     }
                     .accessibilityLabel("Settings")
                 }
@@ -61,21 +61,21 @@ struct ChatView: View {
     private var conversation: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 16) {
+                LazyVStack(alignment: .leading, spacing: Theme.Metrics.messageSpacing) {
                     if model.showWelcome { welcome }
                     ForEach(model.messages.filter { !$0.hidden }) { message in
                         MessageRow(message: message).id(message.id)
                     }
                     if model.isBusy {
-                        HStack(spacing: 10) {
+                        HStack(spacing: Theme.Metrics.spacingRegular) {
                             ProgressView()
-                            Text(model.status).foregroundStyle(.secondary)
+                            Text(model.status).foregroundStyle(Theme.Colors.textSecondary)
                         }
-                        .font(.title3)
+                        .font(Theme.Fonts.message)
                         .id("busy")
                     }
                 }
-                .padding(16)
+                .padding(Theme.Metrics.screenPadding)
             }
             .onChange(of: model.messages.count) {
                 withAnimation { proxy.scrollTo(model.messages.last?.id, anchor: .bottom) }
@@ -87,30 +87,30 @@ struct ChatView: View {
     }
 
     private var welcome: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Theme.Metrics.spacingLarge) {
             Text("Hello! I'm Agatha.")
-                .font(.title.bold())
+                .font(Theme.Fonts.welcomeTitle)
             Text("Let's get to know each other. Tap Start and I will ask you a few short questions out loud, like a phone call. Just answer in your own words.")
-                .font(.title3)
+                .font(Theme.Fonts.message)
         }
-        .padding(18)
+        .padding(Theme.Metrics.welcomePadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18))
+        .background(Theme.Colors.surface, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
     }
 
     // MARK: - Talk / photo / type
 
     @ViewBuilder private var inputBar: some View {
         if model.showWelcome {
-            VStack(spacing: 10) {
+            VStack(spacing: Theme.Metrics.spacingRegular) {
                 StartButton()
                 Text("Tap Start to begin")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .font(Theme.Fonts.hint)
+                    .foregroundStyle(Theme.Colors.textSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(16)
-            .background(.bar)
+            .padding(Theme.Metrics.screenPadding)
+            .background(Theme.Colors.bar)
         } else {
             controls
         }
@@ -125,40 +125,40 @@ struct ChatView: View {
     }
 
     private var controls: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: Theme.Metrics.spacingRegular) {
             if model.isCallMode {
-                HStack(spacing: 12) {
+                HStack(spacing: Theme.Metrics.spacingLarge) {
                     Text(callLabel)
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(model.isRecording ? .red : .primary)
+                        .font(Theme.Fonts.callStatus)
+                        .foregroundStyle(model.isRecording ? Theme.Colors.danger : Theme.Colors.textPrimaryColor)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityAddTraits(.updatesFrequently)
                     Button { model.endCall() } label: {
                         Label("End call", systemImage: "phone.down.fill")
-                            .padding(.horizontal, 16)
-                            .frame(minHeight: 52)
+                            .padding(.horizontal, Theme.Metrics.endCallHorizontalPadding)
+                            .frame(minHeight: Theme.Metrics.bigButtonHeight)
                     }
-                    .buttonStyle(BigButtonStyle(color: .red))
+                    .buttonStyle(BigButtonStyle(color: Theme.Colors.danger))
                 }
             } else if !model.status.isEmpty && !model.isBusy {
                 Text(model.status)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(model.isRecording ? .red : .secondary)
+                    .font(Theme.Fonts.status)
+                    .foregroundStyle(model.isRecording ? Theme.Colors.danger : Theme.Colors.textSecondaryColor)
                     .multilineTextAlignment(.center)
             }
             if !typing {
                 TalkButton()
                 if !model.isCallMode {
                     Text("Tap the button or shake your phone to talk")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Fonts.hint)
+                        .foregroundStyle(Theme.Colors.textSecondary)
                 }
                 photoButton
             }
             typeField
         }
-        .padding(16)
-        .background(.bar)
+        .padding(Theme.Metrics.screenPadding)
+        .background(Theme.Colors.bar)
     }
 
     private var photoButton: some View {
@@ -169,32 +169,32 @@ struct ChatView: View {
             Button { showPhotoLibrary = true } label: { Label("Choose a photo", systemImage: "photo") }
         } label: {
             Label("Show me a photo", systemImage: "camera.fill")
-                .frame(maxWidth: .infinity, minHeight: 52)
+                .frame(maxWidth: .infinity, minHeight: Theme.Metrics.bigButtonHeight)
         }
-        .buttonStyle(BigButtonStyle(color: .indigo))
+        .buttonStyle(BigButtonStyle(color: Theme.Colors.photoButton))
         .disabled(!model.canSend)
     }
 
     private var typeField: some View {
         HStack {
             TextField("Or type here", text: $typed, axis: .vertical)
-                .font(.title3)
-                .padding(12)
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                .font(Theme.Fonts.message)
+                .padding(Theme.Metrics.fieldPadding)
+                .background(Theme.Colors.surface, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerMedium))
                 .submitLabel(.send)
                 .focused($typing)
                 .onSubmit(sendTyped)
                 .disabled(!model.canSend)
             if !typed.isEmpty {
                 Button(action: sendTyped) {
-                    Image(systemName: "arrow.up.circle.fill").font(.system(size: 40))
+                    Image(systemName: "arrow.up.circle.fill").font(Theme.Fonts.sendIcon)
                 }
                 .disabled(!model.canSend)
                 .accessibilityLabel("Send")
             }
             if typing {
                 Button("Done") { typing = false }
-                    .font(.headline)
+                    .font(Theme.Fonts.headline)
             }
         }
     }
@@ -216,34 +216,34 @@ struct MessageRow: View {
 
     var body: some View {
         if message.role == .user {
-            VStack(alignment: .trailing, spacing: 8) {
+            VStack(alignment: .trailing, spacing: Theme.Metrics.spacingMedium) {
                 if let image = message.image {
                     Image(uiImage: image)
                         .resizable().scaledToFit()
-                        .frame(maxHeight: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .frame(maxHeight: Theme.Metrics.photoMaxHeight)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Metrics.cornerMedium))
                 }
                 if !message.text.isEmpty {
                     Text(message.text)
-                        .font(.title3)
-                        .padding(14)
-                        .background(Color.accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 18))
+                        .font(Theme.Fonts.message)
+                        .padding(Theme.Metrics.bubblePadding)
+                        .background(Theme.Colors.userBubble, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
         } else {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: Theme.Metrics.spacingRegular) {
                 if !message.text.isEmpty {
-                    HStack(alignment: .top, spacing: 10) {
+                    HStack(alignment: .top, spacing: Theme.Metrics.spacingRegular) {
                         Text(message.text)
-                            .font(.title3)
-                            .padding(14)
-                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18))
+                            .font(Theme.Fonts.message)
+                            .padding(Theme.Metrics.bubblePadding)
+                            .background(Theme.Colors.surface, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
                         Button { model.repeatAloud(message.text) } label: {
-                            Image(systemName: "speaker.wave.2.fill").font(.title2)
+                            Image(systemName: "speaker.wave.2.fill").font(Theme.Fonts.repeatIcon)
                         }
                         .accessibilityLabel("Read it again")
-                        .padding(.top, 12)
+                        .padding(.top, Theme.Metrics.repeatIconTopPadding)
                     }
                 }
                 ForEach(Array(message.cards.enumerated()), id: \.offset) { index, card in
@@ -261,23 +261,23 @@ struct SkillsBar: View {
     @EnvironmentObject private var model: ChatModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: Theme.Metrics.spacingSmall) {
             HStack {
-                Text("Your AI skills").font(.headline)
+                Text("Your AI skills").font(Theme.Fonts.headline)
                 Spacer()
-                Text("\(model.skills.count) of \(Skill.allCases.count)").font(.headline).foregroundStyle(.secondary)
+                Text("\(model.skills.count) of \(Skill.allCases.count)").font(Theme.Fonts.headline).foregroundStyle(Theme.Colors.textSecondary)
             }
-            HStack(spacing: 8) {
+            HStack(spacing: Theme.Metrics.spacingMedium) {
                 ForEach(Skill.allCases, id: \.self) { skill in
                     let done = model.skills.contains(skill)
-                    VStack(spacing: 4) {
+                    VStack(spacing: Theme.Metrics.spacingXSmall) {
                         Image(systemName: done ? "checkmark.circle.fill" : skill.icon)
-                            .font(.title2)
-                            .foregroundStyle(done ? .green : .secondary)
+                            .font(Theme.Fonts.skillIcon)
+                            .foregroundStyle(done ? Theme.Colors.success : Theme.Colors.textSecondaryColor)
                         Text(skill.label)
-                            .font(.caption)
+                            .font(Theme.Fonts.caption)
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(done ? .primary : .secondary)
+                            .foregroundStyle(done ? Theme.Colors.textPrimary : Theme.Colors.textSecondary)
                     }
                     .frame(maxWidth: .infinity)
                     .accessibilityElement(children: .combine)
@@ -286,17 +286,17 @@ struct SkillsBar: View {
             }
             if let learned = model.lastLearned {
                 Text("New skill: \(learned.label)! 🎉")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.green)
+                    .font(Theme.Fonts.celebration)
+                    .foregroundStyle(Theme.Colors.success)
                     .task(id: learned) {
                         try? await Task.sleep(for: .seconds(4))
                         model.lastLearned = nil
                     }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.bar)
+        .padding(.horizontal, Theme.Metrics.screenPadding)
+        .padding(.vertical, Theme.Metrics.skillsBarVerticalPadding)
+        .background(Theme.Colors.bar)
     }
 }
 
@@ -308,9 +308,9 @@ struct BigButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.title2.weight(.bold))
-            .foregroundStyle(.white)
-            .background(color.opacity(isEnabled ? (configuration.isPressed ? 0.75 : 1) : 0.4),
-                        in: RoundedRectangle(cornerRadius: 18))
+            .font(Theme.Fonts.buttonLabel)
+            .foregroundStyle(Theme.Colors.onColor)
+            .background(color.opacity(isEnabled ? (configuration.isPressed ? Theme.Metrics.pressedOpacity : 1) : Theme.Metrics.disabledOpacity),
+                        in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
     }
 }

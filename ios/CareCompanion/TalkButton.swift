@@ -5,37 +5,35 @@ import UIKit
 struct TalkButton: View {
     @EnvironmentObject private var model: ChatModel
     @State private var pulse = false
-    /// Still clearly the biggest thing on screen, but leaves room for the conversation.
-    static let size: CGFloat = 190
 
     var body: some View {
         Button(action: talk) {
             ZStack {
                 // Soft pulsing ring so it is impossible to miss.
                 Circle()
-                    .fill((model.isRecording ? Color.red : Color.accentColor).opacity(0.25))
-                    .scaleEffect(pulse ? 1.12 : 0.96)
+                    .fill((model.isRecording ? Theme.Colors.danger : Theme.Colors.accent).opacity(Theme.Metrics.talkRingOpacity))
+                    .scaleEffect(pulse ? Theme.Metrics.pulseMaxScale : Theme.Metrics.pulseMinScale)
                 Circle()
-                    .fill(model.isRecording ? Color.red : Color.accentColor)
-                    .padding(14)
-                    .shadow(radius: 8, y: 4)
-                VStack(spacing: 6) {
+                    .fill(model.isRecording ? Theme.Colors.danger : Theme.Colors.accent)
+                    .padding(Theme.Metrics.talkRingInset)
+                    .shadow(radius: Theme.Metrics.talkShadowRadius, y: Theme.Metrics.talkShadowY)
+                VStack(spacing: Theme.Metrics.spacingSmall) {
                     Image(systemName: model.isRecording ? "stop.fill" : "mic.fill")
-                        .font(.system(size: 54, weight: .bold))
+                        .font(Theme.Fonts.talkIcon)
                     Text(model.isRecording ? "I'm listening.\nTap when done" : "Tap to talk")
-                        .font(.title2.weight(.bold))
+                        .font(Theme.Fonts.talkLabel)
                         .multilineTextAlignment(.center)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Colors.onColor)
             }
-            .frame(width: TalkButton.size, height: TalkButton.size)
+            .frame(width: Theme.Metrics.talkButtonSize, height: Theme.Metrics.talkButtonSize)
         }
         .buttonStyle(.plain)
         .disabled(model.isBusy)
-        .opacity(model.isBusy ? 0.5 : 1)
+        .opacity(model.isBusy ? Theme.Metrics.busyOpacity : 1)
         .accessibilityLabel(model.isRecording ? "Stop listening" : "Talk to Agatha")
         .onAppear {
-            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
+            withAnimation(.easeInOut(duration: Theme.Metrics.pulseDuration).repeatForever(autoreverses: true)) { pulse = true }
         }
         .onReceive(NotificationCenter.default.publisher(for: .deviceDidShake)) { _ in talk() }
     }
@@ -61,26 +59,26 @@ struct StartButton: View {
         } label: {
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.25))
-                    .scaleEffect(pulse ? 1.12 : 0.96)
+                    .fill(Theme.Colors.callGreen.opacity(Theme.Metrics.talkRingOpacity))
+                    .scaleEffect(pulse ? Theme.Metrics.pulseMaxScale : Theme.Metrics.pulseMinScale)
                 Circle()
-                    .fill(Color.green)
-                    .padding(14)
-                    .shadow(radius: 8, y: 4)
-                VStack(spacing: 6) {
+                    .fill(Theme.Colors.callGreen)
+                    .padding(Theme.Metrics.talkRingInset)
+                    .shadow(radius: Theme.Metrics.talkShadowRadius, y: Theme.Metrics.talkShadowY)
+                VStack(spacing: Theme.Metrics.spacingSmall) {
                     Image(systemName: "phone.fill")
-                        .font(.system(size: 54, weight: .bold))
+                        .font(Theme.Fonts.talkIcon)
                     Text("Start")
-                        .font(.largeTitle.weight(.bold))
+                        .font(Theme.Fonts.startLabel)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Colors.onColor)
             }
-            .frame(width: TalkButton.size, height: TalkButton.size)
+            .frame(width: Theme.Metrics.talkButtonSize, height: Theme.Metrics.talkButtonSize)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Start getting to know each other")
         .onAppear {
-            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
+            withAnimation(.easeInOut(duration: Theme.Metrics.pulseDuration).repeatForever(autoreverses: true)) { pulse = true }
         }
     }
 }
