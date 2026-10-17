@@ -12,9 +12,9 @@ Built in one day at the Claude Impact Lab Berlin (theme: *AI education for every
 
 ## Who it's for
 
-- **Audience:** older adults (roughly 70+) who take several medicines a day and get confusing paperwork from doctors and clinics, plus the family members who help them.
+- **Audience:** older adults (roughly 70+) who take several medicines a day and get confusing paperwork from doctors and clinics, plus the family members who help them from afar.
 - **Their problem with AI today:** most have never used AI for anything useful. They hear about it, but nobody has shown them a reason or a safe way to start.
-- **What Agatha lets them do:** talk to Agatha like a person, show her a photo of a medication plan or a letter, check what she read, and get a simple daily schedule they can ask questions about.
+- **What Agatha lets them do:** talk to Agatha in their own words, show her a photo of a medication plan or a letter, check what she read, and get reminded (by a friendly "call") when it is time for their pills.
 
 ## The problem
 
@@ -22,49 +22,73 @@ Many older people take several medicines a day, often from different doctors, an
 
 Agatha flips that: you just talk, or hold up the paper. And because every step is a small, real use of AI (speak in your own words, show a photo, check the answer, ask again), people learn the skills that make AI useful for everything else too.
 
+## Meet Margaret (our demo person)
+
+The demo app starts as **Margaret Weber, 78**: five medicines (Ramipril, Metformin, Simvastatin, ASS 100, Pantoprazole), breakfast at 8, a little hard of hearing, new to smartphones. Her daughter **Anna** helps from 300 km away; her GP is **Dr Hoffmann**. Margaret, her plan, her appointments and her last 30 days are all fictional.
+
 ## What it does
 
-- **A getting-to-know-you call.** On first launch, one big *Start* button. Agatha introduces herself and asks one short question at a time: what to call you, when you get up and eat, whether hearing, eyesight or phones are hard, who in the family helps, who your GP is. She reads the summary back and saves it only after you agree. From then on she uses your name, your real meal times ("with your breakfast at 8") and your helper's name.
-- **Call mode, turn by turn.** Tap *Call* and talk: Agatha answers out loud, then says it is your turn and you tap the big button to answer, until *End call*. She stops listening by herself when you have finished. Busy room? Nothing is picked up until you tap. In a quiet room, *Settings → Hands-free* lets her listen again by herself after speaking.
-- **See what Agatha hears.** While you talk, your words appear live in the conversation, so you can see she understood you. When you stop, they become your message.
-- **Easy to talk to.** A huge, pulsing talk button, or simply shake the phone to talk. Replies are spoken in a warm voice, slower for people who said hearing or eyesight is hard. Typing works too.
-- **Show me a photo.** Photograph a medication plan, a medicine box or an appointment letter. Agatha shows a **"Here is what I read"** card with every medicine (dose per time of day) or appointment, plus anything she could not read clearly. Nothing is saved until you tap **Yes, right**.
-- **My medicines today.** Ask "What do I take this evening?" and a schedule card appears, with a big **Take** button for each medicine (it turns into a green **Taken**). Or just say "I took my morning pills" and Agatha ticks them off.
-- **Any other letter.** Show her a bill, a form or any official letter, and she explains in plain words what it is and what you need to do.
-- **An AI-skills bar.** Across the top: *Talk in your own words*, *Show a photo*, *Check the answer*, *Ask a follow-up*. Each one lights up the first time you do it ("New skill!"), and Agatha now and then suggests the next one. People learn how to use AI by using it for something they care about.
+The app has five big, labelled tabs: **Pills, Scan, Home, Notes, SOS**.
+
+- **Tap Agatha and talk.** On Home, tap the big Agatha mascot and speak. Your words appear live while you talk; Agatha answers out loud in a warm British voice, in one or two short sentences (never more than 25 words). Typing works too.
+- **Agatha calls you at pill time.** At each pill time an iPhone-style call screen rings with a gentle ringtone: *"Hello Margaret, it's time for your evening pills: one Metformin and one Simvastatin. Have you taken them yet?"* She only counts a clear "I've taken them"; "later" is not a yes, so she kindly asks again. You can also tick each pill on the call screen. No answer? She tries again (3 tries, 10 minutes apart), and after that Anna is told (simulated in the demo). The person no longer has to remember to open an app.
+- **Show a photo (Scan).** Photograph a medication plan, a medicine box or an appointment letter. Agatha shows a **"Here is what I read"** card and compares it with the saved plan ("Amlodipine is new; everything else matches"). Nothing is saved until you tap **Yes**. Blurry photo? She asks for a new one instead of guessing.
+- **Any other letter.** Show her a bill, a form or an official letter, and she explains in plain words what it is and what you need to do. If you want, she keeps it in **Notes → My papers**.
+- **My pills today.** The Pills tab shows today's pills by time of day with a progress ring and a big **Yes, I took it** button. Or just say "I took my morning pills" and Agatha ticks them off. "Did I take my pills?" is answered from the ticks, never from guesswork.
+- **Notes for the doctor.** "Please write down that I felt dizzy" or "note my question for Dr Hoffmann" saves a note, so the questions are ready for the next visit.
+- **How did I do this week?** Agatha knows the last 30 days and the calendar: "Your mornings were perfect this week." She is warm and never scolds. (History and calendar are demo data; the Google/Apple calendar connection is simulated.)
+- **SOS.** One screen with big buttons: call 112, call Anna, call the doctor. Saying "Agatha, I need help" opens it.
+- **Agatha opens screens for you.** "Show me my pills" or "I need help" switches to the right tab, so nobody has to hunt for buttons.
+- **Teaching AI along the way.** Now and then, after helping, Agatha adds one short tip for a skill not yet practised ("By the way, you can show me any letter, not just medicine papers"), and praises people when they try something new.
+
+### Real vs simulated in the demo
+
+| Real | Simulated / demo data |
+|---|---|
+| Talking to Claude, photo reading, all cards and ticks | Margaret's profile, 30-day history and calendar |
+| Speech-to-text and Agatha's voice | The Google/Apple calendar connection |
+| The pill call screen, ringtone, retries and confirmation | The "Anna has been told" family call (no real call is made) |
+| Notes and kept papers on the phone | All sample documents (fictional) |
 
 ## Safety and privacy by design
 
-- **Explains and organises, never advises.** Agatha never tells anyone to keep, skip, stop or combine a medicine. Questions about changes, side effects, symptoms or interactions get "please ask your doctor or pharmacist", and she offers to write the question down for the next visit.
+- **Explains and organises, never advises.** Agatha never tells anyone to keep, skip, stop or combine a medicine. Questions about changes, side effects, symptoms or interactions get "please ask your doctor or pharmacist", and she offers to write the question down. A missed dose never becomes "take it now" or "double up".
 - **Emergencies go to 112.** Chest pain, trouble breathing, a fall or sudden confusion: she tells them to call 112 now or get help nearby.
 - **A human check after every photo.** AI can misread, so the user confirms each card. That is also the lesson: always check what AI tells you.
-- **Plan and profile stay on the phone.** They are stored only on the iPhone (`UserDefaults`). *Settings → Delete all my data* erases plan, profile, ticks and skills.
-- **Speech stays on the phone or on our own Mac.** Your words are written down live by the iPhone's own speech recognition, on the phone itself where the iPhone supports it (otherwise by Apple's speech recognition service). If that is switched off or unavailable, the recording goes to Whisper on our own Mac instead. Agatha's voice (Kokoro) also runs on our Mac.
-- **What Claude sees.** Each chat request sends the conversation, the newest photo, the saved plan and the profile to Claude, so it can answer. Older photos are replaced by a placeholder.
-- **Private network only.** The helper server listens only on the Mac itself (`127.0.0.1`). A real iPhone reaches it through Tailscale, a private network between our own devices; it is never exposed on public wifi.
+- **Agatha only does what she says.** Each ability is a tool call; she never claims to have saved or opened something she didn't, and she cannot call, message or share anything herself.
+- **Stays on topic.** News, recipes, trivia: one kind sentence, then back to medicines and appointments.
+- **Plan, profile and notes stay on the phone** (`UserDefaults` and the app's Documents folder). *Settings → Delete all my data* erases everything.
+- **Speech stays on the phone or on our own Mac.** Speech recognition runs on the iPhone, or on Whisper on our own Mac (*Settings → Understand my voice on the helper computer*). Agatha's voice (Kokoro) also runs on our Mac. No speech company is involved.
+- **What Claude sees.** Each chat request sends the conversation, the newest photo, the saved plan, the profile, today's ticks and recent notes, so Claude can answer. Older photos are replaced by a placeholder.
+- **Private network only.** The helper server listens only on the Mac itself (`127.0.0.1`). A real iPhone reaches it through Tailscale, a private network between our own devices.
 - **Demo documents are fictional.** All names, medicines, addresses and letters in `samples/` are made up.
 
 ## How Claude is used
 
 Claude is the heart of the product, not just the tool that wrote it.
 
-- **Model:** `claude-sonnet-5-5` (Claude Sonnet 5.5, fast for voice; override with `CLAUDE_MODEL` in `.env`) via the Anthropic API, called from `server.js` with the official `@anthropic-ai/sdk`. The API key stays on the server; the phone never sees it.
-- **One conversation, with tools.** The app sends everything to `POST /api/chat`. Claude answers in short spoken sentences and can call six tools:
+- **Model:** `claude-sonnet-5-5` (Claude Sonnet 5.5, fast enough for voice; override with `CLAUDE_MODEL` in `.env`) via the Anthropic API, called from `server.js` with the official `@anthropic-ai/sdk`. The API key stays on the server; the phone never sees it.
+- **One conversation, with tools.** The app sends everything to `POST /api/chat`. Claude answers in short spoken sentences and can call ten tools:
 
   | Tool | What happens in the app |
   |---|---|
-  | `show_schedule` | Schedule card (all day, or morning / midday / evening / night) with Taken buttons |
+  | `show_schedule` | Schedule card (all day, or morning / midday / evening / night) |
   | `show_appointments` | Appointments card |
   | `propose_medications` | "Here is what I read" card with Yes / No; replaces the plan or adds one box |
   | `propose_appointments` | "Here is what I read" card for appointment letters |
   | `mark_taken` | Ticks off the named medicines for that time of day |
-  | `save_profile` | Saves the getting-to-know-you profile on the phone |
+  | `confirm_intake` | Confirms the pills during a reminder call and ends the call |
+  | `open_screen` | Switches to Pills, Scan, Notes, SOS or Home |
+  | `save_note` | Saves a note, a feeling or questions for the doctor |
+  | `save_document` | Keeps the photographed letter in My papers (only after the user says yes) |
+  | `save_profile` | Saves the profile on the phone |
 
-  The tools change nothing on the server: each becomes a card or an action that the app shows or applies.
+  The tools change nothing on the server: each becomes a card or an action that the app shows or applies. Details: [docs/agatha-abilities.md](docs/agatha-abilities.md).
 - **Vision** reads the photo of the plan, box or letter in the same conversation.
-- **Structured, strict tool schemas** (`strict: true`, every field required, no extra fields), so the app always gets data it can display.
-- **The prompt** lives in one place: `prompts/chat.md` (personality, the getting-to-know-you call, teaching AI skills, safety rules). The profile, saved plan, today's ticks and practised skills are added below it on every request.
-- **Refusals** are handled gently: the server uses the server-side refusal fallback, and if Claude still refuses, the user hears "Sorry, I cannot help with that one. Please ask your doctor or pharmacist."
+- **Strict tool schemas** (`strict: true`, every field required, no extra fields), so the app always gets data it can display.
+- **The prompt** lives in one place: [`prompts/chat.md`](prompts/chat.md) (personality, length limit, tools, pill calls, teaching AI skills, safety). The profile, saved plan, today's ticks, history, calendar, notes and practised skills are added below it on every request.
+- **Tested on real documents.** We ran 7 fictional test scans (new box, changed plan, handwritten family note, blurry photo, eye clinic letter, bank letter) against real Claude: **6 pass, 1 safe partial, 0 invented values.** See [samples/test/RESULTS.md](samples/test/RESULTS.md).
+- **Refusals** are handled gently: if Claude refuses, the user hears "Sorry, I cannot help with that one. Please ask your doctor or pharmacist."
 
 ## Architecture
 
@@ -124,7 +148,9 @@ open CareCompanion.xcodeproj
 
 Pick an iPhone simulator and press Run. The Simulator talks to the server at `http://localhost:3000`, and uses the Mac's microphone for talking.
 
-To try the photo flow, drag `public/samples/medication-plan.png` and `public/samples/appointment-letter.png` onto the Simulator window (they land in Photos), then tap **Show me a photo → Choose a photo**.
+To try the photo flow, drag `public/samples/medication-plan.png` and `public/samples/appointment-letter.png` (more in `public/samples/test/`) onto the Simulator window (they land in Photos), then open the **Scan** tab.
+
+To see the pill reminder call, open *Settings* (gear icon) → **Test pill call in 10 seconds**. In test mode the retries are 30 seconds apart, so the whole flow (3 tries, then the family call) takes about 90 seconds.
 
 ### 3. The app on a real iPhone
 
@@ -141,11 +167,12 @@ Please don't start the server with `HOST=0.0.0.0` on a public or shared wifi: th
 | Path | What it is | Owner |
 |---|---|---|
 | `server.js` | Small Node server: talks to Claude, runs the tools, keeps the API key secret | Gabriela |
-| `prompts/chat.md` | Agatha's instructions: personality, first call, AI-skills teaching, safety | Gabriela |
+| `prompts/chat.md` | Agatha's instructions: personality, pill calls, AI-skills teaching, safety | Gabriela |
 | `ios/` | The SwiftUI iPhone app (`project.yml` for XcodeGen, sources in `ios/CareCompanion/`) | Ahmad (code), Camila (design, `Theme.swift`) |
 | `voice.js`, `tts/` | Local speech-to-text (Whisper) and voice (Kokoro, macOS fallback) | Lucas |
 | `samples/` | Fictional sample documents (HTML source), rendered to `public/samples/*.png` with headless Chrome | Lucas |
 | `README.md` | This file, the pitch story | Valentina |
+| `video/`, `demo-plan/`, `DEMO-SCRIPT.md` | Demo video script, voice lines (Kokoro) and plan | Lucas, Valentina |
 
 To re-render a sample after editing its HTML (use `--window-size=900,560` for `appointment-letter`):
 
