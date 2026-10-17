@@ -114,7 +114,7 @@ struct ChatView: View {
                 }
                 .font(Theme.Fonts.heroGreeting)
                 .foregroundStyle(Theme.Colors.textSecondary)
-            } else if hasEarlierConversation, let answer = lastAgatha {
+            } else if let answer = lastAgatha, hasEarlierConversation || model.isCallMode || answer.isError {
                 if let said = lastUser?.text, !said.isEmpty {
                     Text("You: “\(said)”").font(Theme.Fonts.hint).foregroundStyle(Theme.Colors.textSecondary)
                 }
