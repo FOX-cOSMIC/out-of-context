@@ -9,4 +9,12 @@ enum AppTab: Hashable {
 @MainActor
 final class Navigator: ObservableObject {
     @Published var tab: AppTab = .talk
+    /// Bumped by the Home button: the Talk tab then shows its big home screen again.
+    @Published var homeTick = 0
+
+    /// Back to Agatha's home screen (does not start listening).
+    func goHome() {
+        tab = .talk
+        homeTick += 1
+    }
 }

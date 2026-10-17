@@ -71,36 +71,30 @@ struct BottomBar: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
-    /// Goes to the conversation and starts listening right away.
+    /// Home: back to Agatha's main screen. Talking starts there, by tapping Agatha.
     private var talkButton: some View {
-        let listening = model.isRecording || model.isStartingMic
-        return Button {
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            navigator.tab = .talk
-            if model.isRecording {
-                model.toggleRecording() // second tap: done talking
-            } else if !model.isStartingMic && model.canSend {
-                model.toggleRecording()
-            }
+        Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            navigator.goHome()
         } label: {
             VStack(spacing: 2) {
                 ZStack {
                     Circle().fill(Theme.Palette.lavenderRing).frame(width: Theme.Metrics.tabTalkSize + 8, height: Theme.Metrics.tabTalkSize + 8)
-                    Circle().fill(listening ? Theme.Colors.danger : Theme.Palette.purple)
+                    Circle().fill(Theme.Palette.purple)
                         .frame(width: Theme.Metrics.tabTalkSize, height: Theme.Metrics.tabTalkSize)
                         .shadow(color: Theme.Palette.purple.opacity(0.35), radius: 8, y: 4)
-                    Image(systemName: listening ? "waveform" : "mic.fill")
+                    Image(systemName: "house.fill")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundStyle(Theme.Colors.onColor)
                 }
                 .offset(y: -14)
                 .padding(.bottom, -14)
-                Text("Talk").font(Theme.Fonts.tabLabel).foregroundStyle(Theme.Palette.ink)
+                Text("Home").font(Theme.Fonts.tabLabel).foregroundStyle(Theme.Palette.ink)
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(listening ? "Agatha is listening" : "Talk to Agatha")
+        .accessibilityLabel("Home: back to Agatha")
     }
 }

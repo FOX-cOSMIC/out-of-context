@@ -5,6 +5,9 @@ import SwiftUI
 /// Talk (tap Agatha or shake), show a photo, or type.
 struct ChatView: View {
     @EnvironmentObject private var model: ChatModel
+    @EnvironmentObject private var navigator: Navigator
+    /// The Home button was tapped: show the big home screen even if a conversation exists.
+    @State private var homeShown = false
     @State private var typed = ""
     @State private var photoItem: PhotosPickerItem?
     @State private var showCamera = false
@@ -21,6 +24,17 @@ struct ChatView: View {
             || model.liveText != nil || model.isBusy || model.isCallMode
     }
 
+    /// Conversation view, unless the user went Home; while talking or thinking it always shows.
+    private var showConversation: Bool {
+        (inConversation && !homeShown) || model.isBusy || model.isRecording
+            || model.liveText != nil || model.isCallMode
+    }
+
+    /// Earlier messages exist that the user can go back to from the home screen.
+    private var hasEarlierConversation: Bool {
+        visibleMessages.contains { $0.role == .user }
+    }
+
     /// How the user likes to be called: address_as, else name, else nothing.
     private var userName: String {
         let p = model.profile
@@ -31,7 +45,7 @@ struct ChatView: View {
         VStack(spacing: 0) {
             if model.showWelcome {
                 welcomeScreen
-            } else if inConversation {
+            } else if showConversation {
                 compactHeader
                 SkillsBar()
                 conversation
@@ -41,7 +55,9 @@ struct ChatView: View {
             }
         }
         .background(Theme.Colors.background)
-        .animation(.easeInOut(duration: 0.3), value: inConversation)
+        .animation(.easeInOut(duration: 0.3), value: showConversation)
+        .onChange(of: navigator.homeTick) { homeShown = true }
+        .onChange(of: model.messages.count) { homeShown = false }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .fullScreenCover(isPresented: $showCamera) {
             CameraPicker { image in Task { await model.send(text: "", image: image) } }
@@ -82,6 +98,15 @@ struct ChatView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Metrics.screenPadding)
                 .padding(.top, -36) // tuck the greeting up into the white cloud edge
+                if hasEarlierConversation {
+                    Button { homeShown = false } label: {
+                        Label("See our conversation", systemImage: "bubble.left.and.bubble.right.fill")
+                            .font(Theme.Fonts.buttonLabel)
+                            .frame(maxWidth: .infinity, minHeight: Theme.Metrics.bigButtonHeight)
+                    }
+                    .buttonStyle(BigButtonStyle(color: Theme.Palette.purple))
+                    .padding(.horizontal, Theme.Metrics.screenPadding)
+                }
                 SkillsBar().padding(.horizontal, Theme.Metrics.screenPadding)
                 HStack(spacing: Theme.Metrics.spacingMedium) {
                     photoButton
