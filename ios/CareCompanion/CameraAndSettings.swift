@@ -33,7 +33,7 @@ struct CameraPicker: UIViewControllerRepresentable {
     }
 }
 
-/// Server address (for a real phone on the same wifi) and deleting all data.
+/// Server address (the helper Mac, reached over Tailscale on a real phone) and deleting all data.
 struct SettingsView: View {
     @EnvironmentObject private var model: ChatModel
     @Environment(\.dismiss) private var dismiss

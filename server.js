@@ -1,5 +1,7 @@
-// Care Companion server: serves the screen in public/ and talks to Claude.
-// The API key stays here on the server and never reaches the browser.
+// Helper server for the Agatha iPhone app (ios/): the app sends the conversation here,
+// this server talks to Claude and runs speech-to-text and text-to-speech on this Mac.
+// The API key stays here on the server and never reaches the phone.
+// It also serves the sample document photos in public/samples/.
 // Run: npm start   (reads ANTHROPIC_API_KEY from .env)
 
 import http from "node:http";
@@ -11,7 +13,7 @@ import { transcribe, speak, voiceSettings } from "./voice.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
-// 127.0.0.1 = only this Mac (Simulator). HOST=0.0.0.0 lets a real phone on the same wifi connect.
+// 127.0.0.1 = only this Mac. The real iPhone reaches it over Tailscale (see README); avoid HOST=0.0.0.0 on shared wifi.
 const HOST = process.env.HOST || "127.0.0.1";
 const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const MAX_BODY = 12 * 1024 * 1024; // photos arrive as base64 JSON
@@ -34,78 +36,38 @@ const TIMES = {
   additionalProperties: false,
 };
 
-const DOCUMENT_SCHEMA = {
+// One medicine as read from a plan or box (used by the propose_medications tool).
+const MEDICATION_ITEM = {
   type: "object",
   properties: {
-    document_type: {
-      type: "string",
-      enum: ["medication_plan", "medicine_package", "appointment_letter", "other"],
-    },
-    summary: { type: "string" },
-    medications: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          strength: { type: "string" },
-          purpose: { type: "string" },
-          times: TIMES,
-          instructions: { type: "string" },
-        },
-        required: ["name", "strength", "purpose", "times", "instructions"],
-        additionalProperties: false,
-      },
-    },
-    appointments: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          title: { type: "string" },
-          date: { type: "string" },
-          time: { type: "string" },
-          place: { type: "string" },
-          bring: { type: "string" },
-          preparation: { type: "string" },
-        },
-        required: ["title", "date", "time", "place", "bring", "preparation"],
-        additionalProperties: false,
-      },
-    },
-    unclear: { type: "array", items: { type: "string" } },
+    name: { type: "string" },
+    strength: { type: "string" },
+    purpose: { type: "string" },
+    times: TIMES,
+    instructions: { type: "string" },
   },
-  required: ["document_type", "summary", "medications", "appointments", "unclear"],
+  required: ["name", "strength", "purpose", "times", "instructions"],
+  additionalProperties: false,
+};
+
+// One appointment as read from a letter (used by the propose_appointments tool).
+const APPOINTMENT_ITEM = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    date: { type: "string" },
+    time: { type: "string" },
+    place: { type: "string" },
+    bring: { type: "string" },
+    preparation: { type: "string" },
+  },
+  required: ["title", "date", "time", "place", "bring", "preparation"],
   additionalProperties: false,
 };
 
 // ---------- Claude ----------
 
 class RefusalError extends Error {}
-
-// One place for every Claude request. `schema` makes Claude answer as JSON.
-async function askClaude({ system, content, schema, effort = "low", maxTokens = 8000 }) {
-  if (!client) throw new Error("NO_API_KEY");
-  const response = await client.beta.messages.create({
-    model: MODEL,
-    max_tokens: maxTokens,
-    system,
-    messages: [{ role: "user", content }],
-    output_config: {
-      effort,
-      ...(schema ? { format: { type: "json_schema", schema } } : {}),
-    },
-    // If a safety check declines, the API retries on a suitable model by itself.
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
-  });
-  if (response.stop_reason === "refusal") throw new RefusalError("refused");
-  const text = response.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("");
-  return schema ? JSON.parse(text) : text;
-}
 
 // "data:image/jpeg;base64,AAAA" -> Claude image block
 function imageBlock(dataUrl) {
@@ -152,8 +114,6 @@ function profileAsText(profile) {
 
 // ---------- conversation (the phone app talks to this) ----------
 
-const MEDICATION_ITEM = DOCUMENT_SCHEMA.properties.medications.items;
-const APPOINTMENT_ITEM = DOCUMENT_SCHEMA.properties.appointments.items;
 const SLOT = { type: "string", enum: ["morning", "midday", "evening", "night"] };
 
 // Tools Claude can use during the conversation. They don't change anything on the
@@ -272,6 +232,9 @@ async function chat({ history, plan, taken = {}, today, skills = [], profile }) 
   const messages = historyToMessages(history);
   const cards = [];
   const actions = [];
+  const said = []; // text from every step, so words written next to a tool call are kept
+  const textOf = (response) =>
+    response.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
   for (let turn = 0; turn < 6; turn++) {
     const response = await client.beta.messages.create({
       model: MODEL,
@@ -284,10 +247,11 @@ async function chat({ history, plan, taken = {}, today, skills = [], profile }) 
       fallbacks: "default",
     });
     if (response.stop_reason === "refusal") throw new RefusalError("refused");
+    const text = textOf(response);
+    if (text) said.push(text);
     const toolUses = response.content.filter((b) => b.type === "tool_use");
     if (response.stop_reason !== "tool_use" || !toolUses.length) {
-      const reply = response.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
-      return { reply, cards, actions };
+      return { reply: said.join(" "), cards, actions };
     }
     messages.push({ role: "assistant", content: response.content });
     messages.push({
@@ -299,7 +263,7 @@ async function chat({ history, plan, taken = {}, today, skills = [], profile }) 
       })),
     });
   }
-  return { reply: "Here you are.", cards, actions };
+  return { reply: said.join(" ") || "Here you are.", cards, actions };
 }
 
 // ---------- HTTP ----------
@@ -341,9 +305,13 @@ async function readBuffer(req) {
 
 async function serveStatic(req, res) {
   const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
-  const rel = urlPath === "/" ? "index.html" : urlPath.slice(1);
+  if (urlPath === "/") {
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    return res.end("Agatha helper server is running. Open the Agatha app on the iPhone.\n");
+  }
+  const rel = urlPath.slice(1);
   const file = path.normalize(path.join(here, "public", rel));
-  if (!file.startsWith(path.join(here, "public"))) return sendJson(res, 403, { error: "Forbidden" });
+  if (!file.startsWith(path.join(here, "public") + path.sep)) return sendJson(res, 403, { error: "Forbidden" });
   try {
     const data = await fs.readFile(file);
     res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream" });
@@ -384,32 +352,6 @@ const routes = {
     sendJson(res, 200, await chat(body));
   },
 
-  // Read a photo of a medication plan, a medicine box or an appointment letter.
-  "POST /api/read-document": async (req, res) => {
-    const { image } = await readJson(req);
-    const result = await askClaude({
-      system: await readPrompt("read-document.md"),
-      content: [imageBlock(image), { type: "text", text: "Please read this document." }],
-      schema: DOCUMENT_SCHEMA,
-      effort: "medium", // reading accurately matters more than speed here
-    });
-    sendJson(res, 200, result);
-  },
-
-  // Answer a question about the saved plan ("What is this pill for?").
-  "POST /api/ask": async (req, res) => {
-    const { question, plan } = await readJson(req);
-    if (!question || !question.trim()) {
-      return sendJson(res, 400, { error: "Please type or say something first." });
-    }
-    const answer = await askClaude({
-      system: await readPrompt("ask.md"),
-      content: `My saved plan:\n${planAsText(plan)}\n\nMy question: ${question.trim()}`,
-      maxTokens: 2000,
-    });
-    sendJson(res, 200, { answer });
-  },
-
   // Local speech-to-text on this Mac (Whisper). Body: the raw recorded audio.
   "POST /api/transcribe": async (req, res) => {
     const audio = await readBuffer(req);
@@ -447,6 +389,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Care Companion running: http://${HOST === "0.0.0.0" ? "<this Mac's IP>" : "localhost"}:${PORT}`);
-  if (!client) console.log("Warning: no ANTHROPIC_API_KEY yet. The screen works, Claude calls will fail.");
+  console.log(`Agatha helper server running: http://${HOST === "0.0.0.0" ? "<this Mac's IP>" : "localhost"}:${PORT}`);
+  if (!client) console.log("Warning: no ANTHROPIC_API_KEY yet. Voice works, Claude calls will fail.");
 });
