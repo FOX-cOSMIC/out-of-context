@@ -25,7 +25,8 @@ Agatha flips that: you just talk, or hold up the paper. And because every step i
 ## What it does
 
 - **A getting-to-know-you call.** On first launch, one big *Start* button. Agatha introduces herself and asks one short question at a time: what to call you, when you get up and eat, whether hearing, eyesight or phones are hard, who in the family helps, who your GP is. She reads the summary back and saves it only after you agree. From then on she uses your name, your real meal times ("with your breakfast at 8") and your helper's name.
-- **Hands-free call mode.** Tap *Call* and just talk: Agatha listens, answers out loud, and listens again until *End call*. Every turn also appears as text in the conversation.
+- **Call mode, turn by turn.** Tap *Call* and talk: Agatha answers out loud, then says it is your turn and you tap the big button to answer, until *End call*. She stops listening by herself when you have finished. Busy room? Nothing is picked up until you tap. In a quiet room, *Settings → Hands-free* lets her listen again by herself after speaking.
+- **See what Agatha hears.** While you talk, your words appear live in the conversation, so you can see she understood you. When you stop, they become your message.
 - **Easy to talk to.** A huge, pulsing talk button, or simply shake the phone to talk. Replies are spoken in a warm voice, slower for people who said hearing or eyesight is hard. Typing works too.
 - **Show me a photo.** Photograph a medication plan, a medicine box or an appointment letter. Agatha shows a **"Here is what I read"** card with every medicine (dose per time of day) or appointment, plus anything she could not read clearly. Nothing is saved until you tap **Yes, right**.
 - **My medicines today.** Ask "What do I take this evening?" and a schedule card appears, with a big **Take** button for each medicine (it turns into a green **Taken**). Or just say "I took my morning pills" and Agatha ticks them off.
@@ -38,7 +39,7 @@ Agatha flips that: you just talk, or hold up the paper. And because every step i
 - **Emergencies go to 112.** Chest pain, trouble breathing, a fall or sudden confusion: she tells them to call 112 now or get help nearby.
 - **A human check after every photo.** AI can misread, so the user confirms each card. That is also the lesson: always check what AI tells you.
 - **Plan and profile stay on the phone.** They are stored only on the iPhone (`UserDefaults`). *Settings → Delete all my data* erases plan, profile, ticks and skills.
-- **Speech never goes to a speech company.** Speech-to-text (Whisper) and the voice (Kokoro) run locally on our own Mac.
+- **Speech stays on the phone or on our own Mac.** Your words are written down live by the iPhone's own speech recognition, on the phone itself where the iPhone supports it (otherwise by Apple's speech recognition service). If that is switched off or unavailable, the recording goes to Whisper on our own Mac instead. Agatha's voice (Kokoro) also runs on our Mac.
 - **What Claude sees.** Each chat request sends the conversation, the newest photo, the saved plan and the profile to Claude, so it can answer. Older photos are replaced by a placeholder.
 - **Private network only.** The helper server listens only on the Mac itself (`127.0.0.1`). A real iPhone reaches it through Tailscale, a private network between our own devices; it is never exposed on public wifi.
 - **Demo documents are fictional.** All names, medicines, addresses and letters in `samples/` are made up.

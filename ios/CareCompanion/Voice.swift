@@ -1,5 +1,16 @@
 import AVFoundation
 
+/// One audio setup for the whole app: play and record, out of the loudspeaker (not the earpiece).
+/// Used by the live transcriber, the Whisper recorder and the speaker alike.
+enum AudioSessionSetup {
+    static func activate() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+        try session.setActive(true)
+    }
+}
+
+/// Fallback when live transcription is not available.
 /// Records the user's voice to an .m4a file. The server turns it into text (Whisper).
 final class VoiceRecorder {
     private var recorder: AVAudioRecorder?
@@ -10,9 +21,7 @@ final class VoiceRecorder {
     }
 
     func start() throws {
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
-        try session.setActive(true)
+        try AudioSessionSetup.activate()
         let settings: [String: Any] = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 16_000,
@@ -77,7 +86,7 @@ final class Speaker: NSObject, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegat
         return await withCheckedContinuation { continuation in
             self.continuation = continuation
             if let audio, let newPlayer = try? AVAudioPlayer(data: audio) {
-                try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker])
+                try? AudioSessionSetup.activate()
                 newPlayer.delegate = self
                 player = newPlayer
                 if !newPlayer.play() { finish(true) }

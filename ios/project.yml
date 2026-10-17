@@ -24,6 +24,7 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSMicrophoneUsageDescription: Agatha listens when you tap Talk, so you can speak instead of typing.
+        NSSpeechRecognitionUsageDescription: Agatha writes down what you say while you speak.
         NSCameraUsageDescription: Agatha reads photos of your medication plan and letters.
         NSPhotoLibraryUsageDescription: Agatha reads photos of your medication plan and letters.
         NSLocalNetworkUsageDescription: Agatha talks to the helper computer.

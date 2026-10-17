@@ -5,6 +5,12 @@ import UIKit
 struct TalkButton: View {
     @EnvironmentObject private var model: ChatModel
     @State private var pulse = false
+    @AppStorage("handsFree") private var handsFree = false
+
+    /// In a tap-to-answer call it is the user's turn to answer; otherwise they start talking.
+    private var idleLabel: String {
+        model.isCallMode && !handsFree ? "Tap to answer" : "Tap to talk"
+    }
 
     var body: some View {
         Button(action: talk) {
@@ -20,7 +26,7 @@ struct TalkButton: View {
                 VStack(spacing: Theme.Metrics.spacingSmall) {
                     Image(systemName: model.isRecording ? "stop.fill" : "mic.fill")
                         .font(Theme.Fonts.talkIcon)
-                    Text(model.isRecording ? "I'm listening.\nTap when done" : "Tap to talk")
+                    Text(model.isRecording ? "I'm listening.\nTap when done" : idleLabel)
                         .font(Theme.Fonts.talkLabel)
                         .multilineTextAlignment(.center)
                 }

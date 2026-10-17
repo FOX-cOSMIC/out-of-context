@@ -15,11 +15,19 @@ final class ChatModel: ObservableObject {
     @Published var lastLearned: Skill?
     /// First launch: show the big "Start" button instead of a greeting.
     @Published private(set) var showWelcome = false
-    /// Hands-free call: speak, listen, send, repeat, until "End call".
+    /// A call: Agatha speaks, the user answers, repeat, until "End call".
+    /// The user taps to answer, unless "Hands-free" is on in Settings.
     @Published private(set) var isCallMode = false
+    /// The words heard so far while the user is talking (live transcription); nil when not listening live.
+    @Published private(set) var liveText: String?
 
     private let api = APIClient()
     private let recorder = VoiceRecorder()
+    private let live = LiveTranscriber()
+    /// The current recording is written down live on the phone (false: the Whisper recorder is used).
+    private var isLive = false
+    /// Live transcription broke down on this phone: use Whisper until the app restarts.
+    private var preferWhisper = false
     private let speaker = Speaker()
     private var silenceWatch: Task<Void, Never>?
     private var speakToken: UUID?
@@ -28,10 +36,13 @@ final class ChatModel: ObservableObject {
 
     static let startMessage = "(The user opened the app for the first time and tapped Start.)"
 
-    // Listening in a call (tuned by ear; levels are AVAudioRecorder averagePower in dBFS).
+    // Listening in a call (tuned by ear; levels are microphone loudness in dBFS).
     private enum Listen {
         static let pollEvery: Duration = .milliseconds(100)
-        static let quietAfterSpeech: TimeInterval = 1.5 // stop this long after the user stops talking
+        static let quietAfterSpeech: TimeInterval = 1.5 // Whisper path: stop this long after the user stops talking
+        static let quietWords: TimeInterval = 1.5    // live: stop when no new words came for this long...
+        static let quietWordsMax: TimeInterval = 3    // ...once the room is quiet too, or after this long regardless
+        static let liveFailedEarly: TimeInterval = 2  // live recognition that dies this fast is broken: use Whisper
         static let maxLength: TimeInterval = 30
         static let giveUpIfSilent: TimeInterval = 8
         static let minSpeechLevel: Float = -35 // quiet room: louder than this counts as talking
@@ -60,6 +71,14 @@ final class ChatModel: ObservableObject {
     /// Nothing is being recorded, written down or answered right now.
     var canSend: Bool { !isBusy && !isRecording }
 
+    /// Settings → Hands-free: listen again by herself after speaking (default off: tap to answer).
+    private var handsFree: Bool { UserDefaults.standard.bool(forKey: "handsFree") }
+
+    /// What the call shows when it is the user's turn.
+    var yourTurnStatus: String {
+        handsFree ? "Tap to talk when you're ready" : "Your turn: tap the button to answer"
+    }
+
     // MARK: - The "getting to know you" call
 
     /// The user tapped Start on the welcome screen.
@@ -68,14 +87,14 @@ final class ChatModel: ObservableObject {
         showWelcome = false
         isCallMode = true
         endCallAfterReply = false
-        // Ask for the microphone now, while Claude is thinking of the first question.
-        Task { _ = await recorder.requestPermission() }
+        // Ask for the microphone and speech recognition now, while Claude is thinking of the first question.
+        Task { _ = await requestVoicePermissions() }
         messages.append(ChatMessage(role: .user, text: Self.startMessage, hidden: true))
         isBusy = true // block other input right away, before the task starts
         Task { await askCompanion() }
     }
 
-    /// Start a hands-free call later on (the phone button at the top).
+    /// Start a call later on (the phone button at the top). The user tapped, so listen right away.
     func startCall() {
         guard !isCallMode, canSend else { return }
         isCallMode = true
@@ -88,9 +107,10 @@ final class ChatModel: ObservableObject {
         endCallAfterReply = false
         silenceWatch?.cancel()
         if isRecording {
-            recorder.cancel()
+            if isLive { live.cancel() } else { recorder.cancel() }
             isRecording = false
         }
+        liveText = nil
         speaker.stop()
         status = ""
     }
@@ -101,31 +121,95 @@ final class ChatModel: ObservableObject {
         isRecording ? stopRecording() : startRecording()
     }
 
+    /// Microphone first, then speech recognition (only needed for live transcription).
+    private func requestVoicePermissions() async -> (microphone: Bool, speech: Bool) {
+        guard await recorder.requestPermission() else { return (false, false) }
+        return (true, await LiveTranscriber.requestPermission())
+    }
+
+    /// Waiting for permissions before the microphone starts: a second tap must not start it twice.
+    private var isStartingMic = false
+
     private func startRecording() {
-        guard canSend else { return }
-        speaker.stop()
+        guard canSend, !isStartingMic else { return }
+        speaker.stop() // never record while Agatha is speaking
+        isStartingMic = true
         Task {
-            guard await recorder.requestPermission() else {
+            defer { isStartingMic = false }
+            let allowed = await requestVoicePermissions()
+            guard allowed.microphone else {
                 status = "Please allow the microphone in Settings to talk to me."
                 return
             }
             guard canSend else { return } // something else started while we waited
-            do {
-                try recorder.start()
-                isRecording = true
-                if isCallMode {
-                    status = ""
-                    watchForSilence()
-                } else {
-                    status = "I'm listening… tap again when you're done."
-                }
-            } catch {
+            // Live transcription when possible; otherwise record and let Whisper write it down.
+            guard (allowed.speech && !preferWhisper && startLive()) || startRecorder() else {
                 status = "The microphone did not start. Please try again."
+                return
+            }
+            isRecording = true
+            if isCallMode {
+                status = ""
+                watchForSilence()
+            } else {
+                status = "I'm listening… tap again when you're done."
             }
         }
     }
 
+    private func startLive() -> Bool {
+        do {
+            try live.start(
+                onChange: { [weak self] words in self?.liveText = words },
+                onEnd: { [weak self] in self?.liveEndedByItself() }
+            )
+        } catch {
+            live.cancel()
+            return false
+        }
+        isLive = true
+        liveText = ""
+        liveStarted = Date()
+        return true
+    }
+
+    private func startRecorder() -> Bool {
+        do {
+            try recorder.start()
+        } catch {
+            return false
+        }
+        isLive = false
+        liveText = nil
+        return true
+    }
+
+    private var liveStarted = Date()
+
+    /// Recognition stopped by itself while the user was still meant to be talking.
+    private func liveEndedByItself() {
+        guard isRecording, isLive else { return }
+        if !live.text.isEmpty {
+            stopRecording() // it heard something: send what it heard
+        } else if Date().timeIntervalSince(liveStarted) < Listen.liveFailedEarly {
+            // Broke down straight away (e.g. no speech model on this phone): carry on with Whisper.
+            live.cancel()
+            liveText = nil
+            preferWhisper = true
+            if startRecorder() {
+                if isCallMode { watchForSilence() }
+            } else {
+                isRecording = false
+                status = "The microphone did not start. Please try again."
+            }
+        } else {
+            giveUp()
+        }
+    }
+
     /// In a call: stop by itself when the user has finished talking.
+    /// Live: when no new words have come for a moment (robust against chatter in the room).
+    /// Whisper: when the microphone has gone quiet.
     private func watchForSilence() {
         silenceWatch?.cancel()
         silenceWatch = Task { [weak self] in
@@ -137,12 +221,22 @@ final class ChatModel: ObservableObject {
                 try? await Task.sleep(for: Listen.pollEvery)
                 guard let self, self.isRecording, !Task.isCancelled else { return }
                 let now = Date()
-                let level = self.recorder.currentLevel()
+                let level = self.isLive ? self.live.currentLevel() : self.recorder.currentLevel()
                 // The very first meter readings can be -160 (no signal yet): don't learn from those.
                 if level > -100 { quietest = min(quietest ?? level, level) }
                 let noise = quietest ?? -60
                 let speechLevel = min(max(Listen.minSpeechLevel, noise + Listen.aboveNoise), Listen.maxSpeechLevel)
-                if level > speechLevel {
+                let loud = level > speechLevel
+                if self.isLive {
+                    if let lastWords = self.live.lastChange {
+                        heardSpeech = true
+                        let sinceWords = now.timeIntervalSince(lastWords)
+                        if sinceWords >= Listen.quietWords && (!loud || sinceWords >= Listen.quietWordsMax) {
+                            self.stopRecording()
+                            return
+                        }
+                    }
+                } else if loud {
                     heardSpeech = true
                     quietSince = nil
                 } else if heardSpeech {
@@ -159,28 +253,51 @@ final class ChatModel: ObservableObject {
                     return
                 }
                 if !heardSpeech && elapsed >= Listen.giveUpIfSilent {
-                    self.recorder.cancel()
-                    self.isRecording = false
-                    self.status = "Tap to talk when you're ready"
+                    self.giveUp()
                     return
                 }
             }
         }
     }
 
+    /// Nothing was said: stop listening and throw it away.
+    private func giveUp() {
+        silenceWatch?.cancel()
+        if isLive { live.cancel() } else { recorder.cancel() }
+        liveText = nil
+        isRecording = false
+        status = isCallMode ? yourTurnStatus : "I did not hear anything. Please try again."
+    }
+
     private func stopRecording() {
         guard isRecording else { return }
         silenceWatch?.cancel()
-        let file = recorder.stop()
         isRecording = false
         isBusy = true
+        if isLive {
+            // The words are already written down: no Whisper round trip.
+            status = "Thinking…"
+            Task {
+                let text = await live.finish()
+                isBusy = false
+                guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    liveText = nil
+                    status = isCallMode ? yourTurnStatus : "I did not hear anything. Please try again."
+                    return
+                }
+                liveText = nil // the live bubble becomes the normal message in the same step
+                await userSays(text: text, image: nil)
+            }
+            return
+        }
+        let file = recorder.stop()
         status = "Writing down what you said…"
         Task {
             do {
                 let text = try await api.transcribe(audioFile: file)
                 isBusy = false
                 guard !text.isEmpty else {
-                    status = isCallMode ? "Tap to talk when you're ready" : "I did not hear anything. Please try again."
+                    status = isCallMode ? yourTurnStatus : "I did not hear anything. Please try again."
                     return
                 }
                 await userSays(text: text, image: nil)
@@ -282,9 +399,9 @@ final class ChatModel: ObservableObject {
         } catch {
             isBusy = false
             status = ""
-            messages.append(ChatMessage(role: .assistant, text: error.localizedDescription))
+            messages.append(ChatMessage(role: .assistant, text: error.localizedDescription, isError: true))
             _ = await speak(error.localizedDescription)
-            if isCallMode { status = "Tap to talk when you're ready" }
+            if isCallMode { status = yourTurnStatus }
             return
         }
         apply(reply.actions)
@@ -301,8 +418,13 @@ final class ChatModel: ObservableObject {
             // Saving needs a tap on Yes/No, so don't start listening over the card.
             status = "Please check the card and tap Yes or No."
         } else if finished && canSend {
-            try? await Task.sleep(for: .milliseconds(300)) // let the speaker go quiet first
-            if isCallMode && canSend && !isSpeaking { startRecording() }
+            if handsFree {
+                try? await Task.sleep(for: .milliseconds(300)) // let the speaker go quiet first
+                if isCallMode && canSend && !isSpeaking { startRecording() }
+            } else {
+                // Noisy rooms: don't pick up other people. The user taps when they want to answer.
+                status = yourTurnStatus
+            }
         }
     }
 
@@ -317,9 +439,11 @@ final class ChatModel: ObservableObject {
     }
 
     /// Only the newest photo travels as image data; older ones become a short note.
+    /// App error bubbles stay on screen only: Claude never said them.
     private func historyForServer() -> [APIClient.HistoryItem] {
-        let newestImage = messages.lastIndex(where: { $0.image != nil })
-        return messages.enumerated().map { index, m in
+        let sent = messages.filter { !$0.isError }
+        let newestImage = sent.lastIndex(where: { $0.image != nil })
+        return sent.enumerated().map { index, m in
             var image: String?
             if let picture = m.image {
                 image = index == newestImage ? Self.dataURL(for: picture) : "earlier-photo"

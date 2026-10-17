@@ -24,6 +24,12 @@ enum Theme {
         static let accent = Color.accentColor
         /// The user's own speech bubbles.
         static let userBubble = Color.accentColor.opacity(0.15)
+        /// The live bubble while the user is still talking (words appear as Agatha hears them).
+        static let liveBubble = Color.accentColor.opacity(0.08)
+        /// Dashed outline around the live bubble.
+        static let liveBubbleBorder = Color.accentColor.opacity(0.5)
+        /// The small "Listening…" label and dot above the live bubble.
+        static let liveIndicator = Color.red
         /// Thin outline around Agatha's cards.
         static let cardBorder = Color.accentColor.opacity(0.3)
         /// Background of a "Take" button that is not ticked yet.
@@ -63,6 +69,8 @@ enum Theme {
         static let message = Font.title3
         /// "Listening…" / "Thinking…" while a call is on.
         static let callStatus = Font.title3.weight(.bold)
+        /// The small "Listening…" label above the live bubble.
+        static let liveIndicator = Font.callout.weight(.semibold)
         /// Status line under the bubbles when no call is on.
         static let status = Font.title3.weight(.semibold)
         /// Small hints such as "Tap Start to begin" and "AI can make mistakes".
@@ -113,6 +121,11 @@ enum Theme {
         static let cornerSmall: CGFloat = 12
         /// Outline width around cards.
         static let cardBorderWidth: CGFloat = 2
+        /// Outline width and dash length around the live bubble.
+        static let liveBubbleBorderWidth: CGFloat = 1.5
+        static let liveBubbleDash: CGFloat = 6
+        /// The live bubble's text is slightly faded until the user has finished.
+        static let liveTextOpacity: Double = 0.75
 
         // Padding
         /// Space around the screen edges, inside the bottom bar and inside cards.

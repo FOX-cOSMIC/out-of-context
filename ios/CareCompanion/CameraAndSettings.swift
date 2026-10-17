@@ -33,11 +33,12 @@ struct CameraPicker: UIViewControllerRepresentable {
     }
 }
 
-/// Server address (the helper Mac, reached over Tailscale on a real phone) and deleting all data.
+/// Server address (the helper Mac, reached over Tailscale on a real phone), hands-free calls and deleting all data.
 struct SettingsView: View {
     @EnvironmentObject private var model: ChatModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("serverURL") private var serverURL = ""
+    @AppStorage("handsFree") private var handsFree = false
     @State private var confirmDelete = false
 
     var body: some View {
@@ -52,6 +53,11 @@ struct SettingsView: View {
                     Text("Helper computer")
                 } footer: {
                     Text("Leave empty to use the team's helper computer (\(APIClient.defaultServer)).")
+                }
+                Section {
+                    Toggle("Hands-free", isOn: $handsFree)
+                } footer: {
+                    Text("Agatha listens again by herself after speaking. Best in a quiet room.")
                 }
                 Section {
                     Button("Delete all my data", role: .destructive) { confirmDelete = true }

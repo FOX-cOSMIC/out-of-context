@@ -132,6 +132,8 @@ struct ChatMessage: Identifiable {
     var answers: [Int: Bool] = [:]
     /// Sent to the server but not shown (e.g. "the user tapped Start").
     var hidden = false
+    /// An app error shown as Agatha's bubble (e.g. "I can't reach the helper"): never sent to the server.
+    var isError = false
 }
 
 // MARK: - AI skills the user practises

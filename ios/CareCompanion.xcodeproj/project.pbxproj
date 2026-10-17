@@ -10,6 +10,7 @@
 		0450DA2E76287142F85898E9 /* Voice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE5F6CA5F158CF8C00319D2 /* Voice.swift */; };
 		74C048E4CD39DACFB101688B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2BE09E94E03DC8FF1CC2E5B /* Theme.swift */; };
 		891ADB49DEF2E2527B18906E /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B49D2BC8D14B8993928207 /* ChatView.swift */; };
+		8AA74CDBF06BED3877683168 /* LiveTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */; };
 		94CED109006812F7233823FC /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138ABE3BAAC364F0EA565CE3 /* ChatModel.swift */; };
 		A891874DD09CFE04889FCB98 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCE6A958B2F303CA550D805 /* APIClient.swift */; };
 		D32BEDEBCFF1299487A3FEFC /* CareCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596BA3D59608831D9AB378F7 /* CareCompanionApp.swift */; };
@@ -30,6 +31,7 @@
 		973C753C05A02C4EBC3A13A5 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		A2BE09E94E03DC8FF1CC2E5B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A7B49D2BC8D14B8993928207 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTranscriber.swift; sourceTree = "<group>"; };
 		E9F6FE88211C03283E779848 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB42C8E2FF2BBC098328812A /* CameraAndSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAndSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -53,6 +55,7 @@
 				138ABE3BAAC364F0EA565CE3 /* ChatModel.swift */,
 				A7B49D2BC8D14B8993928207 /* ChatView.swift */,
 				E9F6FE88211C03283E779848 /* Info.plist */,
+				D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */,
 				973C753C05A02C4EBC3A13A5 /* Models.swift */,
 				0A8567E0C2CEEE481CF365BD /* TalkButton.swift */,
 				A2BE09E94E03DC8FF1CC2E5B /* Theme.swift */,
@@ -130,6 +133,7 @@
 				D32BEDEBCFF1299487A3FEFC /* CareCompanionApp.swift in Sources */,
 				94CED109006812F7233823FC /* ChatModel.swift in Sources */,
 				891ADB49DEF2E2527B18906E /* ChatView.swift in Sources */,
+				8AA74CDBF06BED3877683168 /* LiveTranscriber.swift in Sources */,
 				E4B26674966039877BC0D41C /* Models.swift in Sources */,
 				DD8616D3575FB4C6E581BC33 /* TalkButton.swift in Sources */,
 				74C048E4CD39DACFB101688B /* Theme.swift in Sources */,

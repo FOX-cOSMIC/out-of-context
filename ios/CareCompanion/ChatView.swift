@@ -28,7 +28,7 @@ struct ChatView: View {
                             Label("Call", systemImage: "phone.fill").labelStyle(.titleAndIcon).font(Theme.Fonts.headline)
                         }
                         .disabled(!model.canSend)
-                        .accessibilityLabel("Start a call: talk hands-free")
+                        .accessibilityLabel("Start a call: talk to Agatha")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -66,6 +66,9 @@ struct ChatView: View {
                     ForEach(model.messages.filter { !$0.hidden }) { message in
                         MessageRow(message: message).id(message.id)
                     }
+                    if let words = model.liveText {
+                        LiveBubble(words: words, listening: model.isRecording).id("live")
+                    }
                     if model.isBusy {
                         HStack(spacing: Theme.Metrics.spacingRegular) {
                             ProgressView()
@@ -82,6 +85,9 @@ struct ChatView: View {
             }
             .onChange(of: model.isBusy) {
                 if model.isBusy { withAnimation { proxy.scrollTo("busy", anchor: .bottom) } }
+            }
+            .onChange(of: model.liveText) {
+                if model.liveText != nil { proxy.scrollTo("live", anchor: .bottom) }
             }
         }
     }
@@ -121,7 +127,7 @@ struct ChatView: View {
         if model.isRecording { return "Listening…" }
         if model.isBusy { return "Thinking…" }
         if model.isSpeaking { return "Speaking…" }
-        return model.status.isEmpty ? "Tap to talk when you're ready" : model.status
+        return model.status.isEmpty ? model.yourTurnStatus : model.status
     }
 
     private var controls: some View {
@@ -252,6 +258,38 @@ struct MessageRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+}
+
+// MARK: - What Agatha hears, while the user is still talking
+
+struct LiveBubble: View {
+    let words: String
+    /// Still listening (false: finished, the last words are being written down).
+    let listening: Bool
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: Theme.Metrics.spacingXSmall) {
+            if listening {
+                Label("Listening…", systemImage: "waveform")
+                    .font(Theme.Fonts.liveIndicator)
+                    .foregroundStyle(Theme.Colors.liveIndicator)
+                    .symbolEffect(.variableColor.iterative, options: .repeating)
+            }
+            Text(words.isEmpty ? "…" : words)
+                .font(Theme.Fonts.message)
+                .opacity(Theme.Metrics.liveTextOpacity)
+                .padding(Theme.Metrics.bubblePadding)
+                .background(Theme.Colors.liveBubble, in: RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Metrics.cornerLarge)
+                        .stroke(Theme.Colors.liveBubbleBorder,
+                                style: StrokeStyle(lineWidth: Theme.Metrics.liveBubbleBorderWidth, dash: [Theme.Metrics.liveBubbleDash]))
+                )
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(words.isEmpty ? "Listening" : "Agatha hears: \(words)")
     }
 }
 
