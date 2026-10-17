@@ -11,6 +11,8 @@
 
 Loads the model once, then serves:
   POST /speak  {"text": "...", "speed": 0.95}  -> audio/wav (24 kHz mono, 16-bit)
+               optional "voice": "bm_george" picks another Kokoro voice for this request
+               (used for the demo-video voices); without it the default voice is used.
   GET  /health                                 -> {"ok": true, ...}
 
 Listens only on 127.0.0.1. Start with:  npm run tts   (or: uv run tts/server.py)
@@ -21,6 +23,7 @@ Model weights download once to the Hugging Face cache (~/.cache/huggingface), no
 import io
 import json
 import os
+import re
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -34,15 +37,17 @@ VOICE = os.environ.get("KOKORO_VOICE", "bf_emma")  # b* = British, a* = American
 PORT = int(os.environ.get("KOKORO_PORT", "3002"))
 SAMPLE_RATE = 24000
 LANG = "b" if VOICE.startswith("b") else "a"
+VOICE_NAME = re.compile(r"^[ab][fm]_[a-z]+$")  # English Kokoro voices: af_/am_ (US), bf_/bm_ (UK)
 
 print(f"Loading {MODEL_ID} ...", flush=True)
 model = load_model(MODEL_ID)
 lock = threading.Lock()  # one generation at a time; MLX is not thread-safe
 
 
-def synthesize(text: str, speed: float) -> bytes:
+def synthesize(text: str, speed: float, voice: str = VOICE) -> bytes:
+    lang = LANG if voice == VOICE else ("b" if voice.startswith("b") else "a")
     with lock:
-        chunks = [np.array(r.audio) for r in model.generate(text=text, voice=VOICE, speed=speed, lang_code=LANG)]
+        chunks = [np.array(r.audio) for r in model.generate(text=text, voice=voice, speed=speed, lang_code=lang)]
     audio = np.concatenate(chunks) if chunks else np.zeros(1, dtype=np.float32)
     buf = io.BytesIO()
     sf.write(buf, audio, SAMPLE_RATE, format="WAV", subtype="PCM_16")
@@ -78,14 +83,17 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
             text = str(body.get("text", "")).strip()[:4000]
             speed = min(max(float(body.get("speed", 1.0)), 0.5), 1.5)
+            voice = str(body.get("voice") or VOICE).strip()
         except (ValueError, TypeError):
             return self._json(400, {"error": "bad JSON"})
         if not text:
             return self._json(400, {"error": "text is empty"})
+        if voice != VOICE and not VOICE_NAME.match(voice):
+            return self._json(400, {"error": f"unknown or unsupported voice: {voice}"})
         try:
             t = time.time()
-            wav = synthesize(text, speed)
-            print(f"{len(text)} chars in {time.time() - t:.2f} s", flush=True)
+            wav = synthesize(text, speed, voice)
+            print(f"{len(text)} chars ({voice}) in {time.time() - t:.2f} s", flush=True)
             self._send(200, wav, "audio/wav")
         except Exception as e:  # keep the service alive; the Node side falls back to `say`
             print(f"error: {e}", flush=True)

@@ -5,6 +5,7 @@ import UIKit
 struct RootView: View {
     @EnvironmentObject private var model: ChatModel
     @EnvironmentObject private var navigator: Navigator
+    @EnvironmentObject private var calls: CallScheduler
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,6 +30,10 @@ struct RootView: View {
             guard let tab else { return }
             if tab == .talk { navigator.goHome() } else { navigator.tab = tab }
             model.pendingTab = nil
+        }
+        // Agatha's medication-reminder call: its own window above everything (tab bar, sheets).
+        .onChange(of: calls.activeCall != nil) { _, showing in
+            if showing { CallWindow.show(scheduler: calls, model: model) } else { CallWindow.hide() }
         }
     }
 }

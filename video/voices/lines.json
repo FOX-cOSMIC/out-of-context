@@ -1,0 +1,164 @@
+[
+ {
+  "num": "01",
+  "scene": "01-hook",
+  "role": "NARRATOR",
+  "text": "Margaret is seventy-eight. Five medicines, a drawer full of paperwork, and she has never used AI.",
+  "at": "0:01",
+  "file": "lines/01-01-hook-narrator",
+  "dur": 7.55
+ },
+ {
+  "num": "02",
+  "scene": "01-hook",
+  "role": "NARRATOR",
+  "text": "Today, AI calls her.",
+  "at": "0:09",
+  "file": "lines/02-01-hook-narrator",
+  "dur": 2.65
+ },
+ {
+  "num": "03",
+  "scene": "02-call",
+  "role": "AGATHA",
+  "text": "Good morning, Margaret. It's time for your morning pills: Ramipril, Metformin, Pantoprazole and your aspirin. Have you taken them yet?",
+  "at": "0:13",
+  "file": "lines/03-02-call-agatha",
+  "dur": 8.22
+ },
+ {
+  "num": "04",
+  "scene": "02-call",
+  "role": "MARGARET",
+  "text": "Yes, I took them.",
+  "at": "0:23",
+  "file": "lines/04-02-call-margaret",
+  "dur": 2.27
+ },
+ {
+  "num": "05",
+  "scene": "02-call",
+  "role": "AGATHA",
+  "text": "Well done, all your morning pills are ticked off.",
+  "at": "0:26",
+  "file": "lines/05-02-call-agatha",
+  "dur": 3.38
+ },
+ {
+  "num": "06",
+  "scene": "03-scan",
+  "role": "NARRATOR",
+  "text": "At noon, a new box arrives from the pharmacy. She just shows it to Agatha.",
+  "at": "0:33",
+  "file": "lines/06-03-scan-narrator",
+  "dur": 5.83
+ },
+ {
+  "num": "07",
+  "scene": "03-scan",
+  "role": "AGATHA",
+  "text": "Amlodipine is new and isn't on your plan yet. Everything else matches. Please check the card.",
+  "at": "0:41",
+  "file": "lines/07-03-scan-agatha",
+  "dur": 6.28
+ },
+ {
+  "num": "08",
+  "scene": "03-scan",
+  "role": "NARRATOR",
+  "text": "She checks what AI read. That's her first AI lesson.",
+  "at": "0:50",
+  "file": "lines/08-03-scan-narrator",
+  "dur": 4.6
+ },
+ {
+  "num": "09",
+  "scene": "04-safety",
+  "role": "MARGARET",
+  "text": "Can I skip my Metformin today?",
+  "at": "0:56",
+  "file": "lines/09-04-safety-margaret",
+  "dur": 3.0
+ },
+ {
+  "num": "10",
+  "scene": "04-safety",
+  "role": "AGATHA",
+  "text": "Please don't change anything on your own. Ask Doctor Hoffmann or your pharmacist. Shall I note the question?",
+  "at": "1:00",
+  "file": "lines/10-04-safety-agatha",
+  "dur": 6.9
+ },
+ {
+  "num": "11",
+  "scene": "04-safety",
+  "role": "MARGARET",
+  "text": "Yes, please.",
+  "at": "1:08",
+  "file": "lines/11-04-safety-margaret",
+  "dur": 2.0
+ },
+ {
+  "num": "12",
+  "scene": "04-safety",
+  "role": "AGATHA",
+  "text": "Done. It's in your notes for Doctor Hoffmann.",
+  "at": "1:10",
+  "file": "lines/12-04-safety-agatha",
+  "dur": 3.17
+ },
+ {
+  "num": "13",
+  "scene": "05-memory",
+  "role": "MARGARET",
+  "text": "How did I do this week?",
+  "at": "1:14",
+  "file": "lines/13-05-memory-margaret",
+  "dur": 2.65
+ },
+ {
+  "num": "14",
+  "scene": "05-memory",
+  "role": "AGATHA",
+  "text": "Well done, you took 95 percent of your doses this week. Your mornings were perfect.",
+  "at": "1:17",
+  "file": "lines/14-05-memory-agatha",
+  "dur": 5.7
+ },
+ {
+  "num": "15",
+  "scene": "06-family",
+  "role": "NARRATOR",
+  "text": "And if she doesn't confirm? Later doesn't count, so Agatha tries again. After half an hour, Anna is told.",
+  "at": "1:26",
+  "file": "lines/15-06-family-narrator",
+  "dur": 7.8
+ },
+ {
+  "num": "16",
+  "scene": "06-family",
+  "role": "ANNA",
+  "text": "Thanks, Agatha. I'll call Mum.",
+  "at": "1:37",
+  "file": "lines/16-06-family-anna",
+  "dur": 2.35
+ },
+ {
+  "num": "17",
+  "scene": "07-close",
+  "role": "NARRATOR",
+  "text": "Talk in your own words. Show a photo. Check the answer.",
+  "at": "1:43",
+  "file": "lines/17-07-close-narrator",
+  "dur": 4.6
+ },
+ {
+  "num": "18",
+  "scene": "07-close",
+  "role": "NARRATOR",
+  "text": "Medicines are why they start. AI skills are what they keep.",
+  "at": "1:50",
+  "file": "lines/18-07-close-narrator",
+  "dur": 4.9
+ }
+]

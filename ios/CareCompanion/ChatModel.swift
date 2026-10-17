@@ -18,6 +18,10 @@ final class ChatModel: ObservableObject {
     /// A call: Agatha speaks, the user answers, repeat, until "End call".
     /// The user taps to answer, unless "Hands-free" is on in Settings.
     @Published private(set) var isCallMode = false
+    /// A pill reminder call is on: hands-free, turn by turn, until the user confirms intake.
+    @Published private(set) var isPillCall = false
+    /// Set by the app shell: tells the call scheduler that intake was confirmed by voice.
+    var onIntakeConfirmed: ((Slot) -> Void)?
     /// The words heard so far while the user is talking (live transcription); nil when not listening live.
     @Published private(set) var liveText: String?
     /// Notes Agatha wrote down (oldest first) and papers she kept, saved on this phone.
@@ -110,8 +114,38 @@ final class ChatModel: ObservableObject {
         startRecording()
     }
 
+    /// The pill reminder call was answered: Agatha opens with the purpose, then the call runs hands-free.
+    func startMedicationCall(slot: Slot, medicines: [String], attempt: Int) {
+        guard !isPillCall else { return }
+        speaker.stop()
+        if isRecording { if isLive { live.cancel() } else { recorder.cancel() }; isRecording = false }
+        isCallMode = true
+        isPillCall = true
+        endCallAfterReply = false
+        Task { _ = await requestVoicePermissions() }
+        let note = "(Pill reminder call: \(slot.label.lowercased()) pills: \(medicines.joined(separator: ", ")). Attempt \(attempt). The user answered.)"
+        messages.append(ChatMessage(role: .user, text: note, hidden: true))
+        isBusy = true
+        Task { await askCompanion() }
+    }
+
+    /// During a pill call the user ticked pills in the checklist: tell Agatha, so she can thank them or ask about the rest.
+    func reportPillsTicked(slot: Slot, ticked: [String], remaining: [String]) {
+        guard isPillCall else { return }
+        let note = remaining.isEmpty
+            ? "(The user ticked off all \(slot.label.lowercased()) pills in the app: \(ticked.joined(separator: ", ")).)"
+            : "(The user ticked off in the app: \(ticked.joined(separator: ", ")). Still not confirmed: \(remaining.joined(separator: ", ")).)"
+        speaker.stop()
+        if isRecording { if isLive { live.cancel() } else { recorder.cancel() }; isRecording = false }
+        guard !isBusy else { return }
+        messages.append(ChatMessage(role: .user, text: note, hidden: true))
+        isBusy = true
+        Task { await askCompanion() }
+    }
+
     func endCall() {
         isCallMode = false
+        isPillCall = false
         endCallAfterReply = false
         silenceWatch?.cancel()
         if isRecording {
@@ -439,7 +473,7 @@ final class ChatModel: ObservableObject {
             // Saving needs a tap on Yes/No, so don't start listening over the card.
             status = "Please check the card and tap Yes or No."
         } else if finished && canSend {
-            if handsFree {
+            if handsFree || isPillCall { // a pill call is a real call: listen again by itself
                 try? await Task.sleep(for: .milliseconds(300)) // let the speaker go quiet first
                 if isCallMode && canSend && !isSpeaking { startRecording() }
             } else {
@@ -480,6 +514,10 @@ final class ChatModel: ObservableObject {
     private func apply(_ actions: [ChatAction]) {
         for action in actions {
             switch action.type {
+            case "confirm_intake":
+                guard let slot = action.slot.flatMap(Slot.init(rawValue:)) else { continue }
+                if isPillCall { endCallAfterReply = true } // goodbye is spoken, then the call ends
+                onIntakeConfirmed?(slot)
             case "mark_taken":
                 guard let slot = action.slot, let names = action.names else { continue }
                 for name in names {

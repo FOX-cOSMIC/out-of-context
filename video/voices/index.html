@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha Voices</title>
+<style>
+:root{--bg:#FAF9F5;--surface:#FFFFFF;--surface-2:#EFE6FF;--text:#1E1B2E;--muted:#5D5873;--line:#E4DFEE;
+ --accent:#6B3FE0;--accent-text:#5530C4;--n-bg:#E6E3EF;--n-fg:#3D3852;--m-bg:#FFE7DA;--m-fg:#8E3A0E;
+ --a-bg:#EFE6FF;--a-fg:#4B2BB0;--an-bg:#DDF3EA;--an-fg:#1D6B4F;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15131F;--surface:#1F1C2C;--surface-2:#2A2340;
+ --text:#F1EEF8;--muted:#B4AECB;--line:#342F47;--accent:#9C7BFF;--accent-text:#B9A2FF;--n-bg:#2C293A;--n-fg:#D6D1E8;
+ --m-bg:#47261A;--m-fg:#FFB48D;--a-bg:#2F2550;--a-fg:#C9B6FF;--an-bg:#173B30;--an-fg:#8FE0BF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15131F;--surface:#1F1C2C;--surface-2:#2A2340;--text:#F1EEF8;--muted:#B4AECB;--line:#342F47;
+ --accent:#9C7BFF;--accent-text:#B9A2FF;--n-bg:#2C293A;--n-fg:#D6D1E8;--m-bg:#47261A;--m-fg:#FFB48D;--a-bg:#2F2550;
+ --a-fg:#C9B6FF;--an-bg:#173B30;--an-fg:#8FE0BF;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,sans-serif;overflow-x:hidden}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:2rem;margin:0 0 4px}h2{font-size:1.25rem;margin:32px 0 10px}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+.note{background:var(--surface-2);border-radius:12px;padding:12px 14px;margin:14px 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--surface-2);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+.tbl{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--surface-2)}
+.tbl tr:last-child td{border-bottom:0}
+.cand{margin:0 0 8px}.cand span{display:block;font-size:.82rem;color:var(--muted)}
+.cand.pick span{color:var(--accent-text);font-weight:700}
+audio{width:100%;max-width:340px;height:36px;display:block}
+.who{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;letter-spacing:.03em}
+.who.narrator{background:var(--n-bg);color:var(--n-fg)}.who.margaret{background:var(--m-bg);color:var(--m-fg)}
+.who.agatha{background:var(--a-bg);color:var(--a-fg)}.who.anna{background:var(--an-bg);color:var(--an-fg)}
+ol{list-style:none;margin:0;padding:0}
+li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.num{font-weight:700;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.text{margin:6px 0 8px;font-size:1.05rem}
+@media (max-width:640px){.tbl thead{display:none}.tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+ .tbl tr{border-bottom:1px solid var(--line);padding:6px 0}.tbl td{border:0;padding:4px 12px}
+ .tbl td[data-l]::before{content:attr(data-l);display:block;font-weight:700;color:var(--muted);font-size:.75rem;text-transform:uppercase}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Agatha Voices</h1>
+<p class="muted">Demo video "A day with Margaret" · team Out of Context · 18 lines, 83.8 s of speech · Kokoro-82M on this Mac, -16 LUFS, 24 kHz.</p>
+<div class="note small"><b>Change a voice:</b> edit one line in <code>CAST</code> at the top of <code>video/voices/generate.py</code>
+(e.g. <code>"MARGARET": ("bf_lily", 0.88)</code>), then run <code>python3 video/voices/generate.py</code>. Text lives in
+<code>video/script.md</code>. Needs the Kokoro service (<code>npm run tts</code>). Agatha stays <code>bf_emma</code>.</div>
+<p><b>Full preview</b> (all lines, 0.6 s gaps)</p>
+<audio controls preload="none" src="full-preview.m4a"></audio>
+<h2>Cast</h2>
+<table class="tbl"><thead><tr><th>Role</th><th>Voice</th><th>Candidates (same sample line)</th></tr></thead>
+<tbody>
+<tr><td data-l="Role"><span class="who narrator">NARRATOR</span><div class="muted small">Explains the idea · calm, warm, British</div></td><td data-l="Voice"><code>bm_george</code> · speed 0.95</td><td data-l="Candidates"><div class="cand pick"><span>bm_george · 0.95 · chosen</span><audio controls preload="none" src="samples/narrator-bm_george.m4a"></audio></div><div class="cand"><span>bm_lewis · 0.95</span><audio controls preload="none" src="samples/narrator-bm_lewis.m4a"></audio></div><div class="cand"><span>bm_daniel · 0.95</span><audio controls preload="none" src="samples/narrator-bm_daniel.m4a"></audio></div></td></tr>
+<tr><td data-l="Role"><span class="who margaret">MARGARET</span><div class="muted small">78, the user · gentle, a little slower</div></td><td data-l="Voice"><code>bf_lily</code> · speed 0.88</td><td data-l="Candidates"><div class="cand"><span>bf_isabella · 0.88</span><audio controls preload="none" src="samples/margaret-bf_isabella.m4a"></audio></div><div class="cand"><span>bf_alice · 0.88</span><audio controls preload="none" src="samples/margaret-bf_alice.m4a"></audio></div><div class="cand pick"><span>bf_lily · 0.88 · chosen</span><audio controls preload="none" src="samples/margaret-bf_lily.m4a"></audio></div></td></tr>
+<tr><td data-l="Role"><span class="who anna">ANNA</span><div class="muted small">Her daughter, 40s · warm, a bit busy</div></td><td data-l="Voice"><code>af_heart</code> · speed 1.0</td><td data-l="Candidates"><div class="cand pick"><span>af_heart · 1.0 · chosen</span><audio controls preload="none" src="samples/anna-af_heart.m4a"></audio></div><div class="cand"><span>af_bella · 1.0</span><audio controls preload="none" src="samples/anna-af_bella.m4a"></audio></div><div class="cand"><span>af_sarah · 1.0</span><audio controls preload="none" src="samples/anna-af_sarah.m4a"></audio></div></td></tr>
+<tr><td data-l="Role"><span class="who agatha">AGATHA</span><div class="muted small">The app&#x27;s voice · fixed to the app (bf_emma)</div></td><td data-l="Voice"><code>bf_emma</code> · speed 0.95</td><td data-l="Candidates"><p class="muted small">Fixed: the same voice the app uses.</p></td></tr>
+</tbody></table>
+<h2>Lines</h2>
+<ol>
+<li><div class="meta"><span class="num">01</span><span class="who narrator">NARRATOR</span><span class="muted small">01-hook · at 0:01 · 7.5 s</span></div><p class="text">Margaret is seventy-eight. Five medicines, a drawer full of paperwork, and she has never used AI.</p><audio controls preload="none" src="lines/01-01-hook-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">02</span><span class="who narrator">NARRATOR</span><span class="muted small">01-hook · at 0:09 · 2.6 s</span></div><p class="text">Today, AI calls her.</p><audio controls preload="none" src="lines/02-01-hook-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">03</span><span class="who agatha">AGATHA</span><span class="muted small">02-call · at 0:13 · 8.2 s</span></div><p class="text">Good morning, Margaret. It&#x27;s time for your morning pills: Ramipril, Metformin, Pantoprazole and your aspirin. Have you taken them yet?</p><audio controls preload="none" src="lines/03-02-call-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">04</span><span class="who margaret">MARGARET</span><span class="muted small">02-call · at 0:23 · 2.3 s</span></div><p class="text">Yes, I took them.</p><audio controls preload="none" src="lines/04-02-call-margaret.m4a"></audio></li>
+<li><div class="meta"><span class="num">05</span><span class="who agatha">AGATHA</span><span class="muted small">02-call · at 0:26 · 3.4 s</span></div><p class="text">Well done, all your morning pills are ticked off.</p><audio controls preload="none" src="lines/05-02-call-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">06</span><span class="who narrator">NARRATOR</span><span class="muted small">03-scan · at 0:33 · 5.8 s</span></div><p class="text">At noon, a new box arrives from the pharmacy. She just shows it to Agatha.</p><audio controls preload="none" src="lines/06-03-scan-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">07</span><span class="who agatha">AGATHA</span><span class="muted small">03-scan · at 0:41 · 6.3 s</span></div><p class="text">Amlodipine is new and isn&#x27;t on your plan yet. Everything else matches. Please check the card.</p><audio controls preload="none" src="lines/07-03-scan-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">08</span><span class="who narrator">NARRATOR</span><span class="muted small">03-scan · at 0:50 · 4.6 s</span></div><p class="text">She checks what AI read. That&#x27;s her first AI lesson.</p><audio controls preload="none" src="lines/08-03-scan-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">09</span><span class="who margaret">MARGARET</span><span class="muted small">04-safety · at 0:56 · 3.0 s</span></div><p class="text">Can I skip my Metformin today?</p><audio controls preload="none" src="lines/09-04-safety-margaret.m4a"></audio></li>
+<li><div class="meta"><span class="num">10</span><span class="who agatha">AGATHA</span><span class="muted small">04-safety · at 1:00 · 6.9 s</span></div><p class="text">Please don&#x27;t change anything on your own. Ask Doctor Hoffmann or your pharmacist. Shall I note the question?</p><audio controls preload="none" src="lines/10-04-safety-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">11</span><span class="who margaret">MARGARET</span><span class="muted small">04-safety · at 1:08 · 2.0 s</span></div><p class="text">Yes, please.</p><audio controls preload="none" src="lines/11-04-safety-margaret.m4a"></audio></li>
+<li><div class="meta"><span class="num">12</span><span class="who agatha">AGATHA</span><span class="muted small">04-safety · at 1:10 · 3.2 s</span></div><p class="text">Done. It&#x27;s in your notes for Doctor Hoffmann.</p><audio controls preload="none" src="lines/12-04-safety-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">13</span><span class="who margaret">MARGARET</span><span class="muted small">05-memory · at 1:14 · 2.6 s</span></div><p class="text">How did I do this week?</p><audio controls preload="none" src="lines/13-05-memory-margaret.m4a"></audio></li>
+<li><div class="meta"><span class="num">14</span><span class="who agatha">AGATHA</span><span class="muted small">05-memory · at 1:17 · 5.7 s</span></div><p class="text">Well done, you took 95 percent of your doses this week. Your mornings were perfect.</p><audio controls preload="none" src="lines/14-05-memory-agatha.m4a"></audio></li>
+<li><div class="meta"><span class="num">15</span><span class="who narrator">NARRATOR</span><span class="muted small">06-family · at 1:26 · 7.8 s</span></div><p class="text">And if she doesn&#x27;t confirm? Later doesn&#x27;t count, so Agatha tries again. After half an hour, Anna is told.</p><audio controls preload="none" src="lines/15-06-family-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">16</span><span class="who anna">ANNA</span><span class="muted small">06-family · at 1:37 · 2.4 s</span></div><p class="text">Thanks, Agatha. I&#x27;ll call Mum.</p><audio controls preload="none" src="lines/16-06-family-anna.m4a"></audio></li>
+<li><div class="meta"><span class="num">17</span><span class="who narrator">NARRATOR</span><span class="muted small">07-close · at 1:43 · 4.6 s</span></div><p class="text">Talk in your own words. Show a photo. Check the answer.</p><audio controls preload="none" src="lines/17-07-close-narrator.m4a"></audio></li>
+<li><div class="meta"><span class="num">18</span><span class="who narrator">NARRATOR</span><span class="muted small">07-close · at 1:50 · 4.9 s</span></div><p class="text">Medicines are why they start. AI skills are what they keep.</p><audio controls preload="none" src="lines/18-07-close-narrator.m4a"></audio></li>
+</ol>
+</div>
+</body>
+</html>

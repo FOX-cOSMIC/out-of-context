@@ -16,6 +16,7 @@
 		2DA0600561ADB6088E812AE6 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9FC2077961AB910A394B11 /* ScanView.swift */; };
 		3E7F5DAB8A5C97CCCBCFA526 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7948A688AEA9B5F9E5E0ED5 /* CalendarView.swift */; };
 		433A4ECBA7FABCB82D90CEC5 /* SOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4427B82240FEF92B6CA40521 /* SOSView.swift */; };
+		56C12A1A568D67DEDC483BBA /* CallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA8D928BD3BAD8C1B3D54F /* CallScheduler.swift */; };
 		61D295C52CEE9794332EC29E /* Quicksand.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 270C99CE213A063BBE361A38 /* Quicksand.ttf */; };
 		74C048E4CD39DACFB101688B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2BE09E94E03DC8FF1CC2E5B /* Theme.swift */; };
 		78E22725C0BA0579B15F37FA /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DC8FA369751ABA0B2FB05 /* HistoryView.swift */; };
@@ -23,17 +24,21 @@
 		891ADB49DEF2E2527B18906E /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B49D2BC8D14B8993928207 /* ChatView.swift */; };
 		8AA74CDBF06BED3877683168 /* LiveTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */; };
 		94CED109006812F7233823FC /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138ABE3BAAC364F0EA565CE3 /* ChatModel.swift */; };
+		A33FE7CA482668E15A1331FE /* agatha-ring.caf in Resources */ = {isa = PBXBuildFile; fileRef = C589472D708C1B8FBED09C9B /* agatha-ring.caf */; };
 		A891874DD09CFE04889FCB98 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCE6A958B2F303CA550D805 /* APIClient.swift */; };
 		B074CA16F9E15730D41C653B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5296014E6659F3743FACC61A /* Assets.xcassets */; };
+		B15519D022681E58F9FE2BE7 /* agatha-ring-long.caf in Resources */ = {isa = PBXBuildFile; fileRef = 81CE913A8AD3B6893A4EDEB8 /* agatha-ring-long.caf */; };
 		BD694F200160542E57016399 /* MacTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6869EFF18DA20BD067B80769 /* MacTranscriber.swift */; };
 		C4341E7017FA93AD2EBCCD40 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE74AED3EEF50BD8255A7BD /* Mascot.swift */; };
 		C66766126D4B4D0488149858 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C1B160DDF1B40927BE9DA /* NotesView.swift */; };
 		CB302AA781649FCA4F14EC8C /* DemoPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B93F8C2AF096043CDC9027 /* DemoPerson.swift */; };
 		D32BEDEBCFF1299487A3FEFC /* CareCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596BA3D59608831D9AB378F7 /* CareCompanionApp.swift */; };
 		D55DFB256AED90CE99A4913D /* CameraAndSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB42C8E2FF2BBC098328812A /* CameraAndSettings.swift */; };
+		D75734827EC493975459A375 /* outgoing-ring.caf in Resources */ = {isa = PBXBuildFile; fileRef = DC9A893EFACBB6CDEF0C3298 /* outgoing-ring.caf */; };
 		DD8616D3575FB4C6E581BC33 /* TalkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8567E0C2CEEE481CF365BD /* TalkButton.swift */; };
 		E423973A4ABCAFDB3B6498B9 /* AtkinsonHyperlegible-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F183B2CE3A23C560E04C355 /* AtkinsonHyperlegible-Regular.ttf */; };
 		E4B26674966039877BC0D41C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973C753C05A02C4EBC3A13A5 /* Models.swift */; };
+		E73F12F9743F8FD74520C3B8 /* IncomingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E255C9569C6F28A164FE935 /* IncomingCallView.swift */; };
 		EFADD655AE0A6D685B9B89BB /* Cards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2796DD03EA8E675A6E69C /* Cards.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,10 +55,13 @@
 		41E1EF53BB4270D2DD5C1A8F /* DemoHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoHistory.swift; sourceTree = "<group>"; };
 		4427B82240FEF92B6CA40521 /* SOSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOSView.swift; sourceTree = "<group>"; };
 		5296014E6659F3743FACC61A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		56BA8D928BD3BAD8C1B3D54F /* CallScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallScheduler.swift; sourceTree = "<group>"; };
 		596BA3D59608831D9AB378F7 /* CareCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareCompanionApp.swift; sourceTree = "<group>"; };
 		5F8DC8FA369751ABA0B2FB05 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		6869EFF18DA20BD067B80769 /* MacTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTranscriber.swift; sourceTree = "<group>"; };
 		6FD2796DD03EA8E675A6E69C /* Cards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cards.swift; sourceTree = "<group>"; };
+		7E255C9569C6F28A164FE935 /* IncomingCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallView.swift; sourceTree = "<group>"; };
+		81CE913A8AD3B6893A4EDEB8 /* agatha-ring-long.caf */ = {isa = PBXFileReference; path = "agatha-ring-long.caf"; sourceTree = "<group>"; };
 		8F183B2CE3A23C560E04C355 /* AtkinsonHyperlegible-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AtkinsonHyperlegible-Regular.ttf"; sourceTree = "<group>"; };
 		93290F85C6C62CF99B3EE63E /* CareCompanion.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CareCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		973C753C05A02C4EBC3A13A5 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -63,14 +71,26 @@
 		AAE74AED3EEF50BD8255A7BD /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
 		AB450E0D61E362EE51086B4F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B0FB4F1C936A030F097FDDA0 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
+		C589472D708C1B8FBED09C9B /* agatha-ring.caf */ = {isa = PBXFileReference; path = "agatha-ring.caf"; sourceTree = "<group>"; };
 		CF9436F91221A8B653F23F56 /* PillsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillsComponents.swift; sourceTree = "<group>"; };
 		D7948A688AEA9B5F9E5E0ED5 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTranscriber.swift; sourceTree = "<group>"; };
+		DC9A893EFACBB6CDEF0C3298 /* outgoing-ring.caf */ = {isa = PBXFileReference; path = "outgoing-ring.caf"; sourceTree = "<group>"; };
 		E9F6FE88211C03283E779848 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB42C8E2FF2BBC098328812A /* CameraAndSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAndSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0C4015881C0EC5BF20A85067 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				81CE913A8AD3B6893A4EDEB8 /* agatha-ring-long.caf */,
+				C589472D708C1B8FBED09C9B /* agatha-ring.caf */,
+				DC9A893EFACBB6CDEF0C3298 /* outgoing-ring.caf */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		2C663460EB7461B4E0D0AF9D = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +105,7 @@
 				2DCE6A958B2F303CA550D805 /* APIClient.swift */,
 				5296014E6659F3743FACC61A /* Assets.xcassets */,
 				D7948A688AEA9B5F9E5E0ED5 /* CalendarView.swift */,
+				56BA8D928BD3BAD8C1B3D54F /* CallScheduler.swift */,
 				FB42C8E2FF2BBC098328812A /* CameraAndSettings.swift */,
 				6FD2796DD03EA8E675A6E69C /* Cards.swift */,
 				596BA3D59608831D9AB378F7 /* CareCompanionApp.swift */,
@@ -93,6 +114,7 @@
 				41E1EF53BB4270D2DD5C1A8F /* DemoHistory.swift */,
 				11B93F8C2AF096043CDC9027 /* DemoPerson.swift */,
 				5F8DC8FA369751ABA0B2FB05 /* HistoryView.swift */,
+				7E255C9569C6F28A164FE935 /* IncomingCallView.swift */,
 				E9F6FE88211C03283E779848 /* Info.plist */,
 				D7A50C9F2DE9414D1A11110C /* LiveTranscriber.swift */,
 				6869EFF18DA20BD067B80769 /* MacTranscriber.swift */,
@@ -109,6 +131,7 @@
 				A2BE09E94E03DC8FF1CC2E5B /* Theme.swift */,
 				0BE5F6CA5F158CF8C00319D2 /* Voice.swift */,
 				FEAC0B7E3F443AF74CACB67D /* Fonts */,
+				0C4015881C0EC5BF20A85067 /* Sounds */,
 			);
 			path = CareCompanion;
 			sourceTree = "<group>";
@@ -191,6 +214,9 @@
 				07115A4BA2E0C8458FE9295E /* AtkinsonHyperlegible-Bold.ttf in Resources */,
 				E423973A4ABCAFDB3B6498B9 /* AtkinsonHyperlegible-Regular.ttf in Resources */,
 				61D295C52CEE9794332EC29E /* Quicksand.ttf in Resources */,
+				B15519D022681E58F9FE2BE7 /* agatha-ring-long.caf in Resources */,
+				A33FE7CA482668E15A1331FE /* agatha-ring.caf in Resources */,
+				D75734827EC493975459A375 /* outgoing-ring.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +229,7 @@
 			files = (
 				A891874DD09CFE04889FCB98 /* APIClient.swift in Sources */,
 				3E7F5DAB8A5C97CCCBCFA526 /* CalendarView.swift in Sources */,
+				56C12A1A568D67DEDC483BBA /* CallScheduler.swift in Sources */,
 				D55DFB256AED90CE99A4913D /* CameraAndSettings.swift in Sources */,
 				EFADD655AE0A6D685B9B89BB /* Cards.swift in Sources */,
 				D32BEDEBCFF1299487A3FEFC /* CareCompanionApp.swift in Sources */,
@@ -211,6 +238,7 @@
 				7C7DD81810D3B44D75A64B26 /* DemoHistory.swift in Sources */,
 				CB302AA781649FCA4F14EC8C /* DemoPerson.swift in Sources */,
 				78E22725C0BA0579B15F37FA /* HistoryView.swift in Sources */,
+				E73F12F9743F8FD74520C3B8 /* IncomingCallView.swift in Sources */,
 				8AA74CDBF06BED3877683168 /* LiveTranscriber.swift in Sources */,
 				BD694F200160542E57016399 /* MacTranscriber.swift in Sources */,
 				C4341E7017FA93AD2EBCCD40 /* Mascot.swift in Sources */,

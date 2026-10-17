@@ -56,6 +56,18 @@ struct SettingsView: View {
                     Text("Leave empty to use the team's helper computer (\(APIClient.defaultServer)).")
                 }
                 Section {
+                    Button("Test pill call in 10 seconds") {
+                        CallScheduler.shared.startTestCall()
+                        dismiss()
+                    }
+                    .font(.headline)
+                } header: {
+                    Text("Pill reminder calls")
+                } footer: {
+                    Text("Agatha calls at these times until you confirm. After 30 minutes without confirmation, your family helper is told.")
+                }
+                MedicationTimesSection()
+                Section {
                     Toggle("Hands-free", isOn: $handsFree)
                 } footer: {
                     Text("Agatha listens again by herself after speaking. Best in a quiet room.")
