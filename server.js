@@ -165,6 +165,17 @@ const CHAT_TOOLS = [
     },
   },
   {
+    name: "confirm_intake",
+    description:
+      "During a pill reminder call ONLY: the user clearly said they have ALREADY taken the medicines for this time of day (past tense, e.g. 'yes, I've taken them'). Ticks them off and lets the call end. Never use it for 'I will', 'later', 'soon' or unclear answers.",
+    input_schema: {
+      type: "object",
+      properties: { slot: SLOT, names: { type: "array", items: { type: "string" } } },
+      required: ["slot", "names"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "mark_taken",
     description: "Tick off medicines the user says they have taken. Use the names exactly as written in the saved plan.",
     input_schema: {
@@ -233,6 +244,10 @@ function runChatTool(name, input, cards, actions, hasPhoto = false) {
     case "propose_appointments":
       cards.push({ type: "confirm_appointments", ...input });
       return "The card with Yes/No buttons is on screen. Ask the user to check it.";
+    case "confirm_intake":
+      actions.push({ type: "mark_taken", slot: input.slot, names: input.names });
+      actions.push({ type: "confirm_intake", slot: input.slot, names: input.names });
+      return `Confirmed and ticked off (${input.slot}): ${input.names.join(", ")}. Thank them warmly in one short sentence and say goodbye; the call ends by itself.`;
     case "mark_taken":
       actions.push({ type: "mark_taken", ...input });
       return `Marked as taken (${input.slot}): ${input.names.join(", ")}.`;
