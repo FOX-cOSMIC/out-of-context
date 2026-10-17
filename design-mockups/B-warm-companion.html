@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha Warm Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#6B3FE0; --purple-d:#5126C4; --lav:#EFE6FF; --off:#FAF9F5; --ink:#1E1B2E; --ink2:#4A4560;
+  --orange:#FF7A3D; --peach:#FFF1E3; --mint:#E3F6F1; --mint-d:#1F7A63; --red:#C8283A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9E5DC;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:var(--ink);padding:36px 40px 48px}
+h1.page{font-family:Quicksand;font-weight:700;font-size:34px;margin-bottom:4px}
+p.sub{font-size:18px;color:var(--ink2);margin-bottom:26px}
+.row{display:flex;gap:36px;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:14px}
+.label{font-family:Quicksand;font-weight:700;font-size:22px;display:flex;gap:10px;align-items:center}
+.label b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--purple);color:#fff;font-size:18px}
+
+/* phone */
+.phone{width:393px;height:852px;border-radius:56px;background:var(--off);position:relative;overflow:hidden;
+  box-shadow:0 0 0 10px #16131F,0 0 0 12px #3A3548,0 30px 60px rgba(30,27,46,.35)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:#000;z-index:5}
+.status{height:54px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0 36px;font-weight:700;font-size:17px;position:relative;z-index:4}
+.status .ic{display:flex;gap:6px;align-items:center}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.content{flex:1;overflow:hidden;padding:0 20px}
+h2{font-family:Quicksand;font-weight:700;font-size:30px;line-height:1.15}
+.muted{color:var(--ink2)}
+.t18{font-size:18px}.t20{font-size:20px}.t22{font-size:22px}
+
+/* tab bar */
+.tabs{height:98px;background:#fff;border-top:1px solid #E6E1F2;display:flex;justify-content:space-around;align-items:flex-start;padding:10px 6px 0;position:relative;z-index:3}
+.tab{width:68px;min-height:60px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:15px;font-weight:700;color:var(--ink2)}
+.tab svg{width:30px;height:30px}
+.tab.on{color:var(--purple)}
+.tab.sos{color:var(--red)}
+.tab.home{margin-top:-30px}
+.tab.home .hb{width:72px;height:72px;border-radius:50%;background:var(--purple);display:grid;place-items:center;box-shadow:0 0 0 6px #fff,0 8px 18px rgba(107,63,224,.35)}
+.tab.home .hb svg{width:52px;height:52px}
+.tab.sos.on{color:#fff}
+.tab.sos.on .pill{background:var(--red);border-radius:16px;padding:4px 10px;display:flex;flex-direction:column;align-items:center}
+
+/* hero */
+.hero{margin:6px 0 0;border-radius:36px;background:var(--lav);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.rings{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.ring{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);border:2px solid rgba(107,63,224,.16)}
+.flower{position:absolute}
+.tapme{font-family:Quicksand;font-weight:700;font-size:22px;background:#fff;color:var(--purple);border-radius:999px;padding:12px 24px;display:flex;gap:10px;align-items:center;box-shadow:0 4px 12px rgba(107,63,224,.18);position:relative;z-index:2;min-height:56px}
+.bubble-tip{position:relative;z-index:2}
+
+.card{border-radius:28px;padding:18px 18px;position:relative}
+.card.mint{background:var(--mint)}
+.card.peach{background:var(--peach)}
+.card.lav{background:var(--lav)}
+.card.white{background:#fff;box-shadow:0 2px 10px rgba(30,27,46,.06)}
+.kicker{font-family:Quicksand;font-weight:700;font-size:18px;display:flex;gap:8px;align-items:center;letter-spacing:.2px}
+
+.btn{min-height:60px;border-radius:20px;border:0;font-family:'Atkinson Hyperlegible';font-weight:700;font-size:21px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px}
+.btn.primary{background:var(--purple);color:#fff;box-shadow:0 6px 14px rgba(107,63,224,.3)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid #D9D2EC}
+.btn.small{min-height:56px;font-size:20px;padding:0 18px;border-radius:18px}
+
+.pillrow{display:flex;align-items:center;gap:12px;min-height:60px}
+.pillicon{width:46px;height:46px;border-radius:14px;background:#fff;display:grid;place-items:center;flex:none}
+.pname{font-weight:700;font-size:20px;line-height:1.15}
+.pmeta{font-size:18px;color:var(--ink2);line-height:1.2}
+.check{width:40px;height:40px;border-radius:50%;background:var(--mint-d);display:grid;place-items:center;flex:none}
+</style>
+</head>
+<body>
+
+<!-- Agatha mascot (no mouth; mouths are added per expression) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="agatha" viewBox="0 0 200 220">
+      <!-- antenna -->
+      <line x1="100" y1="32" x2="100" y2="14" stroke="#1E1B2E" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="100" cy="11" r="8" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="3"/>
+      <!-- arms -->
+      <path d="M56 152 Q34 162 36 190" fill="none" stroke="#1E1B2E" stroke-width="16" stroke-linecap="round"/>
+      <path d="M56 152 Q34 162 36 190" fill="none" stroke="#6B3FE0" stroke-width="10" stroke-linecap="round"/>
+      <path d="M144 152 Q166 162 164 190" fill="none" stroke="#1E1B2E" stroke-width="16" stroke-linecap="round"/>
+      <path d="M144 152 Q166 162 164 190" fill="none" stroke="#6B3FE0" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="36" cy="192" r="9" fill="#fff" stroke="#1E1B2E" stroke-width="3"/>
+      <circle cx="164" cy="192" r="9" fill="#fff" stroke="#1E1B2E" stroke-width="3"/>
+      <!-- body: white shirt + purple vest -->
+      <rect x="52" y="126" width="96" height="82" rx="30" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="4"/>
+      <path d="M80 128 L100 166 L120 128 Z" fill="#fff" stroke="#1E1B2E" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="100" cy="180" r="4.5" fill="#FF7A3D"/>
+      <circle cx="100" cy="194" r="4.5" fill="#FF7A3D"/>
+      <!-- neck -->
+      <rect x="88" y="116" width="24" height="14" rx="4" fill="#C9B8F5" stroke="#1E1B2E" stroke-width="3"/>
+      <!-- bow tie -->
+      <path d="M100 136 L82 126 L82 146 Z M100 136 L118 126 L118 146 Z" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="100" cy="136" r="5" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="3"/>
+      <!-- ears -->
+      <rect x="26" y="60" width="18" height="34" rx="8" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="3.5"/>
+      <rect x="156" y="60" width="18" height="34" rx="8" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="3.5"/>
+      <!-- head -->
+      <rect x="40" y="30" width="120" height="90" rx="36" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="4"/>
+      <!-- cheeks -->
+      <ellipse cx="58" cy="98" rx="9" ry="5.5" fill="#FFB59A"/>
+      <ellipse cx="142" cy="98" rx="9" ry="5.5" fill="#FFB59A"/>
+      <!-- eyes -->
+      <circle cx="76" cy="74" r="6.5" fill="#1E1B2E"/>
+      <circle cx="124" cy="74" r="6.5" fill="#1E1B2E"/>
+      <circle cx="78.5" cy="71.5" r="2" fill="#fff"/>
+      <circle cx="126.5" cy="71.5" r="2" fill="#fff"/>
+      <!-- glasses -->
+      <circle cx="76" cy="74" r="18" fill="#EFE6FF" fill-opacity=".35" stroke="#1E1B2E" stroke-width="4"/>
+      <circle cx="124" cy="74" r="18" fill="#EFE6FF" fill-opacity=".35" stroke="#1E1B2E" stroke-width="4"/>
+      <path d="M94 72 Q100 66 106 72" fill="none" stroke="#1E1B2E" stroke-width="4" stroke-linecap="round"/>
+      <path d="M58 70 L44 66 M142 70 L156 66" stroke="#1E1B2E" stroke-width="4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="flower" viewBox="0 0 40 40">
+      <g fill="#fff"><circle cx="20" cy="9" r="8"/><circle cx="31" cy="17" r="8"/><circle cx="27" cy="30" r="8"/><circle cx="13" cy="30" r="8"/><circle cx="9" cy="17" r="8"/></g>
+      <circle cx="20" cy="21" r="6" fill="#FF7A3D"/>
+    </symbol>
+    <symbol id="flowerP" viewBox="0 0 40 40">
+      <g fill="#C9B8F5"><circle cx="20" cy="9" r="8"/><circle cx="31" cy="17" r="8"/><circle cx="27" cy="30" r="8"/><circle cx="13" cy="30" r="8"/><circle cx="9" cy="17" r="8"/></g>
+      <circle cx="20" cy="21" r="6" fill="#FFF1E3"/>
+    </symbol>
+    <symbol id="i-pill" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="4" y="11" width="24" height="10" rx="5" transform="rotate(-40 16 16)"/><path d="M12.5 10.5 L19.5 21.5" transform="rotate(-6 16 16)"/></g></symbol>
+    <symbol id="i-scan" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 11V7a2 2 0 0 1 2-2h4M21 5h4a2 2 0 0 1 2 2v4M27 21v4a2 2 0 0 1-2 2h-4M11 27H7a2 2 0 0 1-2-2v-4"/><rect x="10" y="12" width="12" height="8" rx="4"/></g></symbol>
+    <symbol id="i-notes" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h12l5 5v19H8z"/><path d="M12 14h9M12 19h9M12 24h5"/></g></symbol>
+    <symbol id="i-sos" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 L28 26 H4 Z"/><path d="M16 12v7M16 23v.5"/></g></symbol>
+    <symbol id="i-phone" viewBox="0 0 32 32"><path d="M9 4h4l2 7-3 2a16 16 0 0 0 7 7l2-3 7 2v4a3 3 0 0 1-3 3C14 26 6 18 6 7a3 3 0 0 1 3-3z" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 32 32"><path d="M7 16.5l6 6L25 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h5l7-6v20l-7-6H5z" fill="currentColor"/><path d="M21 11a7 7 0 0 1 0 10M24.5 7.5a12 12 0 0 1 0 17"/></g></symbol>
+    <symbol id="i-sun" viewBox="0 0 32 32"><g stroke="#FF7A3D" stroke-width="2.6" stroke-linecap="round"><circle cx="16" cy="16" r="6" fill="#FF7A3D"/><path d="M16 3v3M16 26v3M3 16h3M26 16h3M6.8 6.8l2.1 2.1M23.1 23.1l2.1 2.1M6.8 25.2l2.1-2.1M23.1 8.9l2.1-2.1"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 32 32"><path d="M21 4a12 12 0 1 0 8 18A10 10 0 0 1 21 4z" fill="#6B3FE0"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 32 32"><path d="M5 7h22v15H13l-6 5v-5H5z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 32 32"><rect x="5" y="11" width="22" height="10" rx="5" fill="currentColor"/><rect x="16" y="11" width="11" height="10" rx="5" fill="#fff" fill-opacity=".55"/></symbol>
+  </defs>
+</svg>
+
+<h1 class="page">Agatha · Direction B: Warm companion</h1>
+<p class="sub">Agatha herself is the talk button. Demo user: Margaret, 78 · Saturday, 17 October</p>
+
+<div class="row">
+
+<!-- ============ 1 HOME ============ -->
+<div class="col">
+  <div class="label"><b>1</b>Home (idle)</div>
+  <div class="phone"><div class="island"></div>
+  <div class="screen">
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="20" height="13" viewBox="0 0 20 13"><rect x="0" y="8" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="5.5" width="3.5" height="7.5" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="10" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="13" rx="1" fill="#1E1B2E"/></svg>
+      <svg width="28" height="14" viewBox="0 0 28 14"><rect x="1" y="1" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.5"/><rect x="3" y="3" width="17" height="8" rx="2" fill="#1E1B2E"/><rect x="25.5" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></svg></span></div>
+    <div class="content">
+      <p class="t18 muted" style="margin-top:6px">Saturday, 17 October</p>
+      <h2>Good morning,<br>Margaret</h2>
+      <div class="hero" style="height:392px;margin-top:14px">
+        <div class="ring" style="width:250px;height:250px;top:46%;background:rgba(255,255,255,.55);border-color:transparent"></div>
+        <div class="ring" style="width:310px;height:310px;top:46%"></div>
+        <div class="ring" style="width:380px;height:380px;top:46%"></div>
+        <svg class="flower" style="left:22px;top:26px;width:34px;height:34px"><use href="#flower"/></svg>
+        <svg class="flower" style="right:26px;top:54px;width:24px;height:24px"><use href="#flowerP"/></svg>
+        <svg class="flower" style="left:34px;bottom:96px;width:22px;height:22px"><use href="#flowerP"/></svg>
+        <svg class="flower" style="right:30px;bottom:110px;width:30px;height:30px"><use href="#flower"/></svg>
+        <svg viewBox="0 0 200 220" style="width:214px;height:236px;margin-top:30px;position:relative;z-index:2">
+          <use href="#agatha"/>
+          <path d="M84 98 Q100 114 116 98" fill="none" stroke="#1E1B2E" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+        <div class="tapme" style="margin-top:-6px">
+          <svg width="26" height="26" viewBox="0 0 32 32"><rect x="11" y="4" width="10" height="16" rx="5" fill="#6B3FE0"/><path d="M7 15a9 9 0 0 0 18 0M16 24v4" fill="none" stroke="#6B3FE0" stroke-width="2.8" stroke-linecap="round"/></svg>
+          Tap me and ask
+        </div>
+      </div>
+      <div class="card peach" style="margin-top:14px;display:flex;align-items:center;gap:14px">
+        <svg width="40" height="40" style="flex:none"><use href="#i-sun"/></svg>
+        <div style="flex:1">
+          <div class="pname">Morning pills · 8:00</div>
+          <div class="pmeta">2 more to take with breakfast</div>
+        </div>
+        <svg width="16" height="26" viewBox="0 0 16 26"><path d="M3 3l10 10L3 23" fill="none" stroke="#1E1B2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab home on"><div class="hb"><svg viewBox="30 0 140 130"><use href="#agatha"/><path d="M84 98 Q100 112 116 98" fill="none" stroke="#1E1B2E" stroke-width="5" stroke-linecap="round"/></svg></div>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+  </div></div>
+</div>
+
+<!-- ============ 2 LISTENING ============ -->
+<div class="col">
+  <div class="label"><b>2</b>Listening</div>
+  <div class="phone"><div class="island"></div>
+  <div class="screen">
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="20" height="13" viewBox="0 0 20 13"><rect x="0" y="8" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="5.5" width="3.5" height="7.5" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="10" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="13" rx="1" fill="#1E1B2E"/></svg>
+      <svg width="28" height="14" viewBox="0 0 28 14"><rect x="1" y="1" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.5"/><rect x="3" y="3" width="17" height="8" rx="2" fill="#1E1B2E"/><rect x="25.5" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></svg></span></div>
+    <div class="content" style="display:flex;flex-direction:column">
+      <div class="hero" style="height:356px;margin-top:6px;background:linear-gradient(180deg,#EFE6FF,#FFF1E3)">
+        <div class="ring" style="width:240px;height:240px;top:52%;background:rgba(255,255,255,.7);border:4px solid rgba(255,122,61,.55)"></div>
+        <div class="ring" style="width:296px;height:296px;top:52%;border:3px solid rgba(255,122,61,.32)"></div>
+        <div class="ring" style="width:360px;height:360px;top:52%;border:2px solid rgba(255,122,61,.18)"></div>
+        <svg class="flower" style="left:24px;top:24px;width:26px;height:26px"><use href="#flower"/></svg>
+        <svg class="flower" style="right:24px;bottom:30px;width:28px;height:28px"><use href="#flowerP"/></svg>
+        <div style="margin-top:20px;position:relative;z-index:2;font-family:Quicksand;font-weight:700;font-size:22px;color:#B44A14;display:flex;align-items:center;gap:8px">
+          <span style="width:14px;height:14px;border-radius:50%;background:#FF7A3D;box-shadow:0 0 0 5px rgba(255,122,61,.25)"></span>I'm listening…</div>
+        <svg viewBox="0 0 200 220" style="width:200px;height:220px;margin-top:20px;position:relative;z-index:2">
+          <use href="#agatha"/>
+          <ellipse cx="100" cy="103" rx="9" ry="8" fill="#1E1B2E"/>
+          <ellipse cx="100" cy="106" rx="5" ry="3" fill="#FF7A3D"/>
+          <!-- sound waves at ears -->
+          <path d="M16 66 Q8 77 16 88 M8 60 Q-2 77 8 94" fill="none" stroke="#FF7A3D" stroke-width="4" stroke-linecap="round"/>
+          <path d="M184 66 Q192 77 184 88 M192 60 Q202 77 192 94" fill="none" stroke="#FF7A3D" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="card white" style="margin-top:16px;padding:20px 20px 18px">
+        <div class="kicker muted" style="font-size:17px">You are saying</div>
+        <p style="font-family:Quicksand;font-weight:700;font-size:30px;line-height:1.22;margin-top:6px">What do I take this <span style="color:#8A84A3">evening?</span><span style="display:inline-block;width:3px;height:30px;background:var(--purple);vertical-align:-4px;margin-left:3px;border-radius:2px"></span></p>
+        <svg viewBox="0 0 300 34" style="width:100%;height:34px;margin-top:10px">
+          <g fill="#6B3FE0">
+            <rect x="0" y="13" width="7" height="8" rx="3.5"/><rect x="14" y="8" width="7" height="18" rx="3.5"/><rect x="28" y="3" width="7" height="28" rx="3.5"/><rect x="42" y="10" width="7" height="14" rx="3.5"/><rect x="56" y="0" width="7" height="34" rx="3.5"/><rect x="70" y="6" width="7" height="22" rx="3.5"/><rect x="84" y="11" width="7" height="12" rx="3.5"/><rect x="98" y="4" width="7" height="26" rx="3.5"/><rect x="112" y="9" width="7" height="16" rx="3.5"/><rect x="126" y="2" width="7" height="30" rx="3.5"/><rect x="140" y="8" width="7" height="18" rx="3.5"/><rect x="154" y="12" width="7" height="10" rx="3.5"/>
+          </g>
+          <g fill="#C9B8F5"><rect x="168" y="13" width="7" height="8" rx="3.5"/><rect x="182" y="14" width="7" height="6" rx="3"/><rect x="196" y="14" width="7" height="6" rx="3"/><rect x="210" y="14" width="7" height="6" rx="3"/><rect x="224" y="14" width="7" height="6" rx="3"/><rect x="238" y="14" width="7" height="6" rx="3"/><rect x="252" y="14" width="7" height="6" rx="3"/><rect x="266" y="14" width="7" height="6" rx="3"/><rect x="280" y="14" width="7" height="6" rx="3"/></g>
+        </svg>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button class="btn ghost" style="flex:0 0 120px">
+          <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 4l12 12M16 4L4 16" stroke="#1E1B2E" stroke-width="3" stroke-linecap="round"/></svg>Stop</button>
+        <button class="btn primary" style="flex:1"><svg width="26" height="26"><use href="#i-check"/></svg>I'm done</button>
+      </div>
+      <p class="t18 muted" style="text-align:center;margin-top:12px">Or just stop talking. Agatha waits for you.</p>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab home on"><div class="hb" style="background:#FF7A3D;box-shadow:0 0 0 6px #fff,0 0 0 12px rgba(255,122,61,.25)"><svg viewBox="30 0 140 130"><use href="#agatha"/><ellipse cx="100" cy="103" rx="8" ry="7" fill="#1E1B2E"/></svg></div>Listening</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+  </div></div>
+</div>
+
+<!-- ============ 3 ANSWER ============ -->
+<div class="col">
+  <div class="label"><b>3</b>Answer</div>
+  <div class="phone"><div class="island"></div>
+  <div class="screen">
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="20" height="13" viewBox="0 0 20 13"><rect x="0" y="8" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="5.5" width="3.5" height="7.5" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="10" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="13" rx="1" fill="#1E1B2E"/></svg>
+      <svg width="28" height="14" viewBox="0 0 28 14"><rect x="1" y="1" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.5"/><rect x="3" y="3" width="17" height="8" rx="2" fill="#1E1B2E"/><rect x="25.5" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></svg></span></div>
+    <div class="content">
+      <!-- You said -->
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <div style="max-width:300px;background:#fff;border:2px solid #E2DBF3;border-radius:24px 24px 6px 24px;padding:12px 16px">
+          <div class="kicker muted" style="font-size:16px">You said</div>
+          <div class="t22" style="font-weight:700;line-height:1.25">“What do I take this evening?”</div>
+        </div>
+      </div>
+      <!-- Agatha answer -->
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-top:14px">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--lav);flex:none;display:grid;place-items:center;box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(107,63,224,.25)">
+          <svg viewBox="30 0 140 130" style="width:52px;height:48px"><use href="#agatha"/><path d="M86 98 Q100 110 114 98 Z" fill="#1E1B2E"/></svg>
+        </div>
+        <div style="flex:1;background:var(--purple);color:#fff;border-radius:24px 24px 24px 6px;padding:14px 16px">
+          <p style="font-size:22px;line-height:1.3;font-weight:700">This evening you take one Metformin with your dinner at six and one Simvastatin.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin:12px 0 0 74px">
+        <div style="display:flex;align-items:center;gap:8px;background:var(--lav);color:var(--purple);border-radius:999px;padding:0 16px;min-height:56px;font-weight:700;font-size:18px">
+          <svg width="24" height="24"><use href="#i-speaker"/></svg>Say it again</div>
+        <div style="display:flex;align-items:center;gap:4px;color:var(--purple)">
+          <span style="width:5px;height:12px;background:currentColor;border-radius:3px"></span><span style="width:5px;height:22px;background:currentColor;border-radius:3px"></span><span style="width:5px;height:16px;background:currentColor;border-radius:3px"></span><span style="width:5px;height:26px;background:currentColor;border-radius:3px"></span><span style="width:5px;height:10px;background:currentColor;border-radius:3px"></span>
+        </div>
+      </div>
+      <!-- schedule card -->
+      <div class="card lav" style="margin-top:22px;padding:18px 16px 14px">
+        <div class="kicker" style="font-size:22px"><svg width="28" height="28"><use href="#i-moon"/></svg>This evening · 6:00 pm</div>
+        <div style="background:#fff;border-radius:20px;padding:12px;margin-top:12px">
+          <div class="pillrow">
+            <div style="flex:1"><div class="pname" style="font-size:21px">Metformin 500 mg</div><div class="pmeta">1 tablet · with dinner</div></div>
+            <button class="btn primary small">Take</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:20px;padding:12px;margin-top:10px">
+          <div class="pillrow">
+            <div style="flex:1"><div class="pname" style="font-size:21px">Simvastatin 20 mg</div><div class="pmeta">1 tablet · evening</div></div>
+            <button class="btn primary small">Take</button>
+          </div>
+        </div>
+      </div>
+          </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab home on"><div class="hb"><svg viewBox="30 0 140 130"><use href="#agatha"/><path d="M84 98 Q100 112 116 98" fill="none" stroke="#1E1B2E" stroke-width="5" stroke-linecap="round"/></svg></div>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+  </div></div>
+</div>
+
+<!-- ============ 4 MY PILLS ============ -->
+<div class="col">
+  <div class="label"><b>4</b>My pills today</div>
+  <div class="phone"><div class="island"></div>
+  <div class="screen">
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="20" height="13" viewBox="0 0 20 13"><rect x="0" y="8" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="5.5" width="3.5" height="7.5" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="10" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="13" rx="1" fill="#1E1B2E"/></svg>
+      <svg width="28" height="14" viewBox="0 0 28 14"><rect x="1" y="1" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.5"/><rect x="3" y="3" width="17" height="8" rx="2" fill="#1E1B2E"/><rect x="25.5" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></svg></span></div>
+    <div class="content">
+      <h2 style="margin-top:6px">My pills today</h2>
+      <div class="card mint" style="margin-top:12px;padding:14px 16px;display:flex;align-items:center;gap:14px">
+        <svg viewBox="0 0 60 60" width="60" height="60" style="flex:none">
+          <circle cx="30" cy="30" r="24" fill="none" stroke="#fff" stroke-width="9"/>
+          <circle cx="30" cy="30" r="24" fill="none" stroke="#1F7A63" stroke-width="9" stroke-linecap="round" stroke-dasharray="50.3 150.8" transform="rotate(-90 30 30)"/>
+        </svg>
+        <div><div style="font-family:Quicksand;font-weight:700;font-size:26px">2 of 6 taken</div><div class="pmeta" style="color:#245E50">Well done, Margaret!</div></div>
+      </div>
+      <!-- Morning -->
+      <div class="card peach" style="margin-top:12px;padding:14px 14px">
+        <div class="kicker" style="font-size:21px"><svg width="26" height="26"><use href="#i-sun"/></svg>Morning</div>
+        <div class="pillrow" style="opacity:.75;min-height:56px">
+          <div class="check" style="color:#fff"><svg width="24" height="24"><use href="#i-check"/></svg></div>
+          <div style="flex:1"><div class="pname">Pantoprazole 20 mg</div><div class="pmeta">Taken 7:30 · before breakfast</div></div>
+        </div>
+        <div class="pillrow" style="opacity:.75;min-height:56px">
+          <div class="check" style="color:#fff"><svg width="24" height="24"><use href="#i-check"/></svg></div>
+          <div style="flex:1"><div class="pname">Ramipril 5 mg</div><div class="pmeta">Taken 7:35 · blood pressure</div></div>
+        </div>
+        <div style="background:#fff;border-radius:20px;padding:12px;margin-top:6px;box-shadow:0 0 0 3px #FF7A3D">
+          <div class="pillrow" style="min-height:50px">
+            <div class="pillicon" style="background:#FFF1E3;color:#FF7A3D"><svg width="30" height="30"><use href="#i-cap"/></svg></div>
+            <div style="flex:1"><div class="pname">Metformin 500 mg</div><div class="pmeta">Now · with breakfast</div></div>
+          </div>
+          <button class="btn primary" style="width:100%;margin-top:10px;min-height:64px;font-size:22px"><svg width="28" height="28"><use href="#i-check"/></svg>Yes, I took it</button>
+        </div>
+        <div class="pillrow" style="min-height:56px;margin-top:4px">
+          <div class="pillicon"><svg width="30" height="30" style="color:#6B3FE0"><use href="#i-cap"/></svg></div>
+          <div style="flex:1"><div class="pname">ASS 100</div><div class="pmeta">After breakfast</div></div>
+        </div>
+      </div>
+      <!-- Evening -->
+      <div class="card lav" style="margin-top:12px;padding:14px 14px">
+        <div class="kicker" style="font-size:21px"><svg width="24" height="24"><use href="#i-moon"/></svg>Evening · 6:00 pm</div>
+        <div class="pillrow" style="min-height:56px">
+          <div class="pillicon"><svg width="30" height="30" style="color:#FF7A3D"><use href="#i-cap"/></svg></div>
+          <div style="flex:1"><div class="pname">Metformin 500 mg</div><div class="pmeta">With dinner</div></div>
+        </div>
+        <div class="pillrow" style="min-height:56px">
+          <div class="pillicon"><svg width="30" height="30" style="color:#1F7A63"><use href="#i-cap"/></svg></div>
+          <div style="flex:1"><div class="pname">Simvastatin 20 mg</div><div class="pmeta">Evening</div></div>
+        </div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <div class="tab on"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab home"><div class="hb"><svg viewBox="30 0 140 130"><use href="#agatha"/><path d="M84 98 Q100 112 116 98" fill="none" stroke="#1E1B2E" stroke-width="5" stroke-linecap="round"/></svg></div>Agatha</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+  </div></div>
+</div>
+
+<!-- ============ 5 SOS ============ -->
+<div class="col">
+  <div class="label"><b>5</b>SOS</div>
+  <div class="phone"><div class="island"></div>
+  <div class="screen">
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="20" height="13" viewBox="0 0 20 13"><rect x="0" y="8" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="5.5" width="3.5" height="7.5" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="10" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="13" rx="1" fill="#1E1B2E"/></svg>
+      <svg width="28" height="14" viewBox="0 0 28 14"><rect x="1" y="1" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.5"/><rect x="3" y="3" width="17" height="8" rx="2" fill="#1E1B2E"/><rect x="25.5" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></svg></span></div>
+    <div class="content">
+      <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+        <div style="width:78px;height:78px;border-radius:50%;background:var(--lav);display:grid;place-items:center;flex:none">
+          <svg viewBox="20 0 160 220" style="width:58px;height:74px"><use href="#agatha"/><path d="M88 100 Q100 108 112 100" fill="none" stroke="#1E1B2E" stroke-width="4.5" stroke-linecap="round"/></svg>
+        </div>
+        <div><h2>Need help?</h2><p class="t20 muted">I'm here. Who should I call?</p></div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:18px;min-height:132px;border-radius:32px;background:var(--red);color:#fff;flex-direction:column;gap:4px;box-shadow:0 10px 24px rgba(200,40,58,.35)">
+        <span style="display:flex;align-items:center;gap:14px;font-family:Quicksand;font-size:40px"><svg width="40" height="40"><use href="#i-phone"/></svg>Call 112</span>
+        <span style="font-size:19px;font-weight:400">Ambulance · emergency</span>
+      </button>
+      <p class="t18 muted" style="margin:18px 4px 8px;font-weight:700">Call someone close</p>
+      <div class="card mint" style="display:flex;align-items:center;gap:14px;padding:14px">
+        <div style="width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;font-family:Quicksand;font-weight:700;font-size:24px;color:#1F7A63;flex:none">A</div>
+        <div style="flex:1"><div class="pname">Anna</div><div class="pmeta">Your daughter</div></div>
+        <div style="width:60px;height:60px;border-radius:50%;background:#1F7A63;color:#fff;display:grid;place-items:center"><svg width="28" height="28"><use href="#i-phone"/></svg></div>
+      </div>
+      <div class="card peach" style="display:flex;align-items:center;gap:14px;padding:14px;margin-top:10px">
+        <div style="width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;font-family:Quicksand;font-weight:700;font-size:22px;color:#B44A14;flex:none">Dr</div>
+        <div style="flex:1"><div class="pname">Dr Hoffmann</div><div class="pmeta">Family doctor</div></div>
+        <div style="width:60px;height:60px;border-radius:50%;background:#B44A14;color:#fff;display:grid;place-items:center"><svg width="28" height="28"><use href="#i-phone"/></svg></div>
+      </div>
+      <button class="btn ghost" style="width:100%;margin-top:12px;min-height:64px;border-color:#C8283A;color:#C8283A"><svg width="28" height="28"><use href="#i-msg"/></svg>Send a help message</button>
+      <p class="t18 muted" style="text-align:center;margin-top:8px">Anna gets a text with where you are.</p>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab home"><div class="hb"><svg viewBox="30 0 140 130"><use href="#agatha"/><path d="M84 98 Q100 112 116 98" fill="none" stroke="#1E1B2E" stroke-width="5" stroke-linecap="round"/></svg></div>Agatha</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos on"><div class="pill"><svg><use href="#i-sos"/></svg>SOS</div></div>
+    </nav>
+  </div></div>
+</div>
+
+</div>
+
+<section style="margin-top:44px;max-width:1500px">
+  <h2 style="font-size:28px;margin-bottom:12px">Design rationale</h2>
+  <ul style="font-size:19px;line-height:1.5;padding-left:24px;display:grid;gap:6px">
+    <li><b>Agatha is the button.</b> One huge, friendly target in the middle of Home (and the raised centre tab everywhere else): no microphone icon to decode, just "tap me and ask".</li>
+    <li><b>She shows what she is doing.</b> Smiling = ready, orange rings + open mouth + ear waves = listening, speaking bars + "Say it again" = answering, so a hard-of-hearing user always knows the state without relying on sound.</li>
+    <li><b>Nothing said is lost.</b> Live words while speaking, then a "You said" bubble before the answer, so Margaret can check Agatha understood before she acts; every spoken answer is also written in large type.</li>
+    <li><b>Colour means time of day.</b> Peach for morning, lavender for evening, mint for "done"; cards are large, rounded and labelled with sun/moon so the schedule reads at a glance, and one obvious "Yes, I took it" per due pill.</li>
+    <li><b>Warm, never childish; calm in an emergency.</b> Flowers and the bow tie stay in the hero; text is Atkinson Hyperlegible at 18px+ in ink on light, all targets ≥56px, and SOS drops the decoration for one big red "Call 112" plus named people.</li>
+  </ul>
+</section>
+
+</body>
+</html>

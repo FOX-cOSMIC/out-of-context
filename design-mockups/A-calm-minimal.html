@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha Calm Minimal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#6B3FE0; --purple-d:#5530C2; --lav:#EFE6FF; --off:#FAF9F5; --ink:#1E1B2E;
+  --ink2:#4A4560; --orange:#FF7A3D; --mint:#E3F6F1; --mint-d:#1C7A62; --red:#C8283A;
+  --line:#E6E2EE; --white:#FFFFFF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#ECEAF2;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:var(--ink);padding:36px 40px 40px}
+h1.page{font-family:Quicksand,sans-serif;font-weight:700;font-size:30px;margin-bottom:4px}
+p.sub{font-size:18px;color:var(--ink2);margin-bottom:26px}
+.row{display:flex;gap:36px;align-items:flex-start}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.label{font-family:Quicksand,sans-serif;font-weight:700;font-size:20px;color:var(--ink)}
+.label span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;font-size:16px;margin-right:8px}
+
+/* phone */
+.phone{width:393px;height:852px;border-radius:56px;background:var(--off);position:relative;overflow:hidden;
+  box-shadow:0 0 0 10px #16141F,0 0 0 11px #3a3646,0 30px 60px rgba(30,27,46,.25);display:flex;flex-direction:column}
+.status{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 36px;font-weight:700;font-size:17px;position:relative}
+.island{position:absolute;left:50%;top:11px;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:#000}
+.sicons{display:flex;gap:6px;align-items:center}
+.screen{flex:1;position:relative;display:flex;flex-direction:column;min-height:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 24px 0}
+.date{font-size:18px;color:var(--ink2);font-weight:700;letter-spacing:.2px}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--lav);display:grid;place-items:center}
+.icon-btn{width:56px;height:56px;border-radius:50%;background:var(--white);border:1.5px solid var(--line);display:grid;place-items:center}
+
+/* floating pill */
+.pill{position:absolute;left:20px;right:20px;bottom:104px;height:84px;border-radius:42px;background:var(--white);
+  box-shadow:0 10px 30px rgba(30,27,46,.12),0 0 0 1px rgba(30,27,46,.05);display:flex;align-items:center;padding:0 10px 0 10px;gap:10px}
+.talk{flex:1;height:64px;border-radius:32px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;
+  font-family:Quicksand,sans-serif;font-weight:700;font-size:22px}
+.kbd{width:64px;height:64px;border-radius:50%;background:var(--lav);display:grid;place-items:center;flex:none}
+
+/* tab bar */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:92px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;align-items:flex-start;padding:8px 6px 0}
+.tab{width:70px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:15px;font-weight:700;color:var(--ink2);min-height:58px}
+.tab.on{color:var(--purple)}
+.tab .home{width:46px;height:34px;border-radius:17px;background:var(--lav);display:grid;place-items:center}
+.tab.sos{color:var(--red)}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--ink)}
+
+/* Home */
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px 200px;text-align:center}
+.hero h2{font-family:Quicksand,sans-serif;font-weight:700;font-size:38px;line-height:1.15;margin-top:22px}
+.hero p{font-size:20px;color:var(--ink2);margin-top:14px;line-height:1.4}
+.next{margin-top:30px;background:var(--white);border:1.5px solid var(--line);border-radius:22px;padding:14px 18px;display:flex;gap:14px;align-items:center;text-align:left;width:100%}
+.next .dot{width:48px;height:48px;border-radius:14px;background:var(--mint);display:grid;place-items:center;flex:none}
+.next b{display:block;font-size:19px}
+.next small{font-size:18px;color:var(--ink2)}
+
+/* Listening */
+.listen{flex:1;display:flex;flex-direction:column;align-items:center;padding:30px 30px 0;text-align:center}
+.listen .tag{font-size:18px;font-weight:700;color:var(--purple);background:var(--lav);padding:8px 16px;border-radius:20px;display:flex;align-items:center;gap:8px}
+.listen .tag i{width:10px;height:10px;border-radius:50%;background:var(--orange);display:block}
+.live{font-family:Quicksand,sans-serif;font-weight:700;font-size:36px;line-height:1.25;margin-top:44px}
+.live .faint{color:#B7B0C8}
+.caret{display:inline-block;width:3px;height:36px;background:var(--purple);vertical-align:-5px;margin-left:3px}
+.orb{margin-top:40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,var(--lav) 0 55%,rgba(239,230,255,.5) 56% 75%,rgba(239,230,255,.25) 76%);display:grid;place-items:center}
+.wave{display:flex;gap:6px;align-items:center;height:60px}
+.wave b{width:7px;border-radius:4px;background:var(--purple)}
+.hint{font-size:18px;color:var(--ink2);margin-top:24px}
+.lpill{position:absolute;left:20px;right:20px;bottom:104px;display:flex;gap:12px}
+.cancel{width:84px;height:72px;border-radius:36px;background:var(--white);border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:18px;color:var(--ink2)}
+.done{flex:1;height:72px;border-radius:36px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;font-family:Quicksand,sans-serif;font-weight:700;font-size:23px}
+.done .sq{width:20px;height:20px;border-radius:5px;background:var(--orange)}
+
+/* Answer */
+.scroll{flex:1;padding:14px 20px 200px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
+.yousaid{align-self:flex-end;max-width:86%;background:var(--lav);border-radius:24px 24px 6px 24px;padding:12px 18px}
+.yousaid .k{font-size:15px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.8px}
+.yousaid .t{font-size:21px;margin-top:2px;font-weight:700}
+.agatha{display:flex;gap:12px;align-items:flex-start}
+.agatha .avatar{width:44px;height:44px;flex:none}
+.answer{font-family:Quicksand,sans-serif;font-weight:600;font-size:27px;line-height:1.3}
+.speaking{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ink2);margin-top:8px;font-weight:700}
+.card{background:var(--white);border-radius:24px;border:1.5px solid var(--line);padding:16px 16px 6px;box-shadow:0 4px 16px rgba(30,27,46,.05)}
+.card h3{font-family:Quicksand,sans-serif;font-size:20px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.card h3 small{font-family:'Atkinson Hyperlegible';font-size:17px;color:var(--ink2);font-weight:400}
+.med{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.med:first-of-type{border-top:none}
+.pillic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none}
+.med .n{flex:1}
+.med .n b{display:block;font-size:19px;white-space:nowrap}
+.med .n span{font-size:17px;color:var(--ink2)}
+.take{height:56px;min-width:76px;border-radius:28px;background:var(--purple);color:#fff;font-weight:700;font-size:19px;display:grid;place-items:center;padding:0 14px;flex:none}
+
+/* Pills */
+.ph{padding:6px 24px 0}
+.ph h2{font-family:Quicksand,sans-serif;font-size:32px;font-weight:700;margin-top:4px}
+.prog{margin:14px 24px 0;background:var(--white);border:1.5px solid var(--line);border-radius:22px;padding:14px 18px;display:flex;align-items:center;gap:16px}
+.prog .big{font-family:Quicksand,sans-serif;font-weight:700;font-size:28px}
+.prog .big small{font-size:19px;color:var(--ink2);font-weight:600}
+.bar{height:12px;border-radius:6px;background:var(--lav);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:33.3%;background:var(--purple);border-radius:6px}
+.plist{padding:14px 20px 120px;display:flex;flex-direction:column;gap:12px;overflow:hidden;flex:1}
+.slot{background:var(--white);border:1.5px solid var(--line);border-radius:22px;padding:12px 16px}
+.slot.now{border:2px solid var(--purple);box-shadow:0 6px 20px rgba(107,63,224,.12)}
+.slot .sh{display:flex;justify-content:space-between;align-items:center;font-family:Quicksand,sans-serif;font-weight:700;font-size:20px}
+.chip{font-family:'Atkinson Hyperlegible';font-size:16px;font-weight:700;padding:4px 12px;border-radius:14px}
+.chip.ok{background:var(--mint);color:var(--mint-d)}
+.chip.nowc{background:#FFE9DE;color:#A8461A}
+.chip.later{background:var(--lav);color:var(--purple)}
+.line{font-size:18px;color:var(--ink2);margin-top:4px;display:flex;align-items:center;gap:8px}
+.yes{margin-top:10px;height:60px;border-radius:30px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-family:Quicksand,sans-serif;font-weight:700;font-size:22px}
+.mrow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.mrow b{font-size:19px}
+.mrow span{font-size:17px;color:var(--ink2)}
+
+/* SOS */
+.sosh{padding:6px 24px 0;text-align:center}
+.sosh h2{font-family:Quicksand,sans-serif;font-size:32px;font-weight:700}
+.sosh p{font-size:19px;color:var(--ink2);margin-top:6px}
+.call112{margin:22px 24px 0;height:150px;border-radius:32px;background:var(--red);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 12px 30px rgba(200,40,58,.3)}
+.call112 b{font-family:Quicksand,sans-serif;font-size:40px;font-weight:700;display:flex;align-items:center;gap:12px}
+.call112 span{font-size:18px;opacity:.95}
+.contacts{margin:18px 24px 0;display:flex;flex-direction:column;gap:12px}
+.contact{height:80px;border-radius:24px;background:var(--white);border:1.5px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 14px}
+.face{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-family:Quicksand,sans-serif;font-weight:700;font-size:22px;flex:none}
+.contact .n{flex:1}
+.contact .n b{display:block;font-size:20px}
+.contact .n span{font-size:17px;color:var(--ink2)}
+.callbtn{width:56px;height:56px;border-radius:50%;background:var(--mint);display:grid;place-items:center}
+.helpmsg{margin:12px 24px 0;height:68px;border-radius:24px;background:var(--lav);color:var(--purple);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:20px}
+
+/* rationale */
+.rationale{margin-top:44px;max-width:2105px;background:#fff;border-radius:24px;padding:24px 32px}
+.rationale h3{font-family:Quicksand,sans-serif;font-size:26px;margin-bottom:10px}
+.rationale ul{padding-left:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 40px}
+.rationale li{font-size:18px;line-height:1.45;color:var(--ink2)}
+.rationale li b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<!-- Agatha mascot -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="agatha" viewBox="0 0 100 100">
+      <line x1="50" y1="6" x2="50" y2="16" stroke="#1E1B2E" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="50" cy="6" r="5" fill="#FF7A3D"/>
+      <!-- body / vest -->
+      <path d="M24 100 Q24 72 50 72 Q76 72 76 100 Z" fill="#6B3FE0"/>
+      <path d="M42 73 L50 86 L58 73 Z" fill="#FFFFFF"/>
+      <!-- bow tie -->
+      <path d="M50 80 L40 74 L40 86 Z M50 80 L60 74 L60 86 Z" fill="#FF7A3D"/>
+      <circle cx="50" cy="80" r="3" fill="#E5612A"/>
+      <!-- head -->
+      <rect x="18" y="16" width="64" height="54" rx="22" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="3"/>
+      <rect x="12" y="36" width="7" height="14" rx="3.5" fill="#6B3FE0"/>
+      <rect x="81" y="36" width="7" height="14" rx="3.5" fill="#6B3FE0"/>
+      <!-- glasses -->
+      <circle cx="37" cy="41" r="10" fill="#EFE6FF" stroke="#1E1B2E" stroke-width="3"/>
+      <circle cx="63" cy="41" r="10" fill="#EFE6FF" stroke="#1E1B2E" stroke-width="3"/>
+      <line x1="47" y1="41" x2="53" y2="41" stroke="#1E1B2E" stroke-width="3"/>
+      <circle cx="37" cy="42" r="3.6" fill="#1E1B2E"/>
+      <circle cx="63" cy="42" r="3.6" fill="#1E1B2E"/>
+      <circle cx="38.5" cy="40.5" r="1.2" fill="#fff"/>
+      <circle cx="64.5" cy="40.5" r="1.2" fill="#fff"/>
+      <!-- smile + cheeks -->
+      <path d="M41 57 Q50 64 59 57" fill="none" stroke="#1E1B2E" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="28" cy="56" r="3.5" fill="#FFC6A8"/>
+      <circle cx="72" cy="56" r="3.5" fill="#FFC6A8"/>
+    </symbol>
+    <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="kbd" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M6 13.5h1M17 13.5h1M9 14h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="t-pills" viewBox="0 0 24 24"><rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-40 12 12)" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 8.8l5.4 6.4" stroke="currentColor" stroke-width="2" transform="rotate(0)"/></symbol>
+    <symbol id="t-scan" viewBox="0 0 24 24"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M4 12h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="t-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="t-notes" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="t-sos" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-7.5-10.3A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7.5 2.7C19.5 16.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 11v4M10 13h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.5 4-2 1.3a11 11 0 0 0 6.5 6.5l1.3-2 4 1.5v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z" fill="currentColor"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="cap" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 12h12" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="spk" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="msg" viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<h1 class="page">Agatha &mdash; Direction A: Calm minimal</h1>
+<p class="sub">One question, one big button, lots of quiet space. Demo: Margaret, 78.</p>
+
+<div class="row">
+
+<!-- 1 HOME -->
+<div class="col">
+  <div class="label"><span>1</span>Home (idle)</div>
+  <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><div class="sicons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/></svg></div></div>
+    <div class="screen">
+      <div class="topbar"><div class="date">Friday, 17 October</div><div class="icon-btn"><svg width="26" height="26" style="color:#1E1B2E"><use href="#spk"/></svg></div></div>
+      <div class="hero">
+        <div class="avatar" style="width:96px;height:96px"><svg width="76" height="76"><use href="#agatha"/></svg></div>
+        <h2>What's on your mind, Margaret?</h2>
+        <p>Tap the purple button and just talk to me.</p>
+        <div class="next">
+          <div class="dot" style="color:var(--mint-d)"><svg width="26" height="26"><use href="#moon"/></svg></div>
+          <div><b>Next: evening pills, 6 pm</b><small>Metformin and Simvastatin</small></div>
+        </div>
+      </div>
+      <div class="pill">
+        <div class="talk"><svg width="28" height="28"><use href="#mic"/></svg>Tap to talk</div>
+        <div class="kbd" style="color:var(--purple)"><svg width="30" height="30"><use href="#kbd"/></svg></div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><svg width="30" height="30"><use href="#t-pills"/></svg>Pills</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-scan"/></svg>Scan</div>
+        <div class="tab on"><div class="home"><svg width="28" height="28"><use href="#t-home"/></svg></div>Home</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-notes"/></svg>Notes</div>
+        <div class="tab sos"><svg width="30" height="30"><use href="#t-sos"/></svg>SOS</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 LISTENING -->
+<div class="col">
+  <div class="label"><span>2</span>Listening</div>
+  <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><div class="sicons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/></svg></div></div>
+    <div class="screen">
+      <div class="topbar"><div class="date">Friday, 17 October</div><div class="avatar"><svg width="44" height="44"><use href="#agatha"/></svg></div></div>
+      <div class="listen">
+        <div class="tag"><i></i>I'm listening&hellip;</div>
+        <div class="live">What do I take <span class="faint">this evening?</span><span class="caret"></span></div>
+        <div class="orb"><div class="wave">
+          <b style="height:18px"></b><b style="height:34px"></b><b style="height:52px"></b><b style="height:40px"></b><b style="height:58px"></b><b style="height:30px"></b><b style="height:44px"></b><b style="height:20px"></b>
+        </div></div>
+        <div class="hint">Take your time. Tap <b>Done</b> when you've finished.</div>
+      </div>
+      <div class="lpill">
+        <div class="cancel">
+          <svg width="26" height="26" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="#4A4560" stroke-width="2.6" stroke-linecap="round"/></svg>
+        </div>
+        <div class="done"><div class="sq"></div>Done talking</div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><svg width="30" height="30"><use href="#t-pills"/></svg>Pills</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-scan"/></svg>Scan</div>
+        <div class="tab on"><div class="home"><svg width="28" height="28"><use href="#t-home"/></svg></div>Home</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-notes"/></svg>Notes</div>
+        <div class="tab sos"><svg width="30" height="30"><use href="#t-sos"/></svg>SOS</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 ANSWER -->
+<div class="col">
+  <div class="label"><span>3</span>Answer</div>
+  <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><div class="sicons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/></svg></div></div>
+    <div class="screen">
+      <div class="topbar"><div class="date">Friday, 17 October</div><div class="icon-btn"><svg width="26" height="26" style="color:#1E1B2E"><use href="#spk"/></svg></div></div>
+      <div class="scroll">
+        <div class="yousaid"><div class="k">You said</div><div class="t">&ldquo;What do I take this evening?&rdquo;</div></div>
+        <div class="agatha">
+          <div class="avatar"><svg width="36" height="36"><use href="#agatha"/></svg></div>
+          <div>
+            <div class="answer">This evening you take one Metformin with your dinner at six and one Simvastatin.</div>
+            <div class="speaking" style="color:var(--purple)"><svg width="20" height="20"><use href="#spk"/></svg>Speaking &middot; tap to hear again</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>This evening <small>6:00 pm</small></h3>
+          <div class="med">
+            <div class="pillic" style="background:var(--lav);color:var(--purple)"><svg width="24" height="24"><use href="#cap"/></svg></div>
+            <div class="n"><b>Metformin 500 mg</b><span>1 tablet, with dinner</span></div>
+            <div class="take">Take</div>
+          </div>
+          <div class="med">
+            <div class="pillic" style="background:#FFE9DE;color:#C2531F"><svg width="24" height="24"><use href="#cap"/></svg></div>
+            <div class="n"><b>Simvastatin 20 mg</b><span>1 tablet</span></div>
+            <div class="take">Take</div>
+          </div>
+        </div>
+      </div>
+      <div class="pill">
+        <div class="talk"><svg width="28" height="28"><use href="#mic"/></svg>Ask something else</div>
+        <div class="kbd" style="color:var(--purple)"><svg width="30" height="30"><use href="#kbd"/></svg></div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><svg width="30" height="30"><use href="#t-pills"/></svg>Pills</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-scan"/></svg>Scan</div>
+        <div class="tab on"><div class="home"><svg width="28" height="28"><use href="#t-home"/></svg></div>Home</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-notes"/></svg>Notes</div>
+        <div class="tab sos"><svg width="30" height="30"><use href="#t-sos"/></svg>SOS</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 PILLS -->
+<div class="col">
+  <div class="label"><span>4</span>My pills today</div>
+  <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><div class="sicons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/></svg></div></div>
+    <div class="screen">
+      <div class="ph"><div class="date">Friday, 17 October</div><h2>My pills today</h2></div>
+      <div class="prog">
+        <div style="flex:1"><div class="big">2 of 6 <small>taken</small></div><div class="bar"><i></i></div></div>
+        <div class="avatar"><svg width="44" height="44"><use href="#agatha"/></svg></div>
+      </div>
+      <div class="plist">
+        <div class="slot">
+          <div class="sh"><span>Before breakfast &middot; 7:30</span><span class="chip ok">Done</span></div>
+          <div class="line"><svg width="20" height="20" style="color:var(--mint-d)"><use href="#check"/></svg>Pantoprazole 20 mg</div>
+        </div>
+        <div class="slot now">
+          <div class="sh"><span>After breakfast &middot; 8:00</span><span class="chip nowc">Now</span></div>
+          <div class="line"><svg width="20" height="20" style="color:var(--mint-d)"><use href="#check"/></svg>Ramipril 5 mg</div>
+          <div class="mrow"><svg width="20" height="20" style="color:var(--purple)"><use href="#cap"/></svg><b>ASS 100</b><span>1 tablet</span></div>
+          <div class="mrow"><svg width="20" height="20" style="color:var(--purple)"><use href="#cap"/></svg><b>Metformin 500 mg</b><span>with meal</span></div>
+          <div class="yes"><svg width="26" height="26"><use href="#check"/></svg>Yes, I took it</div>
+        </div>
+        <div class="slot">
+          <div class="sh"><span>Evening &middot; 6:00 pm</span><span class="chip later">Later</span></div>
+          <div class="line">Metformin 500 mg &middot; Simvastatin 20 mg</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab on"><svg width="30" height="30"><use href="#t-pills"/></svg>Pills</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-scan"/></svg>Scan</div>
+        <div class="tab"><div class="home" style="background:transparent"><svg width="28" height="28"><use href="#t-home"/></svg></div>Home</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-notes"/></svg>Notes</div>
+        <div class="tab sos"><svg width="30" height="30"><use href="#t-sos"/></svg>SOS</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 SOS -->
+<div class="col">
+  <div class="label"><span>5</span>SOS</div>
+  <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><div class="sicons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#1E1B2E" opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/></svg></div></div>
+    <div class="screen">
+      <div class="sosh"><h2>Do you need help?</h2><p>One tap is enough. I'll stay with you.</p></div>
+      <div class="call112">
+        <b><svg width="38" height="38"><use href="#phone"/></svg>Call 112</b>
+        <span>Emergency &middot; ambulance</span>
+      </div>
+      <div class="contacts">
+        <div class="contact">
+          <div class="face" style="background:#FFE9DE;color:#A8461A">A</div>
+          <div class="n"><b>Call Anna</b><span>Your daughter</span></div>
+          <div class="callbtn" style="color:var(--mint-d)"><svg width="26" height="26"><use href="#phone"/></svg></div>
+        </div>
+        <div class="contact">
+          <div class="face" style="background:var(--lav);color:var(--purple)">H</div>
+          <div class="n"><b>Call Dr Hoffmann</b><span>Your doctor</span></div>
+          <div class="callbtn" style="color:var(--mint-d)"><svg width="26" height="26"><use href="#phone"/></svg></div>
+        </div>
+      </div>
+      <div class="helpmsg"><svg width="26" height="26"><use href="#msg"/></svg>Send a help message</div>
+      <p style="text-align:center;font-size:17px;color:var(--ink2);margin:12px 30px 0;line-height:1.4">Sends your location to Anna and Dr Hoffmann.</p>
+      <div class="tabs">
+        <div class="tab"><svg width="30" height="30"><use href="#t-pills"/></svg>Pills</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-scan"/></svg>Scan</div>
+        <div class="tab"><div class="home" style="background:transparent"><svg width="28" height="28"><use href="#t-home"/></svg></div>Home</div>
+        <div class="tab"><svg width="30" height="30"><use href="#t-notes"/></svg>Notes</div>
+        <div class="tab sos on" style="color:var(--red)"><div class="home" style="background:#FBE3E6"><svg width="28" height="28"><use href="#t-sos"/></svg></div>SOS</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="rationale">
+  <h3>Design rationale</h3>
+  <ul>
+    <li><b>One thing per screen.</b> Home asks a single question with a single purple button, so Margaret never has to hunt for what to do next.</li>
+    <li><b>She sees what Agatha heard.</b> Live words while listening and a clear &ldquo;You said&rdquo; bubble let a slightly hard-of-hearing user catch a mistake before acting on it.</li>
+    <li><b>Answers are spoken and written.</b> Agatha's reply is set in 27px type, with a replay control, and any action (Take) sits right below in a card with 56px+ buttons.</li>
+    <li><b>Calm, not clinical.</b> Off-white space, soft lavender and mint, and a small bespectacled robot keep it warm; orange is saved for &ldquo;now&rdquo; moments, red only for SOS.</li>
+    <li><b>Stable, thumb-reachable controls.</b> The talk pill and tab bar never move; Home sits in the centre, SOS always at the right edge, all targets at least 56px with high-contrast ink text.</li>
+  </ul>
+</div>
+
+</body>
+</html>

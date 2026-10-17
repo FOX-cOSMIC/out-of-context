@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agatha — C Max Accessibility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#6B3FE0; --purple-d:#3E1F99; --lav:#EFE6FF; --off:#FAF9F5; --ink:#1E1B2E;
+  --orange:#FF7A3D; --mint:#E3F6F1; --red:#C8283A; --green-d:#0B5D46; --line:#1E1B2E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#D9D4E8;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;color:var(--ink);padding:28px 32px 36px}
+h1{font-size:26px;margin-bottom:4px}
+.sub{font-size:16px;margin-bottom:22px;color:#3a3550}
+.row{display:flex;gap:28px;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:12px}
+.label{font-size:19px;font-weight:700;color:var(--ink)}
+.label b{display:inline-block;background:var(--ink);color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;margin-right:8px}
+
+.phone{width:393px;height:852px;border-radius:54px;background:var(--off);position:relative;overflow:hidden;
+  box-shadow:0 0 0 10px #111,0 0 0 12px #444,0 24px 50px rgba(30,27,46,.35);display:flex;flex-direction:column}
+.status{height:54px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0 34px;font-weight:700;font-size:17px}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;background:#000;border-radius:20px}
+.sicons{display:flex;gap:6px;align-items:center}
+.content{flex:1;padding:6px 18px 12px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+
+/* header */
+.hdr{display:flex;align-items:center;gap:12px}
+.hdr h2{font-size:28px;line-height:1.15}
+.hdr .who{font-size:18px;font-weight:700;color:var(--purple-d)}
+
+/* tab bar */
+.tabs{flex:none;height:104px;border-top:3px solid var(--ink);background:#fff;display:flex;padding:6px 4px 22px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:16px;font-weight:700;color:var(--ink);border-radius:14px;margin:0 2px}
+.tab svg{width:30px;height:30px}
+.tab.on{background:var(--purple-d);color:#fff}
+.tab.sos{color:var(--red)}
+.tab.sos.on{background:var(--red);color:#fff}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--ink)}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:68px;border-radius:18px;font-family:inherit;font-weight:700;font-size:24px;border:3px solid var(--ink);background:#fff;color:var(--ink);padding:10px 16px;text-align:left}
+.btn svg{width:32px;height:32px;flex:none}
+.btn.primary{background:var(--purple-d);color:#fff;border-color:var(--purple-d)}
+.btn.huge{min-height:150px;font-size:32px;flex-direction:column;gap:8px;border-radius:28px}
+.btn.huge svg{width:64px;height:64px}
+.btn.green{background:var(--green-d);border-color:var(--green-d);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:14px 16px}
+.kicker{font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--purple-d)}
+.big{font-size:24px;line-height:1.3}
+.hint{font-size:21px;line-height:1.35;text-align:center}
+
+.state{border-radius:16px;padding:12px 14px;font-size:22px;font-weight:700;line-height:1.3;display:flex;gap:12px;align-items:center}
+.state.listen{background:var(--orange);color:var(--ink);border:3px solid var(--ink)}
+.state.speak{background:var(--mint);border:3px solid var(--green-d);color:var(--ink)}
+.dot{width:18px;height:18px;border-radius:50%;background:var(--ink);flex:none;box-shadow:0 0 0 5px rgba(30,27,46,.25)}
+
+.bubble-you{background:var(--lav);border:3px solid var(--purple-d);border-radius:20px 20px 6px 20px;padding:10px 14px;margin-left:30px}
+.bubble-you .kicker{font-size:16px}
+.bubble-you p{font-size:24px;font-weight:700}
+.answer{display:flex;gap:10px;align-items:flex-start}
+.answer p{font-size:27px;line-height:1.3;font-weight:700}
+
+.pill-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:2px solid #CFC9DD}
+.pill-row:first-of-type{border-top:none}
+.pill-ic{width:48px;height:48px;border-radius:12px;background:var(--lav);display:flex;align-items:center;justify-content:center;flex:none;border:2px solid var(--purple-d)}
+.pill-ic svg{width:30px;height:30px}
+.pname{font-size:23px;font-weight:700;line-height:1.15}
+.pdesc{font-size:19px;line-height:1.25}
+.take{margin-left:auto;min-height:64px;min-width:104px;width:auto;font-size:22px;padding:8px 14px;gap:8px}
+.take svg{width:26px;height:26px}
+.done-tag{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:20px;font-weight:700;color:var(--green-d)}
+.done-tag svg{width:28px;height:28px}
+
+.progress{height:22px;border-radius:11px;background:#fff;border:3px solid var(--ink);overflow:hidden}
+.progress i{display:block;height:100%;width:33.3%;background:var(--green-d)}
+
+.live{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:18px;min-height:150px}
+.live p{font-size:32px;font-weight:700;line-height:1.3}
+.caret{display:inline-block;width:4px;height:34px;background:var(--purple-d);vertical-align:-6px;margin-left:4px}
+
+.rationale{margin-top:34px;max-width:2100px;background:#fff;border:3px solid var(--ink);border-radius:20px;padding:20px 28px}
+.rationale h3{font-size:22px;margin-bottom:10px}
+.rationale ul{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;list-style:none}
+.rationale li{font-size:16px;line-height:1.45}
+.rationale li strong{display:block;font-size:18px;margin-bottom:4px;color:var(--purple-d)}
+.logo{font-family:Quicksand,sans-serif;font-weight:700;font-size:26px;color:var(--purple-d)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Agatha mascot -->
+    <symbol id="agatha" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="58" fill="#EFE6FF"/>
+      <line x1="60" y1="14" x2="60" y2="26" stroke="#1E1B2E" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="60" cy="12" r="6" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="3"/>
+      <!-- body / vest -->
+      <path d="M26 118 Q28 88 60 88 Q92 88 94 118 Z" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="3"/>
+      <path d="M52 89 L60 104 L68 89" fill="#fff" stroke="#1E1B2E" stroke-width="2.5"/>
+      <path d="M48 92 L60 98 L48 104 Z M72 92 L60 98 L72 104 Z" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="60" cy="98" r="3.5" fill="#FF7A3D" stroke="#1E1B2E" stroke-width="2"/>
+      <!-- head -->
+      <rect x="24" y="26" width="72" height="60" rx="22" fill="#fff" stroke="#1E1B2E" stroke-width="3.5"/>
+      <rect x="18" y="48" width="8" height="18" rx="4" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="2.5"/>
+      <rect x="94" y="48" width="8" height="18" rx="4" fill="#6B3FE0" stroke="#1E1B2E" stroke-width="2.5"/>
+      <!-- glasses -->
+      <circle cx="46" cy="52" r="11" fill="#EFE6FF" stroke="#1E1B2E" stroke-width="3.5"/>
+      <circle cx="74" cy="52" r="11" fill="#EFE6FF" stroke="#1E1B2E" stroke-width="3.5"/>
+      <line x1="57" y1="52" x2="63" y2="52" stroke="#1E1B2E" stroke-width="3.5"/>
+      <circle cx="46" cy="53" r="4" fill="#1E1B2E"/><circle cx="74" cy="53" r="4" fill="#1E1B2E"/>
+      <circle cx="47.5" cy="51.5" r="1.3" fill="#fff"/><circle cx="75.5" cy="51.5" r="1.3" fill="#fff"/>
+      <!-- cheeks + smile -->
+      <circle cx="36" cy="70" r="4" fill="#FF7A3D" opacity=".55"/><circle cx="84" cy="70" r="4" fill="#FF7A3D" opacity=".55"/>
+      <path d="M49 71 Q60 80 71 71" fill="none" stroke="#1E1B2E" stroke-width="3.5" stroke-linecap="round"/>
+    </symbol>
+    <!-- icons (stroke) -->
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M8.5 21.5h7"/></symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(-35 12 12)"/><path d="M9.3 8.2l5.4 7.6" /></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><rect x="7" y="8" width="10" height="8" rx="1.5"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7.5 9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></symbol>
+    <symbol id="i-notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-sos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+    <symbol id="i-checkc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5l3 3 6-6.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5h3.5l2 5-2.5 1.5a11 11 0 0 0 6 6l1.5-2.5 5 2V19a2 2 0 0 1-2 2A17 17 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></symbol>
+    <symbol id="sbar" viewBox="0 0 70 14"><rect x="0" y="9" width="3.5" height="5" rx="1" fill="#1E1B2E"/><rect x="5.5" y="6" width="3.5" height="8" rx="1" fill="#1E1B2E"/><rect x="11" y="3" width="3.5" height="11" rx="1" fill="#1E1B2E"/><rect x="16.5" y="0" width="3.5" height="14" rx="1" fill="#1E1B2E"/><path d="M27 5a11 11 0 0 1 14 0M29.5 8a7 7 0 0 1 9 0M32 11a3 3 0 0 1 4 0" stroke="#1E1B2E" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="45" y="1" width="21" height="12" rx="3.5" fill="none" stroke="#1E1B2E" stroke-width="1.6"/><rect x="47" y="3" width="15" height="8" rx="2" fill="#1E1B2E"/><rect x="67" y="5" width="2" height="4" rx="1" fill="#1E1B2E"/></symbol>
+  </defs>
+</svg>
+
+<h1><span class="logo">Agatha</span> &nbsp;·&nbsp; Direction C — Maximum accessibility</h1>
+<p class="sub">For Margaret, 78: a little hard of hearing, reads with glasses, new to smartphones. Every control has an icon and a word. One main action per screen. No gestures.</p>
+
+<div class="row">
+
+<!-- 1 HOME -->
+<div class="col">
+  <div class="label"><b>1</b>Home (idle)</div>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="status"><span>8:15</span><span class="sicons"><svg width="70" height="14"><use href="#sbar"/></svg></span></div>
+    <div class="content">
+      <div class="hdr">
+        <svg width="64" height="64"><use href="#agatha"/></svg>
+        <div><div class="who">Agatha</div><h2>Good morning, Margaret</h2></div>
+      </div>
+      <div class="card" style="background:var(--mint);border-color:var(--green-d)">
+        <div class="kicker" style="color:var(--green-d);display:flex;gap:8px;align-items:center"><svg width="22" height="22"><use href="#i-clock"/></svg>Your next pills</div>
+        <p class="big" style="margin-top:6px"><strong>Now, after breakfast:</strong><br>Metformin and ASS 100</p>
+      </div>
+      <div style="display:flex;justify-content:center;margin:2px 0 -4px">
+        <svg width="170" height="170"><use href="#agatha"/></svg>
+      </div>
+      <p class="hint"><strong>Ask me anything about your medicines.</strong><br>Press the big button, then speak.</p>
+      <button class="btn primary huge"><svg><use href="#i-mic"/></svg>TAP TO TALK</button>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab on"><svg><use href="#i-home"/></svg>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+<!-- 2 LISTENING -->
+<div class="col">
+  <div class="label"><b>2</b>Listening</div>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="status"><span>8:16</span><span class="sicons"><svg width="70" height="14"><use href="#sbar"/></svg></span></div>
+    <div class="content">
+      <div class="state listen"><span class="dot"></span><span>Agatha is listening.<br>Tap DONE when you have finished.</span></div>
+      <div style="display:flex;align-items:center;gap:14px;justify-content:center;padding:4px 0">
+        <svg width="56" height="80" viewBox="0 0 56 80"><g fill="#3E1F99"><rect x="2" y="30" width="8" height="20" rx="4"/><rect x="16" y="18" width="8" height="44" rx="4"/><rect x="30" y="8" width="8" height="64" rx="4"/><rect x="44" y="24" width="8" height="32" rx="4"/></g></svg>
+        <svg width="130" height="130"><use href="#agatha"/></svg>
+        <svg width="56" height="80" viewBox="0 0 56 80"><g fill="#3E1F99"><rect x="4" y="24" width="8" height="32" rx="4"/><rect x="18" y="8" width="8" height="64" rx="4"/><rect x="32" y="18" width="8" height="44" rx="4"/><rect x="46" y="30" width="8" height="20" rx="4"/></g></svg>
+      </div>
+      <div class="live">
+        <div class="kicker" style="margin-bottom:8px">I hear you saying</div>
+        <p>What do I take this evening?<span class="caret"></span></p>
+      </div>
+      <p class="hint" style="font-size:20px">Take your time. I will wait.</p>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+        <button class="btn green" style="min-height:96px;font-size:32px"><svg style="width:42px;height:42px"><use href="#i-check"/></svg>DONE</button>
+        <button class="btn"><svg><use href="#i-x"/></svg>Cancel, stop listening</button>
+      </div>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab on"><svg><use href="#i-home"/></svg>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+<!-- 3 ANSWER -->
+<div class="col">
+  <div class="label"><b>3</b>Answer</div>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="status"><span>8:16</span><span class="sicons"><svg width="70" height="14"><use href="#sbar"/></svg></span></div>
+    <div class="content" style="gap:12px">
+      <div class="state speak"><svg width="30" height="30" style="flex:none;color:var(--green-d)"><use href="#i-speaker"/></svg><span>Agatha is speaking out loud</span></div>
+      <div class="bubble-you"><div class="kicker">You said</div><p>“What do I take this evening?”</p></div>
+      <div class="answer">
+        <svg width="54" height="54" style="flex:none"><use href="#agatha"/></svg>
+        <p>This evening you take one Metformin with your dinner at six and one Simvastatin.</p>
+      </div>
+      <div class="card" style="padding:10px 14px">
+        <div class="kicker" style="display:flex;gap:8px;align-items:center"><svg width="22" height="22"><use href="#i-moon"/></svg>This evening · 6:00 pm</div>
+        <div class="pill-row">
+          <div class="pill-ic"><svg style="color:var(--purple-d)"><use href="#i-pill"/></svg></div>
+          <div><div class="pname">Metformin</div><div class="pdesc">500 mg · with dinner</div></div>
+          <button class="btn primary take"><svg><use href="#i-check"/></svg>Take</button>
+        </div>
+        <div class="pill-row">
+          <div class="pill-ic"><svg style="color:var(--purple-d)"><use href="#i-pill"/></svg></div>
+          <div><div class="pname">Simvastatin</div><div class="pdesc">20 mg · 1 tablet</div></div>
+          <button class="btn primary take"><svg><use href="#i-check"/></svg>Take</button>
+        </div>
+      </div>
+      <button class="btn" style="margin-top:auto"><svg><use href="#i-speaker"/></svg>Say it again</button>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab on"><svg><use href="#i-home"/></svg>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+<!-- 4 PILLS -->
+<div class="col">
+  <div class="label"><b>4</b>My pills today</div>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="status"><span>8:20</span><span class="sicons"><svg width="70" height="14"><use href="#sbar"/></svg></span></div>
+    <div class="content" style="gap:12px">
+      <div class="hdr"><svg width="48" height="48"><use href="#agatha"/></svg><h2>My pills today</h2></div>
+      <div>
+        <p style="font-size:24px;font-weight:700;margin-bottom:6px">2 of 6 taken</p>
+        <div class="progress"><i></i></div>
+      </div>
+      <div class="card" style="padding:8px 14px">
+        <div class="kicker" style="display:flex;gap:8px;align-items:center"><svg width="22" height="22"><use href="#i-sun"/></svg>Morning · done</div>
+        <div class="pill-row" style="padding:6px 0"><div><div class="pname" style="font-size:21px">Pantoprazole 20 mg</div></div><span class="done-tag"><svg><use href="#i-checkc"/></svg>7:00</span></div>
+        <div class="pill-row" style="padding:6px 0"><div><div class="pname" style="font-size:21px">Ramipril 5 mg</div></div><span class="done-tag"><svg><use href="#i-checkc"/></svg>7:45</span></div>
+      </div>
+      <div class="card" style="border:4px solid var(--purple-d);background:var(--lav)">
+        <div class="kicker">Take now · with breakfast</div>
+        <div style="display:flex;gap:12px;align-items:center;margin:8px 0 12px">
+          <div class="pill-ic" style="width:60px;height:60px;background:#fff"><svg style="color:var(--purple-d);width:38px;height:38px"><use href="#i-pill"/></svg></div>
+          <div><div class="pname" style="font-size:26px;white-space:nowrap">Metformin 500 mg</div><div class="pdesc" style="font-size:21px">1 tablet, with your meal</div></div>
+        </div>
+        <button class="btn green" style="min-height:76px;font-size:26px"><svg><use href="#i-check"/></svg>Yes, I took it</button>
+        <p style="font-size:19px;margin-top:8px"><strong>Next:</strong> ASS 100, after breakfast</p>
+      </div>
+      <div class="card" style="padding:8px 14px">
+        <div class="kicker" style="display:flex;gap:8px;align-items:center"><svg width="22" height="22"><use href="#i-moon"/></svg>Evening · 6:00 pm</div>
+        <p style="font-size:21px;margin-top:4px;line-height:1.3">Metformin 500 mg<br>Simvastatin 20 mg</p>
+      </div>
+    </div>
+    <nav class="tabs">
+      <div class="tab on"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab"><svg><use href="#i-home"/></svg>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+<!-- 5 SOS -->
+<div class="col">
+  <div class="label"><b>5</b>SOS</div>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="status"><span>8:21</span><span class="sicons"><svg width="70" height="14"><use href="#sbar"/></svg></span></div>
+    <div class="content">
+      <div class="hdr"><svg width="56" height="56"><use href="#agatha"/></svg><div><h2>Do you need help?</h2><div style="font-size:20px">I will stay with you.</div></div></div>
+      <button class="btn red" style="min-height:150px;flex-direction:column;gap:6px;border-radius:26px;border:4px solid #7A0F1D">
+        <svg style="width:52px;height:52px"><use href="#i-phone"/></svg>
+        <span style="font-size:38px">Call 112</span>
+        <span style="font-size:21px;font-weight:700">Ambulance &amp; emergency</span>
+      </button>
+      <button class="btn" style="justify-content:flex-start;min-height:80px"><svg style="color:var(--purple-d)"><use href="#i-phone"/></svg><span>Call Anna<br><span style="font-size:19px;font-weight:400">your daughter</span></span></button>
+      <button class="btn" style="justify-content:flex-start;min-height:80px"><svg style="color:var(--purple-d)"><use href="#i-phone"/></svg><span>Call Dr Hoffmann<br><span style="font-size:19px;font-weight:400">your doctor</span></span></button>
+      <button class="btn" style="justify-content:flex-start;min-height:80px"><svg style="color:var(--purple-d)"><use href="#i-msg"/></svg><span>Send a help message<br><span style="font-size:19px;font-weight:400">to Anna, with where you are</span></span></button>
+      <p style="font-size:19px;line-height:1.35;text-align:center;margin-top:auto">Nothing happens until you press a button. Each call asks you once more: <strong>“Call now?”</strong></p>
+    </div>
+    <nav class="tabs">
+      <div class="tab"><svg><use href="#i-pill"/></svg>Pills</div>
+      <div class="tab"><svg><use href="#i-scan"/></svg>Scan</div>
+      <div class="tab"><svg><use href="#i-home"/></svg>Home</div>
+      <div class="tab"><svg><use href="#i-notes"/></svg>Notes</div>
+      <div class="tab sos on"><svg><use href="#i-sos"/></svg>SOS</div>
+    </nav>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+</div>
+
+<section class="rationale">
+  <h3>Design rationale</h3>
+  <ul>
+    <li><strong>Contrast first (AAA)</strong>Ink #1E1B2E on off-white and white on deep purple #3E1F99 both exceed 7:1. Bright purple and orange are used only for shapes and backgrounds, never for small text. Every card has a 3px dark outline, so edges stay visible with glasses or cataracts.</li>
+    <li><strong>Text you can read without zooming</strong>Atkinson Hyperlegible everywhere. Body text is 21–24px, and Agatha's answers and the live transcript are 27–32px bold. Medicine names always appear with the dose and an instruction in plain words ("with your meal").</li>
+    <li><strong>One clear job per screen</strong>Each screen has one dominant button: TAP TO TALK, DONE, Yes I took it, Call 112. Everything else is secondary and outlined. Main buttons are full width and 68–150px tall, so a shaky finger can't miss.</li>
+    <li><strong>Always say what is happening</strong>A coloured state banner names the mode in words ("Agatha is listening. Tap DONE when you have finished", "Agatha is speaking out loud"). "You said" shows her words back, so a mishearing is caught before the answer is trusted. "Say it again" helps with hearing loss.</li>
+    <li><strong>Every icon has a word, no hidden gestures</strong>Tabs and buttons all pair an icon with a label. Nothing needs a swipe, long press or double tap. SOS stays in the tab bar on every screen in red, and calls only start after a second confirmation. Agatha's face appears on every screen to keep it warm and personal, not clinical.</li>
+  </ul>
+</section>
+</body>
+</html>
