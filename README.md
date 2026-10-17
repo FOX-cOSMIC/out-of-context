@@ -62,6 +62,11 @@ To re-render a sample after editing its HTML:
   --window-size=1060,520 --screenshot="$PWD/public/samples/medication-plan.png" "file://$PWD/samples/medication-plan.html"
 ```
 
+### Team rule: pull often, push often
+- Start every task with `git pull --rebase`.
+- After every small working step: commit, `git pull --rebase`, `git push`. Don't sit on changes for more than ~15 minutes.
+- Claude Code follows this automatically (it's in `CLAUDE.md`). If you work on github.com directly, refresh before editing.
+
 **Live link (if any):** <link>
 
 ## Screenshots / demo

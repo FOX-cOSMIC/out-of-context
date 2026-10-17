@@ -5,6 +5,19 @@ Hard submission deadline: **16:00**. **Shipping a working demo beats perfect cod
 
 Read this whole file at the start of every session and follow it. When the team is unsure about a rule, answer from this file.
 
+## Team Out of Context: pull often, push often (team policy, always follow)
+Five people work in this repo at the same time. Everyone should get each other's work early.
+- **Before starting any task:** run `git pull --rebase`.
+- **After every small step that works** (a fixed bug, a new button, a changed prompt):
+  commit with a clear message, `git pull --rebase`, then `git push` right away. Do not ask first;
+  this team has agreed to it. Never sit on unpushed work for more than about 15 minutes.
+- **If the push is rejected:** `git pull --rebase`, resolve conflicts (keep both sides' intent,
+  explain in plain words what you kept), run the app once to check it still starts, push again.
+- **Only commit what works:** run `npm start` (or at least `node --check` on changed files) first.
+  If something is half-done, keep it out of the commit or behind a flag, but still push often.
+- Stage specific files (`git add <file>`), never `git add -A` blindly; never commit `.env`.
+- Stay in your own files where possible (see "Project layout" in README.md) to avoid conflicts.
+
 ## The challenge
 Theme: **AI education for everyone.** Build a working prototype that helps one real audience learn or use AI
 (for example older adults, small business owners, job seekers, parents, newcomers, people with disabilities,
