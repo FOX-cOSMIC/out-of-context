@@ -190,3 +190,52 @@ enum Theme {
         static let disabledOpacity: Double = 0.4
     }
 }
+
+// MARK: - Valentina's design (Medication Voice Assistant.html)
+// Shared by all screens. Builders map the older Theme.Colors / Theme.Fonts tokens onto these.
+
+extension Color {
+    init(hex: UInt32) {
+        self.init(red: Double((hex >> 16) & 0xFF) / 255,
+                  green: Double((hex >> 8) & 0xFF) / 255,
+                  blue: Double(hex & 0xFF) / 255)
+    }
+}
+
+extension Theme {
+    enum Palette {
+        static let page = Color(hex: 0xFAF9F5)          // warm off-white screen background
+        static let white = Color.white
+        static let ink = Color(hex: 0x1E1B2E)           // main text
+        static let inkSoft = Color(hex: 0x5A5470)       // secondary text
+        static let inkMuted = Color(hex: 0x4A4460)
+        static let purple = Color(hex: 0x6B3FE0)        // primary: Talk button, main buttons
+        static let purpleDark = Color(hex: 0x5B33C9)
+        static let purpleDeep = Color(hex: 0x3E1F99)
+        static let lavender = Color(hex: 0xEFE6FF)      // hero background, soft cards
+        static let lavenderLight = Color(hex: 0xF3EEFB)
+        static let lavenderBorder = Color(hex: 0xDDD0F5)
+        static let lavenderRing = Color(hex: 0xCDB8FF)
+        static let orange = Color(hex: 0xFF7A3D)        // "due now" accents, pills
+        static let orangeDark = Color(hex: 0xE0602A)
+        static let orangeText = Color(hex: 0xA3400F)
+        static let peach = Color(hex: 0xFFF1E3)         // afternoon card, reminder card
+        static let mint = Color(hex: 0xE3F6F1)          // taken / morning card, doctor
+        static let green = Color(hex: 0x17694B)         // "Taken at 8:02"
+        static let yellow = Color(hex: 0xFFB547)
+        static let pink = Color(hex: 0xFF9FB2)
+        static let sosRed = Color(hex: 0xC8283A)        // "Call 112"
+        static let sosSoft = Color(hex: 0xFDECEE)       // SOS tab background
+        static let sosText = Color(hex: 0xB3202F)
+    }
+
+    /// Quicksand for headings, Atkinson Hyperlegible for everything else (falls back to system fonts).
+    enum Typeface {
+        static func heading(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
+            .custom("Quicksand", size: size, relativeTo: .title).weight(weight)
+        }
+        static func body(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+            .custom("Atkinson Hyperlegible", size: size, relativeTo: .body).weight(weight)
+        }
+    }
+}
