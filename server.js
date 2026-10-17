@@ -7,6 +7,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
+import { transcribe, speak, voiceSettings } from "./voice.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
@@ -152,6 +153,17 @@ async function readJson(req) {
   return raw ? JSON.parse(raw) : {};
 }
 
+async function readBuffer(req) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > MAX_BODY) throw new Error("TOO_LARGE");
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
 async function serveStatic(req, res) {
   const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
   const rel = urlPath === "/" ? "index.html" : urlPath.slice(1);
@@ -214,8 +226,25 @@ const routes = {
     sendJson(res, 200, { answer });
   },
 
+  // Local speech-to-text on this Mac (Whisper). Body: the raw recorded audio.
+  "POST /api/transcribe": async (req, res) => {
+    const audio = await readBuffer(req);
+    if (!audio.length) return sendJson(res, 400, { error: "I did not hear anything. Please try again." });
+    const text = await transcribe(audio);
+    sendJson(res, 200, { text });
+  },
+
+  // Local text-to-speech on this Mac (macOS voices). Returns m4a audio.
+  "POST /api/speak": async (req, res) => {
+    const { text } = await readJson(req);
+    if (!text || !text.trim()) return sendJson(res, 400, { error: "Nothing to say." });
+    const audio = await speak(text.trim().slice(0, 4000));
+    res.writeHead(200, { "Content-Type": "audio/mp4", "Content-Length": audio.length });
+    res.end(audio);
+  },
+
   "GET /api/health": async (_req, res) => {
-    sendJson(res, 200, { ok: true, apiKey: Boolean(client), model: MODEL });
+    sendJson(res, 200, { ok: true, apiKey: Boolean(client), model: MODEL, voice: voiceSettings });
   },
 };
 
