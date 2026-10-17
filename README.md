@@ -6,28 +6,34 @@
 >
 > 🔑 Set your API key first: `cp .env.example .env`, then paste your key into `.env` (it's git-ignored, never commit it).
 
-# Scam Shield (working title) · by Team Out of Context
+# Care Companion (working title) · by Team Out of Context
 
-**One line:** A voice-first helper that lets older adults in Germany check a suspicious call or message with AI, and practise spotting scams safely.
+**One line:** A voice-first companion that helps older adults understand their medicines and appointments by showing AI a photo of their paperwork.
 
-**Audience:** Older adults (roughly 70+), starting in Germany, who get scam calls on their landline or phone, plus their adult children who help them with tech.
+**Audience:** Older adults (roughly 70+) who take several medicines a day and get confusing paperwork from doctors and clinics, plus the adult children who help them.
 
-**Their problem with AI today:** They mostly hear about AI as a threat (voice-cloned "shock calls", fake police officers) and have never used it to protect themselves.
+**Their problem with AI today:** They have never used AI for anything useful, while being handed confusing paper all the time: medication plans, medicine boxes, appointment letters.
 
-**What our demo lets them do:** Describe a call or show a message, get a plain-English verdict and one clear next step, and practise hanging up on an AI playing the scammer.
+**What our demo lets them do:** Photograph a medication plan or a letter, check what the AI read, and get a simple, read-aloud daily schedule they can ask questions about.
 
 ## The problem
-Phone scams on older people are rising in Germany: according to BKA figures reported in the press, fake police officers took about €49.5M in 2025 (up from €30.1M), and the grandchild trick and shock calls about €49.0M. The costliest scams arrive by phone, often on a landline, where existing text-only scam checkers don't help. Research suggests short, repeated practice works better than one-off warnings.
+Many older people take several medicines a day, often from different doctors, and keep track of them on paper. Mixing up doses or forgetting what a tablet is for is common and risky, and the rest of the family worries about it. Reminder apps exist, but they expect people to type in drug names and schedules themselves, which is exactly the hard part.
 
 ## What it does
-- **Check a call or message:** describe what happened (typing or speaking), get a plain-English verdict (scam / suspicious / safe), the warning signs, one clear next step, and a tip to remember. The answer is read aloud.
-- **Practise:** pick a scenario (fake police officer, shock call, "Hi Mum, new number"). Claude plays the caller; you answer by voice or text, press *Hang up* and get kind feedback on what you did well and what to watch for.
+- **Show me a document:** take a photo of a medication plan, a medicine box or an appointment letter. Claude reads it and shows *"Here is what I read, is this right?"*; the user checks every line, removes mistakes and confirms.
+- **My day:** a big, simple schedule (morning, midday, evening, night) with *Mark as taken* and *What is this?* (read aloud), plus upcoming appointments.
+- **Ask a question:** "What is Ramipril for?", "What do I take this evening?", "Help me write questions for my doctor". Example questions teach people *how* to ask AI.
+
+### Safety and privacy by design
+- **Explains and organises, never advises.** Questions about changing, stopping or combining medicines, side effects or symptoms are answered with "please ask your doctor or pharmacist", and offered as a question for the next visit. Emergencies are pointed to 112.
+- **Human check after every photo.** AI can misread; nothing is saved until the user confirms. That is also the lesson: always check what AI tells you.
+- **Data stays on the device.** The confirmed plan lives in the browser (localStorage), with a *Delete my data* button. Only the photo or question being processed is sent to Claude.
+- **Demo data is fictional.** See `samples/`.
 
 ## How Claude is used
 Claude Opus 5.5 (`claude-opus-5-5`) via the Anthropic API, called from `server.js`:
-- **Scam check:** reads the user's description of a call or message and returns structured JSON (verdict, why, next step, learning tip). Prompt: `prompts/check.md`.
-- **Practice caller:** role-plays a scammer from a scenario file, mildly, and stops if real personal data appears. Prompt: `prompts/practice-caller.md`.
-- **Coach:** reviews the practice call and returns encouraging feedback as JSON. Prompt: `prompts/practice-feedback.md`.
+- **Read document (vision):** reads a photo and returns structured JSON (document type, summary, medications with doses per time of day, appointments, anything unclear). Prompt: `prompts/read-document.md`.
+- **Ask:** answers questions about the saved plan in plain, spoken-style English, within the safety rules above. Prompt: `prompts/ask.md`.
 
 ## How to run it
 Needs Node.js 22 or newer.
@@ -38,17 +44,23 @@ npm install
 npm start               # then open http://localhost:3000
 ```
 
-`npm run dev` restarts the server automatically when you change a file. Voice input works in Chrome, Edge and Safari.
+`npm run dev` restarts the server automatically when you change a file. Voice input works best in Chrome. No document at hand? Use *Try a sample plan* or *Try a sample letter* on the photo screen.
 
 ### Project layout (who owns what)
 
 | Path | What it is | Owner |
 |---|---|---|
 | `server.js` | Small Node server: talks to Claude, keeps the API key secret | Gabriela |
-| `prompts/` | Instructions for Claude (check, practice caller, coach) | Gabriela |
+| `prompts/` | Instructions for Claude (read document, ask) | Gabriela |
 | `public/index.html` | The big-button, voice-first screen | Ahmad |
-| `scenarios/` | Fake scam scenarios for practice and the demo (one JSON file each) | Lucas |
+| `samples/` | Fictional sample documents (HTML source), rendered to `public/samples/*.png` | Lucas |
 | `README.md` | This file, the pitch story | Valentina |
+
+To re-render a sample after editing its HTML:
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+  --window-size=1060,520 --screenshot="$PWD/public/samples/medication-plan.png" "file://$PWD/samples/medication-plan.html"
+```
 
 **Live link (if any):** <link>
 
@@ -69,4 +81,4 @@ Teams of 5 (at least 1 builder, 1 product or design, 1 domain expert; plus found
 ## Credits
 - [Anthropic API](https://docs.claude.com) and the official [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) (MIT)
 - Browser Web Speech API for speech input and read-aloud
-- Scam patterns: [Verbraucherzentrale](https://www.verbraucherzentrale.de/wissen/digitale-welt/mobilfunk-und-festnetz/hallo-mama-hallo-papa-betrugsversuche-ueber-whatsapp-und-sms-72910), BKA figures as reported by German press. All scenarios are fictional.
+- All sample documents, names and addresses are fictional.

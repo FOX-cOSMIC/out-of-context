@@ -1,4 +1,4 @@
-// Scam Shield server: serves the screen in public/ and talks to Claude.
+// Care Companion server: serves the screen in public/ and talks to Claude.
 // The API key stays here on the server and never reaches the browser.
 // Run: npm start   (reads ANTHROPIC_API_KEY from .env)
 
@@ -11,58 +11,83 @@ import Anthropic from "@anthropic-ai/sdk";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
 const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
+const MAX_BODY = 12 * 1024 * 1024; // photos arrive as base64 JSON
 
 const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 
-// ---------- prompts and scenarios (plain files, easy to edit) ----------
-
 const readPrompt = (name) => fs.readFile(path.join(here, "prompts", name), "utf8");
 
-async function loadScenarios() {
-  const dir = path.join(here, "scenarios");
-  const files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json")).sort();
-  return Promise.all(
-    files.map(async (f) => JSON.parse(await fs.readFile(path.join(dir, f), "utf8"))),
-  );
-}
+// ---------- answer shapes Claude must return ----------
 
-// ---------- Claude calls ----------
-
-const VERDICT_SCHEMA = {
+const TIMES = {
   type: "object",
   properties: {
-    verdict: { type: "string", enum: ["scam", "suspicious", "safe"] },
-    headline: { type: "string" },
-    why: { type: "string" },
-    next_step: { type: "string" },
-    learn_tip: { type: "string" },
+    morning: { type: "string" },
+    midday: { type: "string" },
+    evening: { type: "string" },
+    night: { type: "string" },
   },
-  required: ["verdict", "headline", "why", "next_step", "learn_tip"],
+  required: ["morning", "midday", "evening", "night"],
   additionalProperties: false,
 };
 
-const FEEDBACK_SCHEMA = {
+const DOCUMENT_SCHEMA = {
   type: "object",
   properties: {
-    score: { type: "string", enum: ["great", "okay", "risky"] },
-    praise: { type: "string" },
-    tip: { type: "string" },
-    red_flags: { type: "array", items: { type: "string" } },
+    document_type: {
+      type: "string",
+      enum: ["medication_plan", "medicine_package", "appointment_letter", "other"],
+    },
+    summary: { type: "string" },
+    medications: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          strength: { type: "string" },
+          purpose: { type: "string" },
+          times: TIMES,
+          instructions: { type: "string" },
+        },
+        required: ["name", "strength", "purpose", "times", "instructions"],
+        additionalProperties: false,
+      },
+    },
+    appointments: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          date: { type: "string" },
+          time: { type: "string" },
+          place: { type: "string" },
+          bring: { type: "string" },
+          preparation: { type: "string" },
+        },
+        required: ["title", "date", "time", "place", "bring", "preparation"],
+        additionalProperties: false,
+      },
+    },
+    unclear: { type: "array", items: { type: "string" } },
   },
-  required: ["score", "praise", "tip", "red_flags"],
+  required: ["document_type", "summary", "medications", "appointments", "unclear"],
   additionalProperties: false,
 };
+
+// ---------- Claude ----------
 
 class RefusalError extends Error {}
 
 // One place for every Claude request. `schema` makes Claude answer as JSON.
-async function askClaude({ system, messages, schema, effort = "low", maxTokens = 4000 }) {
+async function askClaude({ system, content, schema, effort = "low", maxTokens = 8000 }) {
   if (!client) throw new Error("NO_API_KEY");
   const response = await client.beta.messages.create({
     model: MODEL,
     max_tokens: maxTokens,
     system,
-    messages,
+    messages: [{ role: "user", content }],
     output_config: {
       effort,
       ...(schema ? { format: { type: "json_schema", schema } } : {}),
@@ -79,15 +104,27 @@ async function askClaude({ system, messages, schema, effort = "low", maxTokens =
   return schema ? JSON.parse(text) : text;
 }
 
-// Turn the practice transcript into Claude messages: the scammer is "assistant".
-// The conversation must start with a user turn, so the user "picks up" first.
-const toClaudeMessages = (history) => [
-  { role: "user", content: "(The phone rings. I pick up.) Hello?" },
-  ...history.map((m) => ({
-    role: m.from === "caller" ? "assistant" : "user",
-    content: m.text,
-  })),
-];
+// "data:image/jpeg;base64,AAAA" -> Claude image block
+function imageBlock(dataUrl) {
+  const match = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/.exec(dataUrl || "");
+  if (!match) throw new Error("BAD_IMAGE");
+  return { type: "image", source: { type: "base64", media_type: match[1], data: match[2] } };
+}
+
+// The saved plan, as short text Claude can answer questions about.
+function planAsText(plan = {}) {
+  const meds = (plan.medications || []).map((m) => {
+    const when = Object.entries(m.times || {})
+      .filter(([, v]) => v)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(", ");
+    return `- ${m.name} ${m.strength} (${m.purpose}); ${when}; ${m.instructions}`;
+  });
+  const appts = (plan.appointments || []).map(
+    (a) => `- ${a.title}, ${a.date} ${a.time}, ${a.place}; bring: ${a.bring}; ${a.preparation}`,
+  );
+  return `Medications:\n${meds.join("\n") || "- none"}\n\nAppointments:\n${appts.join("\n") || "- none"}`;
+}
 
 // ---------- HTTP ----------
 
@@ -97,6 +134,7 @@ const MIME = {
   ".js": "text/javascript; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".jpg": "image/jpeg",
   ".ico": "image/x-icon",
 };
 
@@ -109,7 +147,7 @@ async function readJson(req) {
   let raw = "";
   for await (const chunk of req) {
     raw += chunk;
-    if (raw.length > 100_000) throw new Error("TOO_LARGE");
+    if (raw.length > MAX_BODY) throw new Error("TOO_LARGE");
   }
   return raw ? JSON.parse(raw) : {};
 }
@@ -130,76 +168,50 @@ async function serveStatic(req, res) {
 
 // Friendly messages for the screen; details go to the terminal.
 function friendlyError(res, err) {
-  if (err.message === "NO_API_KEY") {
-    console.error("No ANTHROPIC_API_KEY. Put it in .env and restart (npm start).");
-    return sendJson(res, 503, {
-      error: "The assistant is not set up yet (API key missing).",
-    });
+  const known = {
+    NO_API_KEY: [503, "The assistant is not set up yet (API key missing)."],
+    BAD_IMAGE: [400, "That photo did not work. Please try another one."],
+    TOO_LARGE: [413, "That photo is too large. Please try again."],
+  };
+  if (known[err.message]) {
+    if (err.message === "NO_API_KEY") console.error("No ANTHROPIC_API_KEY. Put it in .env and restart.");
+    const [status, error] = known[err.message];
+    return sendJson(res, status, { error });
   }
   if (err instanceof RefusalError) {
     return sendJson(res, 200, {
-      error: "Sorry, I cannot help with that one. If in doubt: hang up and call the police yourself.",
+      error: "Sorry, I cannot help with that one. Please ask your doctor or pharmacist.",
     });
   }
   console.error(err);
-  return sendJson(res, 502, {
-    error: "That did not work just now. Please try again.",
-  });
+  return sendJson(res, 502, { error: "That did not work just now. Please try again." });
 }
 
 const routes = {
-  // Check a described call or a pasted message.
-  "POST /api/check": async (req, res) => {
-    const { text } = await readJson(req);
-    if (!text || !text.trim()) return sendJson(res, 400, { error: "Please type or say something first." });
+  // Read a photo of a medication plan, a medicine box or an appointment letter.
+  "POST /api/read-document": async (req, res) => {
+    const { image } = await readJson(req);
     const result = await askClaude({
-      system: await readPrompt("check.md"),
-      messages: [{ role: "user", content: text.trim() }],
-      schema: VERDICT_SCHEMA,
+      system: await readPrompt("read-document.md"),
+      content: [imageBlock(image), { type: "text", text: "Please read this document." }],
+      schema: DOCUMENT_SCHEMA,
+      effort: "medium", // reading accurately matters more than speed here
     });
     sendJson(res, 200, result);
   },
 
-  // List practice scenarios (without the secret scammer script).
-  "GET /api/scenarios": async (_req, res) => {
-    const list = (await loadScenarios()).map(({ id, title, description, opening }) => ({
-      id, title, description, opening,
-    }));
-    sendJson(res, 200, list);
-  },
-
-  // Practice: Claude plays the caller and answers the user's last line.
-  "POST /api/practice": async (req, res) => {
-    const { scenarioId, history = [] } = await readJson(req);
-    const scenario = (await loadScenarios()).find((s) => s.id === scenarioId);
-    if (!scenario) return sendJson(res, 404, { error: "Exercise not found." });
-    const system = (await readPrompt("practice-caller.md")).replace(
-      "{{SCENARIO}}",
-      JSON.stringify(scenario, null, 2),
-    );
-    const reply = await askClaude({ system, messages: toClaudeMessages(history), maxTokens: 1000 });
-    sendJson(res, 200, { reply });
-  },
-
-  // Practice: after hanging up, coach the user on how it went.
-  "POST /api/feedback": async (req, res) => {
-    const { scenarioId, history = [] } = await readJson(req);
-    const scenario = (await loadScenarios()).find((s) => s.id === scenarioId);
-    if (!scenario) return sendJson(res, 404, { error: "Exercise not found." });
-    const transcript = history
-      .map((m) => `${m.from === "caller" ? "Caller" : "User"}: ${m.text}`)
-      .join("\n");
-    const result = await askClaude({
-      system: await readPrompt("practice-feedback.md"),
-      messages: [
-        {
-          role: "user",
-          content: `Scenario: ${scenario.title}\nTypical warning signs: ${scenario.red_flags.join("; ")}\n\nConversation:\n${transcript}`,
-        },
-      ],
-      schema: FEEDBACK_SCHEMA,
+  // Answer a question about the saved plan ("What is this pill for?").
+  "POST /api/ask": async (req, res) => {
+    const { question, plan } = await readJson(req);
+    if (!question || !question.trim()) {
+      return sendJson(res, 400, { error: "Please type or say something first." });
+    }
+    const answer = await askClaude({
+      system: await readPrompt("ask.md"),
+      content: `My saved plan:\n${planAsText(plan)}\n\nMy question: ${question.trim()}`,
+      maxTokens: 2000,
     });
-    sendJson(res, 200, result);
+    sendJson(res, 200, { answer });
   },
 
   "GET /api/health": async (_req, res) => {
@@ -220,6 +232,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Scam Shield running: http://localhost:${PORT}`);
+  console.log(`Care Companion running: http://localhost:${PORT}`);
   if (!client) console.log("Warning: no ANTHROPIC_API_KEY yet. The screen works, Claude calls will fail.");
 });

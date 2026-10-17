@@ -1,9 +1,0 @@
-{
-  "id": "fake-police",
-  "title": "The fake police officer",
-  "description": "A \"detective\" warns you about burglars and wants to collect your valuables.",
-  "opening": "Good afternoon, this is Detective Weber from the criminal police. Please don't be alarmed, but we arrested burglars in your street last night.",
-  "caller_goal": "Get the person to hand cash and jewellery to a 'colleague' who comes by for safekeeping.",
-  "tactics": ["authority (police)", "fear of burglars", "secrecy: 'tell no one, the bank is involved'", "time pressure"],
-  "red_flags": ["Police want to collect money or valuables", "Asked to keep it secret", "Time pressure"]
-}

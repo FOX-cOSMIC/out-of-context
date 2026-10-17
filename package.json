@@ -1,9 +1,9 @@
 {
-  "name": "out-of-context-scam-shield",
+  "name": "out-of-context-care-companion",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Scam Shield: helps older adults check suspicious calls and messages with Claude, and practise spotting scams.",
+  "description": "Care Companion: helps older adults understand their medicines and appointments with Claude.",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "dev": "node --watch --env-file-if-exists=.env server.js"

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scam Shield</title>
+  <title>Care Companion</title>
   <style>
     :root {
       --bg: #fbf8f3;
@@ -11,9 +11,8 @@
       --text: #1d1b18;
       --muted: #5c574f;
       --accent: #1f5fae;
-      --scam: #b42318;
-      --suspicious: #b54708;
-      --safe: #067647;
+      --ok: #067647;
+      --warn: #b54708;
       --radius: 18px;
     }
     * { box-sizing: border-box; }
@@ -26,6 +25,7 @@
     main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
     h1 { font-size: 40px; margin: 8px 0 4px; }
     h2 { font-size: 30px; margin: 0 0 12px; }
+    h3 { font-size: 26px; margin: 24px 0 8px; }
     p.lead { color: var(--muted); margin: 0 0 24px; }
     .view { display: none; }
     .view.active { display: block; }
@@ -38,13 +38,12 @@
       cursor: pointer; text-align: left;
     }
     .big-btn.primary { background: var(--accent); color: #fff; }
-    .big-btn.danger { border-color: var(--scam); background: var(--scam); color: #fff; }
     .big-btn small { display: block; font-size: 19px; font-weight: 400; opacity: .85; }
-    .big-btn:focus-visible { outline: 4px solid #f5b400; outline-offset: 3px; }
+    .big-btn:focus-visible, .chip:focus-visible { outline: 4px solid #f5b400; outline-offset: 3px; }
     .row { display: flex; gap: 12px; flex-wrap: wrap; }
     .row .big-btn { flex: 1 1 200px; text-align: center; }
     textarea {
-      width: 100%; min-height: 160px;
+      width: 100%; min-height: 120px;
       font: inherit; padding: 16px;
       border: 2px solid #c9c2b6; border-radius: var(--radius);
       background: var(--card); color: var(--text);
@@ -56,21 +55,33 @@
     }
     .card {
       background: var(--card); border-radius: var(--radius);
-      padding: 20px 22px; margin: 16px 0;
-      border-left: 10px solid var(--muted);
+      padding: 18px 20px; margin: 12px 0;
+      border-left: 10px solid var(--accent);
       box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
-    .card.scam, .card.risky { border-left-color: var(--scam); }
-    .card.suspicious, .card.okay { border-left-color: var(--suspicious); }
-    .card.safe, .card.great { border-left-color: var(--safe); }
-    .card .headline { font-size: 28px; font-weight: 700; margin: 0 0 8px; }
-    .card p { margin: 8px 0; }
-    .label { font-weight: 700; }
-    .error { color: var(--scam); font-weight: 600; }
-    .chat { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-    .bubble { padding: 14px 18px; border-radius: var(--radius); max-width: 85%; }
-    .bubble.caller { background: #eee8de; align-self: flex-start; }
-    .bubble.me { background: #dbe8f8; align-self: flex-end; }
+    .card.taken { border-left-color: var(--ok); opacity: .75; }
+    .card .name { font-size: 26px; font-weight: 700; margin: 0; }
+    .card p { margin: 6px 0; }
+    .card .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .small-btn {
+      font: inherit; font-size: 19px; font-weight: 600;
+      padding: 10px 16px; border-radius: 12px;
+      border: 2px solid var(--accent); background: var(--card); color: var(--accent);
+      cursor: pointer;
+    }
+    .small-btn.done { border-color: var(--ok); background: var(--ok); color: #fff; }
+    .warn { background: #fff4e5; border-left: 10px solid var(--warn); border-radius: var(--radius); padding: 14px 18px; margin: 12px 0; }
+    .error { color: #b42318; font-weight: 600; }
+    .muted { color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .chip {
+      font: inherit; font-size: 19px;
+      padding: 10px 16px; border-radius: 999px;
+      border: 2px solid #c9c2b6; background: var(--card); color: var(--text);
+      cursor: pointer;
+    }
+    #photo-preview { max-width: 100%; border-radius: var(--radius); margin: 8px 0 16px; }
+    .link-btn { font: inherit; font-size: 18px; background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 0; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -79,53 +90,72 @@
 
   <!-- HOME -->
   <section id="home" class="view active">
-    <h1>Scam Shield</h1>
-    <p class="lead">Your helper against phone and message scams.</p>
-    <button class="big-btn primary" data-go="check">
-      Check a call or message
-      <small>Tell me what happened. I will tell you if it is a scam.</small>
+    <h1>Care Companion</h1>
+    <p class="lead">Your medicines and appointments, explained simply.</p>
+    <button class="big-btn primary" data-go="day">
+      My day
+      <small id="home-day-hint">See what to take today.</small>
     </button>
-    <button class="big-btn" data-go="practice">
-      Practise
-      <small>Practise spotting scammers and hanging up, at your own pace.</small>
+    <button class="big-btn" data-go="scan">
+      📷 Show me a document
+      <small>A medication plan, a medicine box or an appointment letter.</small>
     </button>
+    <button class="big-btn" data-go="ask">
+      💬 Ask a question
+      <small>For example: "What is this pill for?"</small>
+    </button>
+    <p class="muted">Your plan is saved only on this device. <button class="link-btn" id="clear-btn">Delete my data</button></p>
   </section>
 
-  <!-- CHECK -->
-  <section id="check" class="view">
+  <!-- SCAN: take or choose a photo -->
+  <section id="scan" class="view">
     <button class="back" data-go="home">← Back</button>
-    <h2>What happened?</h2>
-    <p class="lead">Tell me about the call, or paste the message.</p>
-    <textarea id="check-text" placeholder="For example: A police officer called. He says burglars are in my street and wants to collect my jewellery."></textarea>
+    <h2>Show me a document</h2>
+    <p class="lead">Take a photo of your medication plan, a medicine box or a letter from your doctor.</p>
+    <input type="file" id="photo-input" accept="image/*" capture="environment" class="hidden">
+    <button class="big-btn primary" id="photo-btn">📷 Take or choose a photo</button>
     <div class="row">
-      <button class="big-btn mic-btn" data-target="check-text">🎤 Speak</button>
-      <button class="big-btn primary" id="check-btn">Check</button>
+      <button class="big-btn" data-sample="samples/medication-plan.png">Try a sample plan</button>
+      <button class="big-btn" data-sample="samples/appointment-letter.png">Try a sample letter</button>
     </div>
-    <div id="check-result"></div>
+    <img id="photo-preview" class="hidden" alt="Your photo">
+    <div id="scan-status"></div>
   </section>
 
-  <!-- PRACTICE: pick a scenario -->
-  <section id="practice" class="view">
+  <!-- CONFIRM: "here's what I read, is this right?" -->
+  <section id="confirm" class="view">
+    <button class="back" data-go="scan">← Take another photo</button>
+    <h2>Here is what I read</h2>
+    <p id="confirm-summary" class="lead"></p>
+    <div id="confirm-unclear"></div>
+    <div id="confirm-list"></div>
+    <p class="muted">Please check every line against your paper. AI can make mistakes.</p>
+    <div class="row">
+      <button class="big-btn primary" id="confirm-yes">✓ Yes, this is right</button>
+      <button class="big-btn" data-go="scan">✗ No, try again</button>
+    </div>
+  </section>
+
+  <!-- MY DAY -->
+  <section id="day" class="view">
     <button class="back" data-go="home">← Back</button>
-    <h2>Practise</h2>
-    <p class="lead">Pick an exercise. The caller is an AI, so nothing can go wrong.</p>
-    <div id="scenario-list"></div>
+    <h2>My day</h2>
+    <p id="day-date" class="lead"></p>
+    <div id="day-list"></div>
   </section>
 
-  <!-- PRACTICE: the call -->
-  <section id="call" class="view">
-    <button class="back" data-go="practice">← Other exercise</button>
-    <h2 id="call-title"></h2>
-    <div class="chat" id="chat"></div>
-    <div id="call-controls">
-      <textarea id="reply-text" placeholder="What do you say?"></textarea>
-      <div class="row">
-        <button class="big-btn mic-btn" data-target="reply-text">🎤 Speak</button>
-        <button class="big-btn primary" id="reply-btn">Reply</button>
-      </div>
-      <button class="big-btn danger" id="hangup-btn">Hang up 📞</button>
+  <!-- ASK -->
+  <section id="ask" class="view">
+    <button class="back" data-go="home">← Back</button>
+    <h2>Ask a question</h2>
+    <p class="lead">Try asking me something. Tap an example or use your own words.</p>
+    <div class="chips" id="ask-chips"></div>
+    <textarea id="ask-text" placeholder="Type or speak your question"></textarea>
+    <div class="row">
+      <button class="big-btn mic-btn" data-target="ask-text">🎤 Speak</button>
+      <button class="big-btn primary" id="ask-btn">Ask</button>
     </div>
-    <div id="feedback"></div>
+    <div id="ask-answer"></div>
   </section>
 
 </main>
@@ -133,29 +163,33 @@
 <script>
   // ---------- helpers ----------
   const $ = (id) => document.getElementById(id);
+  const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   function show(viewId) {
     document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === viewId));
     window.speechSynthesis?.cancel();
     window.scrollTo(0, 0);
-    if (viewId === "practice") loadScenarios();
+    if (viewId === "day") renderDay();
+    if (viewId === "ask") renderChips();
+    if (viewId === "home") renderHome();
   }
-  document.querySelectorAll("[data-go]").forEach((b) =>
-    b.addEventListener("click", () => show(b.dataset.go)));
+  document.addEventListener("click", (e) => {
+    const go = e.target.closest("[data-go]");
+    if (go) show(go.dataset.go);
+  });
 
   async function api(path, body) {
-    const res = await fetch(path, body
-      ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
-      : undefined);
+    const res = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || data.error) throw new Error(data.error || "That did not work just now.");
     return data;
   }
 
-  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-  // Read text aloud in English (built into the browser).
   function speak(text) {
     if (!window.speechSynthesis) return;
     speechSynthesis.cancel();
@@ -172,7 +206,6 @@
     btn.addEventListener("click", () => {
       const rec = new Recognition();
       rec.lang = "en-GB";
-      rec.interimResults = false;
       btn.textContent = "🎤 Listening…";
       rec.onresult = (e) => {
         const box = $(btn.dataset.target);
@@ -183,107 +216,217 @@
     });
   });
 
-  // ---------- check ----------
-  const VERDICT_LABEL = { scam: "Scam", suspicious: "Suspicious", safe: "Probably safe" };
+  // ---------- saved plan (only in this browser) ----------
+  const STORE = "care-companion-plan";
+  const emptyPlan = () => ({ medications: [], appointments: [], taken: {} });
 
-  $("check-btn").addEventListener("click", async () => {
-    const out = $("check-result");
-    out.innerHTML = "<p>One moment, I am checking…</p>";
+  function loadPlan() {
+    try { return { ...emptyPlan(), ...JSON.parse(localStorage.getItem(STORE)) }; }
+    catch { return emptyPlan(); }
+  }
+  function savePlan(plan) {
+    try { localStorage.setItem(STORE, JSON.stringify(plan)); } catch { /* private mode: keep in memory only */ }
+    memoryPlan = plan;
+  }
+  let memoryPlan = loadPlan();
+  const plan = () => memoryPlan;
+
+  $("clear-btn").onclick = () => {
+    savePlan(emptyPlan());
+    renderHome();
+  };
+
+  function renderHome() {
+    const n = plan().medications.length;
+    $("home-day-hint").textContent = n
+      ? `${n} medicine${n === 1 ? "" : "s"} on your plan.`
+      : "Nothing saved yet. Start by showing me a document.";
+  }
+  renderHome();
+
+  // ---------- scan ----------
+  let reading = null; // last result from Claude, waiting for confirmation
+
+  $("photo-btn").onclick = () => $("photo-input").click();
+  $("photo-input").onchange = async (e) => {
+    const file = e.target.files[0];
+    if (file) readPhoto(await shrinkImage(file));
+    e.target.value = "";
+  };
+  document.querySelectorAll("[data-sample]").forEach((btn) => {
+    btn.onclick = async () => {
+      const blob = await (await fetch(btn.dataset.sample)).blob();
+      readPhoto(await shrinkImage(blob));
+    };
+  });
+
+  // Phone photos are huge; shrink to max 1600px JPEG before sending.
+  function shrinkImage(fileOrBlob) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(img.src);
+        resolve(canvas.toDataURL("image/jpeg", 0.85));
+      };
+      img.onerror = () => reject(new Error("That photo did not work. Please try another one."));
+      img.src = URL.createObjectURL(fileOrBlob);
+    });
+  }
+
+  async function readPhoto(dataUrl) {
+    $("photo-preview").src = dataUrl;
+    $("photo-preview").classList.remove("hidden");
+    $("scan-status").innerHTML = "<p>One moment, I am reading your document…</p>";
     try {
-      const r = await api("/api/check", { text: $("check-text").value });
-      out.innerHTML = `
-        <div class="card ${r.verdict}">
-          <p class="headline">${escapeHtml(r.headline)}</p>
-          <p>${escapeHtml(r.why)}</p>
-          <p><span class="label">What to do now:</span> ${escapeHtml(r.next_step)}</p>
-          <p><span class="label">Remember:</span> ${escapeHtml(r.learn_tip)}</p>
-        </div>
+      reading = await api("/api/read-document", { image: dataUrl });
+      $("scan-status").innerHTML = "";
+      renderConfirm();
+      show("confirm");
+    } catch (e) {
+      $("scan-status").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  }
+
+  // ---------- confirm ----------
+  const SLOTS = [["morning", "Morning"], ["midday", "Midday"], ["evening", "Evening"], ["night", "Night"]];
+  const whenText = (times) =>
+    SLOTS.filter(([k]) => times?.[k]).map(([k, label]) => `${label}: ${times[k]}`).join(" · ") || "No times found";
+
+  function renderConfirm() {
+    $("confirm-summary").textContent = reading.summary;
+    $("confirm-unclear").innerHTML = reading.unclear.length
+      ? `<div class="warn"><strong>I could not read everything:</strong><br>${reading.unclear.map(escapeHtml).join("<br>")}</div>`
+      : "";
+    const meds = reading.medications.map((m, i) => `
+      <div class="card">
+        <p class="name">${escapeHtml(m.name)} ${escapeHtml(m.strength)}</p>
+        <p>${escapeHtml(m.purpose)}</p>
+        <p><strong>${escapeHtml(whenText(m.times))}</strong></p>
+        ${m.instructions ? `<p>${escapeHtml(m.instructions)}</p>` : ""}
+        <div class="actions"><button class="small-btn" data-remove-med="${i}">Remove this line</button></div>
+      </div>`);
+    const appts = reading.appointments.map((a, i) => `
+      <div class="card">
+        <p class="name">📅 ${escapeHtml(a.title)}</p>
+        <p><strong>${escapeHtml(a.date)} ${escapeHtml(a.time)}</strong>, ${escapeHtml(a.place)}</p>
+        ${a.bring ? `<p>Bring: ${escapeHtml(a.bring)}</p>` : ""}
+        ${a.preparation ? `<p>${escapeHtml(a.preparation)}</p>` : ""}
+        <div class="actions"><button class="small-btn" data-remove-appt="${i}">Remove this line</button></div>
+      </div>`);
+    $("confirm-list").innerHTML = [...meds, ...appts].join("") ||
+      "<p>I did not find any medicines or appointments on this document.</p>";
+    speak(reading.summary);
+  }
+
+  $("confirm-list").addEventListener("click", (e) => {
+    const med = e.target.dataset.removeMed;
+    const appt = e.target.dataset.removeAppt;
+    if (med !== undefined) reading.medications.splice(Number(med), 1);
+    if (appt !== undefined) reading.appointments.splice(Number(appt), 1);
+    if (med !== undefined || appt !== undefined) renderConfirm();
+  });
+
+  $("confirm-yes").onclick = () => {
+    const p = plan();
+    // A full medication plan replaces the old list; a single box or letter adds to it.
+    const meds = reading.document_type === "medication_plan"
+      ? reading.medications
+      : [...p.medications, ...reading.medications];
+    savePlan({ ...p, medications: meds, appointments: [...p.appointments, ...reading.appointments] });
+    show("day");
+    speak("Saved. Here is your day.");
+  };
+
+  // ---------- my day ----------
+  const todayKey = () => new Date().toLocaleDateString("en-CA"); // local YYYY-MM-DD
+
+  function renderDay() {
+    const p = plan();
+    $("day-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    if (!p.medications.length && !p.appointments.length) {
+      $("day-list").innerHTML = `<p>Nothing saved yet.</p><button class="big-btn primary" data-go="scan">📷 Show me a document</button>`;
+      return;
+    }
+    const taken = p.taken[todayKey()] || {};
+    let html = "";
+    for (const [slot, label] of SLOTS) {
+      const meds = p.medications.map((m, i) => ({ m, i })).filter(({ m }) => m.times?.[slot]);
+      if (!meds.length) continue;
+      html += `<h3>${label}</h3>`;
+      html += meds.map(({ m, i }) => {
+        const done = taken[`${slot}:${i}`];
+        return `
+          <div class="card ${done ? "taken" : ""}">
+            <p class="name">${escapeHtml(m.name)} <span class="muted">${escapeHtml(m.times[slot])}</span></p>
+            <p>${escapeHtml(m.purpose)}${m.instructions ? `. ${escapeHtml(m.instructions)}` : ""}</p>
+            <div class="actions">
+              <button class="small-btn ${done ? "done" : ""}" data-take="${slot}:${i}">${done ? "✓ Taken" : "Mark as taken"}</button>
+              <button class="small-btn" data-say="${i}">🔊 What is this?</button>
+            </div>
+          </div>`;
+      }).join("");
+    }
+    if (p.appointments.length) {
+      html += `<h3>Appointments</h3>` + p.appointments.map((a) => `
+        <div class="card">
+          <p class="name">📅 ${escapeHtml(a.title)}</p>
+          <p><strong>${escapeHtml(a.date)} ${escapeHtml(a.time)}</strong>, ${escapeHtml(a.place)}</p>
+          ${a.bring ? `<p>Bring: ${escapeHtml(a.bring)}</p>` : ""}
+          ${a.preparation ? `<p>${escapeHtml(a.preparation)}</p>` : ""}
+        </div>`).join("");
+    }
+    $("day-list").innerHTML = html;
+  }
+
+  $("day-list").addEventListener("click", (e) => {
+    const take = e.target.dataset.take;
+    const say = e.target.dataset.say;
+    if (take) {
+      const p = plan();
+      const day = { ...(p.taken[todayKey()] || {}) };
+      day[take] = !day[take];
+      savePlan({ ...p, taken: { ...p.taken, [todayKey()]: day } });
+      renderDay();
+    }
+    if (say !== undefined) {
+      const m = plan().medications[Number(say)];
+      speak(`${m.name}. ${m.purpose}. ${whenText(m.times)}. ${m.instructions || ""}`);
+    }
+  });
+
+  // ---------- ask ----------
+  function renderChips() {
+    const first = plan().medications[0]?.name;
+    const examples = [
+      first ? `What is ${first} for?` : "What can you help me with?",
+      "What do I take this evening?",
+      "When is my next appointment?",
+      "Help me write questions for my doctor",
+    ];
+    $("ask-chips").innerHTML = examples.map((q) => `<button class="chip">${escapeHtml(q)}</button>`).join("");
+  }
+  $("ask-chips").addEventListener("click", (e) => {
+    if (e.target.classList.contains("chip")) $("ask-text").value = e.target.textContent;
+  });
+
+  $("ask-btn").onclick = async () => {
+    const out = $("ask-answer");
+    out.innerHTML = "<p>One moment…</p>";
+    try {
+      const { answer } = await api("/api/ask", { question: $("ask-text").value, plan: plan() });
+      out.innerHTML = `<div class="card"><p>${escapeHtml(answer).replace(/\n/g, "<br>")}</p></div>
         <button class="big-btn" id="read-again">🔊 Read it again</button>`;
-      const spoken = `${r.headline} ${r.why} ${r.next_step}`;
-      speak(spoken);
-      $("read-again").onclick = () => speak(spoken);
+      speak(answer);
+      $("read-again").onclick = () => speak(answer);
     } catch (e) {
       out.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
     }
-  });
-
-  // ---------- practice ----------
-  let scenario = null;
-  let history = []; // [{ from: "caller" | "me", text }]
-
-  async function loadScenarios() {
-    const list = $("scenario-list");
-    list.innerHTML = "<p>Loading exercises…</p>";
-    try {
-      const scenarios = await api("/api/scenarios");
-      list.innerHTML = "";
-      scenarios.forEach((s) => {
-        const b = document.createElement("button");
-        b.className = "big-btn";
-        b.innerHTML = `${escapeHtml(s.title)}<small>${escapeHtml(s.description)}</small>`;
-        b.onclick = () => startCall(s);
-        list.appendChild(b);
-      });
-    } catch (e) {
-      list.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
-    }
-  }
-
-  function renderChat() {
-    $("chat").innerHTML = history.map((m) =>
-      `<div class="bubble ${m.from}">${escapeHtml(m.text)}</div>`).join("");
-  }
-
-  function startCall(s) {
-    scenario = s;
-    history = [{ from: "caller", text: s.opening }];
-    $("call-title").textContent = s.title;
-    $("feedback").innerHTML = "";
-    $("call-controls").classList.remove("hidden");
-    $("reply-text").value = "";
-    show("call");
-    renderChat();
-    speak(s.opening);
-  }
-
-  $("reply-btn").addEventListener("click", async () => {
-    const text = $("reply-text").value.trim();
-    if (!text) return;
-    history.push({ from: "me", text });
-    $("reply-text").value = "";
-    renderChat();
-    try {
-      const { reply } = await api("/api/practice", { scenarioId: scenario.id, history });
-      history.push({ from: "caller", text: reply });
-      renderChat();
-      speak(reply);
-    } catch (e) {
-      $("feedback").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
-    }
-  });
-
-  const SCORE_LABEL = { great: "Well done!", okay: "Good, with one tip", risky: "Careful" };
-
-  $("hangup-btn").addEventListener("click", async () => {
-    speechSynthesis?.cancel();
-    $("call-controls").classList.add("hidden");
-    const out = $("feedback");
-    out.innerHTML = "<p>Hung up. Let me look at the conversation…</p>";
-    try {
-      const f = await api("/api/feedback", { scenarioId: scenario.id, history });
-      out.innerHTML = `
-        <div class="card ${f.score}">
-          <p class="headline">${SCORE_LABEL[f.score] || ""}</p>
-          <p>${escapeHtml(f.praise)}</p>
-          <p><span class="label">Tip:</span> ${escapeHtml(f.tip)}</p>
-          <p><span class="label">Warning signs:</span> ${f.red_flags.map(escapeHtml).join(" · ")}</p>
-        </div>
-        <button class="big-btn" data-go="practice" onclick="show('practice')">Next exercise</button>`;
-      speak(`${SCORE_LABEL[f.score] || ""} ${f.praise} ${f.tip}`);
-    } catch (e) {
-      out.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
-    }
-  });
+  };
 </script>
 </body>
 </html>
