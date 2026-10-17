@@ -18,6 +18,12 @@ final class LiveTranscriber {
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private let meter = LevelMeter()
+    /// The microphone tap feeds whatever request is current, so recognition can restart mid-speech.
+    private let feed = RequestFeed()
+    /// Words from earlier sections: Apple starts a fresh section after a pause and only reports the new words.
+    private var committed = ""
+    /// The words of the current section.
+    private var current = ""
     private var gotFinal = false
     /// Changes every session, so late results from an older session are ignored.
     private var session = UUID()
@@ -53,15 +59,11 @@ final class LiveTranscriber {
         // No microphone (some Simulators): installing a tap would crash, so give up cleanly.
         guard format.sampleRate > 0, format.channelCount > 0 else { throw Unavailable() }
 
-        let newRequest = SFSpeechAudioBufferRecognitionRequest()
-        newRequest.shouldReportPartialResults = true
-        newRequest.taskHint = .dictation
-        newRequest.addsPunctuation = true
-        // Stay on the phone when it can; otherwise Apple's server recognises it.
-        if recognizer.supportsOnDeviceRecognition { newRequest.requiresOnDeviceRecognition = true }
+        let newRequest = Self.makeRequest(recognizer)
+        feed.set(newRequest)
 
         meter.reset()
-        input.installTap(onBus: 0, bufferSize: 1024, format: format, block: Self.makeTap(request: newRequest, meter: meter))
+        input.installTap(onBus: 0, bufferSize: 1024, format: format, block: Self.makeTap(feed: feed, meter: meter))
         newEngine.prepare()
         do {
             try newEngine.start()
@@ -73,15 +75,48 @@ final class LiveTranscriber {
         let id = UUID()
         session = id
         text = ""
+        committed = ""
+        current = ""
         lastChange = nil
         gotFinal = false
         self.onChange = onChange
         self.onEnd = onEnd
         engine = newEngine
+        startTask(newRequest, session: id)
+    }
+
+    private static func makeRequest(_ recognizer: SFSpeechRecognizer) -> SFSpeechAudioBufferRecognitionRequest {
+        let newRequest = SFSpeechAudioBufferRecognitionRequest()
+        newRequest.shouldReportPartialResults = true
+        newRequest.taskHint = .dictation
+        newRequest.addsPunctuation = true
+        // Stay on the phone when it can; otherwise Apple's server recognises it.
+        if recognizer.supportsOnDeviceRecognition { newRequest.requiresOnDeviceRecognition = true }
+        return newRequest
+    }
+
+    private func startTask(_ newRequest: SFSpeechAudioBufferRecognitionRequest, session id: UUID) {
+        guard let recognizer else { return }
         request = newRequest
         task = recognizer.recognitionTask(with: newRequest, resultHandler: Self.makeResultHandler { [weak self] words, isFinal, failed in
             self?.handle(words: words, isFinal: isFinal, failed: failed, session: id)
         })
+    }
+
+    /// Apple ended recognition (after a pause) while the user is still talking: keep the words, listen on.
+    private func continueListening(session id: UUID) {
+        guard let recognizer, engine != nil else { return }
+        commitCurrent()
+        task = nil
+        let next = Self.makeRequest(recognizer)
+        feed.set(next)
+        startTask(next, session: id)
+    }
+
+    private func commitCurrent() {
+        guard !current.isEmpty else { return }
+        committed = committed.isEmpty ? current : committed + " " + current
+        current = ""
     }
 
     /// How loud the microphone is right now, in decibels (-160 = silence, 0 = loudest).
@@ -108,6 +143,7 @@ final class LiveTranscriber {
         task?.cancel()
         task = nil
         request = nil
+        feed.set(nil)
         onChange = nil
         onEnd = nil
     }
@@ -121,23 +157,34 @@ final class LiveTranscriber {
 
     private func handle(words: String?, isFinal: Bool, failed: Bool, session id: UUID) {
         guard id == session else { return }
-        if let words, !words.isEmpty, words != text {
-            text = words
-            lastChange = Date()
-            onChange?(words)
+        if let words, !words.isEmpty, words != current {
+            // A fresh section after a pause: the new words don't continue the old ones, so keep the old.
+            let continues = current.isEmpty || words.lowercased().hasPrefix(String(current.lowercased().prefix(8)))
+            if !continues && words.count < current.count { commitCurrent() }
+            current = words
+            let all = committed.isEmpty ? current : committed + " " + current
+            if all != text {
+                text = all
+                lastChange = Date()
+                onChange?(all)
+            }
         }
-        if isFinal || failed {
+        guard isFinal || failed else { return }
+        if engine != nil {
+            // The user has not tapped yet. Words so far: carry on in a new section.
+            // Nothing heard at all and it failed: tell the model (it may fall back to Whisper).
+            if failed && text.isEmpty { gotFinal = true; onEnd?() } else { continueListening(session: id) }
+        } else {
+            commitCurrent()
             gotFinal = true
-            // Still listening (the user has not tapped): tell the model recognition is over.
-            if engine != nil { onEnd?() }
         }
     }
 
     // These run on audio / recognition threads, so they are built outside the main actor.
 
-    private nonisolated static func makeTap(request: SFSpeechAudioBufferRecognitionRequest, meter: LevelMeter) -> AVAudioNodeTapBlock {
+    private nonisolated static func makeTap(feed: RequestFeed, meter: LevelMeter) -> AVAudioNodeTapBlock {
         { buffer, _ in
-            request.append(buffer)
+            feed.append(buffer)
             meter.measure(buffer)
         }
     }
@@ -175,5 +222,20 @@ private final class LevelMeter: @unchecked Sendable {
         let rms = (sum / Float(buffer.frameLength)).squareRoot()
         let decibels = rms > 0 ? max(20 * log10(rms), -160) : -160
         lock.lock(); current = decibels; lock.unlock()
+    }
+}
+
+/// The recognition request the microphone feeds; swapped when recognition restarts mid-speech.
+private final class RequestFeed: @unchecked Sendable {
+    private let lock = NSLock()
+    private var request: SFSpeechAudioBufferRecognitionRequest?
+
+    func set(_ newRequest: SFSpeechAudioBufferRecognitionRequest?) {
+        lock.lock(); request = newRequest; lock.unlock()
+    }
+
+    func append(_ buffer: AVAudioPCMBuffer) {
+        lock.lock(); let current = request; lock.unlock()
+        current?.append(buffer)
     }
 }
