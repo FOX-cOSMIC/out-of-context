@@ -127,6 +127,149 @@ function planAsText(plan = {}) {
   return `Medications:\n${meds.join("\n") || "- none"}\n\nAppointments:\n${appts.join("\n") || "- none"}`;
 }
 
+// ---------- conversation (the phone app talks to this) ----------
+
+const MEDICATION_ITEM = DOCUMENT_SCHEMA.properties.medications.items;
+const APPOINTMENT_ITEM = DOCUMENT_SCHEMA.properties.appointments.items;
+const SLOT = { type: "string", enum: ["morning", "midday", "evening", "night"] };
+
+// Tools Claude can use during the conversation. They don't change anything on the
+// server: each one becomes a "card" or an "action" that the app shows or applies.
+const CHAT_TOOLS = [
+  {
+    name: "show_schedule",
+    description:
+      "Show the user their medicines as a card in the chat. Use whenever they ask what to take, today or at a time of day.",
+    input_schema: {
+      type: "object",
+      properties: { slot: { type: "string", enum: ["all", "morning", "midday", "evening", "night"] } },
+      required: ["slot"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "show_appointments",
+    description: "Show the user's saved appointments as a card in the chat.",
+    input_schema: { type: "object", properties: {}, required: [], additionalProperties: false },
+  },
+  {
+    name: "propose_medications",
+    description:
+      "After reading a photo of a medication plan or medicine box: show what you read as a card with Yes/No buttons so the user can check it. Nothing is saved until they tap Yes.",
+    input_schema: {
+      type: "object",
+      properties: {
+        replaces_plan: {
+          type: "boolean",
+          description: "true for a full medication plan from a doctor, false for a single medicine box",
+        },
+        medications: { type: "array", items: MEDICATION_ITEM },
+        unclear: { type: "array", items: { type: "string" } },
+      },
+      required: ["replaces_plan", "medications", "unclear"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "propose_appointments",
+    description:
+      "After reading an appointment letter: show the appointment(s) as a card with Yes/No buttons. Nothing is saved until they tap Yes.",
+    input_schema: {
+      type: "object",
+      properties: { appointments: { type: "array", items: APPOINTMENT_ITEM } },
+      required: ["appointments"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "mark_taken",
+    description: "Tick off medicines the user says they have taken.",
+    input_schema: {
+      type: "object",
+      properties: { slot: SLOT, names: { type: "array", items: { type: "string" } } },
+      required: ["slot", "names"],
+      additionalProperties: false,
+    },
+  },
+].map((t) => ({ ...t, strict: true }));
+
+function runChatTool(name, input, cards, actions) {
+  switch (name) {
+    case "show_schedule":
+      cards.push({ type: "schedule", slot: input.slot });
+      return "The schedule card is now on screen.";
+    case "show_appointments":
+      cards.push({ type: "appointments" });
+      return "The appointments card is now on screen.";
+    case "propose_medications":
+      cards.push({ type: "confirm_medications", ...input });
+      return "The card with Yes/No buttons is on screen. Ask the user to check each line against their paper.";
+    case "propose_appointments":
+      cards.push({ type: "confirm_appointments", ...input });
+      return "The card with Yes/No buttons is on screen. Ask the user to check it.";
+    case "mark_taken":
+      actions.push({ type: "mark_taken", ...input });
+      return `Marked as taken (${input.slot}): ${input.names.join(", ")}.`;
+    default:
+      return `Unknown tool ${name}`;
+  }
+}
+
+// history: [{ role: "user" | "assistant", text, image? }]; only the newest image is sent.
+function historyToMessages(history) {
+  const lastImage = history.findLastIndex((m) => m.image);
+  return history.map((m, i) => {
+    if (m.role === "assistant") return { role: "assistant", content: m.text || "…" };
+    const content = [];
+    if (m.image && i === lastImage) content.push(imageBlock(m.image));
+    else if (m.image) content.push({ type: "text", text: "[The user showed a photo earlier.]" });
+    content.push({ type: "text", text: m.text || (m.image ? "Here is a photo." : "…") });
+    return { role: "user", content };
+  });
+}
+
+async function chat({ history, plan, taken = {}, today, skills = [] }) {
+  if (!client) throw new Error("NO_API_KEY");
+  const system = [
+    { type: "text", text: await readPrompt("chat.md"), cache_control: { type: "ephemeral" } },
+    {
+      type: "text",
+      text: `Today: ${today || new Date().toDateString()}\n\nSaved plan:\n${planAsText(plan)}\n\nTaken today: ${JSON.stringify(taken)}\n\nAI skills the user has already practised: ${skills.join(", ") || "none yet"}`,
+    },
+  ];
+  const messages = historyToMessages(history);
+  const cards = [];
+  const actions = [];
+  for (let turn = 0; turn < 6; turn++) {
+    const response = await client.beta.messages.create({
+      model: MODEL,
+      max_tokens: 8000,
+      system,
+      tools: CHAT_TOOLS,
+      messages,
+      output_config: { effort: "low" },
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+    });
+    if (response.stop_reason === "refusal") throw new RefusalError("refused");
+    const toolUses = response.content.filter((b) => b.type === "tool_use");
+    if (response.stop_reason !== "tool_use" || !toolUses.length) {
+      const reply = response.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+      return { reply, cards, actions };
+    }
+    messages.push({ role: "assistant", content: response.content });
+    messages.push({
+      role: "user",
+      content: toolUses.map((t) => ({
+        type: "tool_result",
+        tool_use_id: t.id,
+        content: runChatTool(t.name, t.input, cards, actions),
+      })),
+    });
+  }
+  return { reply: "Here you are.", cards, actions };
+}
+
 // ---------- HTTP ----------
 
 const MIME = {
@@ -200,6 +343,15 @@ function friendlyError(res, err) {
 }
 
 const routes = {
+  // The phone app's conversation: text and/or a photo in, a reply plus cards out.
+  "POST /api/chat": async (req, res) => {
+    const body = await readJson(req);
+    if (!Array.isArray(body.history) || !body.history.length) {
+      return sendJson(res, 400, { error: "Please type or say something first." });
+    }
+    sendJson(res, 200, await chat(body));
+  },
+
   // Read a photo of a medication plan, a medicine box or an appointment letter.
   "POST /api/read-document": async (req, res) => {
     const { image } = await readJson(req);
