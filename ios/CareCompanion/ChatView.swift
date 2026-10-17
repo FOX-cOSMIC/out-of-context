@@ -88,7 +88,7 @@ struct ChatView: View {
                     Text(model.isRecording || model.isStartingMic ? TalkButtonLabel.text(model) : "How are you doing today?")
                         .font(Theme.Fonts.heroTitle)
                         .foregroundStyle(model.isRecording || model.isStartingMic ? Theme.Colors.danger : Theme.Colors.textPrimary)
-                    Text("Tap Agatha and ask: “What medicine do I have to take today?”")
+                    Text("Tap Agatha to talk")
                         .font(Theme.Fonts.hint)
                         .foregroundStyle(Theme.Colors.textSecondary)
                     if !model.status.isEmpty {
@@ -133,12 +133,6 @@ struct ChatView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .accessibilityHidden(true)
             VStack(spacing: Theme.Metrics.spacingLarge) {
-                Text("MEDICINE HELPER")
-                    .font(Theme.Fonts.chip)
-                    .tracking(2)
-                    .foregroundStyle(Theme.Palette.inkMuted)
-                    .padding(.horizontal, 22).padding(.vertical, 10)
-                    .background(Theme.Palette.white, in: Capsule())
                 content()
             }
             .padding(.top, Theme.Metrics.spacingMedium)
@@ -150,20 +144,12 @@ struct ChatView: View {
     /// Call (top left) and Settings (top right).
     private var topButtons: some View {
         HStack {
-            if !model.showWelcome && !model.isCallMode {
-                Button { model.startCall() } label: {
-                    Image(systemName: "phone.fill").font(Theme.Fonts.toolbarIcon)
-                        .frame(width: Theme.Metrics.minTouch, height: Theme.Metrics.minTouch)
-                        .background(Theme.Palette.white.opacity(0.8), in: Circle())
-                }
-                .disabled(!model.canSend)
-                .accessibilityLabel("Start a call: talk to Agatha")
-            }
             Spacer()
+            // Tap-to-talk only: no call button. Settings stays small and quiet (needed to reset a demo).
             Button { showSettings = true } label: {
-                Image(systemName: "gearshape.fill").font(Theme.Fonts.toolbarIcon)
+                Image(systemName: "gearshape").font(Theme.Fonts.toolbarIcon)
                     .frame(width: Theme.Metrics.minTouch, height: Theme.Metrics.minTouch)
-                    .background(Theme.Palette.white.opacity(0.8), in: Circle())
+                    .opacity(0.6)
             }
             .accessibilityLabel("Settings")
         }
