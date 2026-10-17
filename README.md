@@ -6,12 +6,18 @@
 >
 > 🔑 Set your API key first: `cp .env.example .env`, then paste your key into `.env` (it's git-ignored, never commit it).
 
-# <Project name>
+# Scam Shield (working title) · by Team Out of Context
 
-**One line:** <what it does, for whom>
+**One line:** A voice-first helper that lets older adults in Germany check a suspicious call or message with AI, and practise spotting scams safely.
+
+**Audience:** Older adults (roughly 70+) in Germany who get scam calls on their landline or phone, plus their adult children who help them with tech.
+
+**Their problem with AI today:** They mostly hear about AI as a threat (voice-cloned "shock calls", fake police officers) and have never used it to protect themselves.
+
+**What our demo lets them do:** Describe a call or show a message, get a plain-German verdict and one clear next step, and practise hanging up on an AI playing the scammer.
 
 ## The problem
-<Who has this problem, and why it matters. 2–3 sentences.>
+Phone scams on older people are rising in Germany: according to BKA figures reported in the press, fake police officers took about €49.5M in 2025 (up from €30.1M), and the grandchild trick and shock calls about €49.0M. The costliest scams arrive by phone, often on a landline, where existing text-only scam checkers don't help. Research suggests short, repeated practice works better than one-off warnings.
 
 ## What it does
 <What a user can do with it. A short list is fine.>
@@ -36,12 +42,11 @@ Teams of 5 (at least 1 builder, 1 product or design, 1 domain expert; plus found
 
 | Name | Role / background |
 |---|---|
-| [Mehul Patel](https://github.com/nomadicmehul) *(example)* | Claude Ambassador, DevRel |
-| [Your name](https://www.linkedin.com/in/your-profile) | Builder / Product or design / Domain expert / Founder |
-| [Your name](https://github.com/your-username) | |
-| [Your name](https://github.com/your-username) | |
-| [Your name](https://github.com/your-username) *(optional)* | |
-| [Your name](https://github.com/your-username) *(optional)* | |
+| Gabriela | Builder |
+| Ahmad | Builder |
+| Camila | Product design |
+| Valentina | Founder |
+| Lucas | Domain expert (videography) |
 
 ## Credits
 <Open-source libraries, APIs, datasets and assets you used.>
